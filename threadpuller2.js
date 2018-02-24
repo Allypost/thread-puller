@@ -15,7 +15,7 @@ const app = express();
 
 const style = `<style> video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; } </style>`;
 
-function getPosts(url, cb) {
+const getPosts = (url, cb) => {
     try {
         return request(
             {
@@ -45,22 +45,20 @@ function getPosts(url, cb) {
         console.log('GET-POSTS', 'ERROR:', err);
         return new Promise(new Function);
     }
-}
+};
 
-function dlLoc(dir, url) {
+const dlLoc = (dir, url) => {
     const name = url.split('/').pop();
 
     return dir + name;
-}
-
-function fileName(url) {
+};
+const fileName = (url) => {
     const file = url.split('/').pop();
     const nameArr = file.split('.');
 
     return nameArr[ 0 ];
-}
-
-function dl(dir, url, cb) {
+};
+const dl = (dir, url, cb) => {
     let id = fileName(url);
 
     mkdirp(dir, (err) => {
@@ -99,52 +97,47 @@ function dl(dir, url, cb) {
     });
 
     return id;
-}
+};
 
-function localURL(url) {
+const localURL = (url) => {
     const urlParts = URL.parse(url);
     const origPath = urlParts.pathname;
 
     return `/i${origPath}`;
-}
-
-function thumbURL(url) {
+};
+const thumbURL = (url) => {
     return url.substr(0, url.lastIndexOf('.')) + 's.jpg';
-}
+};
 
-function vid(url, opts, isLocal) {
+const vid = (url, opts, isLocal) => {
     const autoplay = opts.autoplay ? ' autoplay muted=\'true\'' : '';
     const loop = opts.loop ? ' loop' : '';
     // const thumb = thumbURL(url);
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
-}
-
-function img(url, isLocal) {
+};
+const img = (url, isLocal) => {
     const mainURL = isLocal ? url : localURL(url);
     const altUrl = thumbURL(url);
 
     const error = !isLocal ? `onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"` : '';
 
     return `<img src="${mainURL}" ${error}>`;
-}
-
-function li(item) {
+};
+const li = (item) => {
     return `<li>${item}</li>`;
-}
-
-function a(url, name, newTab) {
+};
+const a = (url, name, newTab) => {
     let newT = newTab ? `target="_blank"` : '';
     return `<a href="${url}" ${newT}>${name}</a>`;
-}
-
-function title(post) {
+};
+const title = (post) => {
     const title = post[ 'sub' ] || post[ 'com' ] || 'No title';
 
     return `<title>${title}</title>`;
-}
+};
 
-function resource(url, params, isLocal) {
+const resource = (url, params, isLocal) => {
     const imgs = [ 'jpg', 'png', 'gif', 'jpeg' ];
     const ext = url.split('/').pop().split('.').pop();
     // noinspection EqualityComparisonWithCoercionJS
@@ -163,9 +156,9 @@ function resource(url, params, isLocal) {
     const res = isImg ? img(url, isLocal) : vid(url, opts, isLocal);
 
     return a(url, res, true);
-}
+};
 
-function getUrl(thread, postNumber) {
+const getUrl = (thread, postNumber) => {
     /*
      const base = 'http://_.4chan.org/' + thread + '/';
      const srvr = (postNumber % 3 > 1) ? 'is' : 'is2';
@@ -173,19 +166,17 @@ function getUrl(thread, postNumber) {
      */
 
     return `https://i.4cdn.org/${thread}/`;
-}
-
-function getDlDir(thread, num) {
+};
+const getDlDir = (thread, num) => {
     return `dl/${thread}/${num}/`;
-}
-
-function getApiUrl(thread, num) {
+};
+const getApiUrl = (thread, num) => {
     return `https://a.4cdn.org/${thread}/thread/${num}.json`;
-}
+};
 
-function pad(width, string, padding) {
+const pad = (width, string, padding) => {
     return (width <= string.length) ? string : pad(width, padding + string, padding);
-}
+};
 
 app.get('/:thread/thread/:num', (req, res) => {
     res.type('html');
