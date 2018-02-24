@@ -113,12 +113,7 @@ const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.j
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
 const getFileUrl = (thread, resourceID, extension) => getUrl(thread) + resourceID + extension;
 const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
-const getImageLocalUrl = (url) => {
-    const urlParts = URL.parse(url);
-    const origPath = urlParts.pathname;
-
-    return `https://thrdpllr.tk/i${origPath}`;
-};
+const getImageLocalUrl = (url) => `https://thrdpllr.tk/i${URL.parse(url).pathname}`;
 const getImageThumbUrl = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
