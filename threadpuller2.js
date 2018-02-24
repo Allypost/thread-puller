@@ -108,10 +108,9 @@ const resource = (post, params) => {
     return a(postUrl, res, true);
 };
 
-const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
 const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
-const getFileUrl = (thread, resourceID, extension) => getUrl(thread) + resourceID + extension;
+const getFileUrl = (thread, resourceID, extension) => `https://i.4cdn.org/${thread}/${resourceID}${extension}`;
 const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
 const getImageLocalUrl = (url) => `https://thrdpllr.tk/i${URL.parse(url).pathname}`;
 const getImageThumbUrl = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
