@@ -181,8 +181,6 @@ Router.get('/i/:thread/:id.:ext', (req, res) => {
         .end();
 });
 
-Router.get('/ping', (req, res) => res.send('pong'));
-
 app.use(Router);
 
 const dater = () => (new Date).toISOString();
