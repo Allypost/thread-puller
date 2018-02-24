@@ -109,10 +109,9 @@ const thumbURL = (url) => {
     return url.substr(0, url.lastIndexOf('.')) + 's.jpg';
 };
 
-const vid = (url, opts, isLocal) => {
+const vid = (url, opts) => {
     const autoplay = opts.autoplay ? ' autoplay muted=\'true\'' : '';
     const loop = opts.loop ? ' loop' : '';
-    // const thumb = thumbURL(url);
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
@@ -120,7 +119,9 @@ const img = (url, isLocal) => {
     const mainURL = isLocal ? url : localURL(url);
     const altUrl = thumbURL(url);
 
-    const error = !isLocal ? `onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"` : '';
+    const error = !isLocal
+        ? `onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"`
+        : '';
 
     return `<img src="${mainURL}" ${error}>`;
 };
@@ -153,18 +154,12 @@ const resource = (url, params, isLocal) => {
     const opts = { autoplay, loop };
 
     const isImg = imgs.indexOf(ext) >= 0;
-    const res = isImg ? img(url, isLocal) : vid(url, opts, isLocal);
+    const res = isImg ? img(url, isLocal) : vid(url, opts);
 
     return a(url, res, true);
 };
 
-const getUrl = (thread, postNumber) => {
-    /*
-     const base = 'http://_.4chan.org/' + thread + '/';
-     const srvr = (postNumber % 3 > 1) ? 'is' : 'is2';
-     return base.replace('_', srvr);
-     */
-
+const getUrl = (thread) => {
     return `https://i.4cdn.org/${thread}/`;
 };
 const getDlDir = (thread, num) => {
@@ -191,7 +186,7 @@ app.get('/:thread/thread/:num', (req, res) => {
             if (!post.tim)
                 return;
 
-            const base = getUrl(p.thread, post.no);
+            const base = getUrl(p.thread);
             const postUrl = base + post.tim + post.ext;
             const file = resource(postUrl, req.query);
 
@@ -257,7 +252,7 @@ if (ENV === 'dev') {
 
             for (let i in posts) {
                 const post = posts[ i ];
-                const base = getUrl(p.thread, post.no);
+                const base = getUrl(p.thread);
 
                 if (!post.tim)
                     continue;
