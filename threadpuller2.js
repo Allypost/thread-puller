@@ -1,7 +1,5 @@
 const express = require('express');
 const request = require('request');
-const fs = require('fs');
-const mkdirp = require('mkdirp');
 const http = require('http');
 const URL = require('url');
 const Raven = require('raven');
@@ -15,7 +13,7 @@ const app = express();
 
 Raven.config(process.env.SENTRY_URL).install();
 
-const style = `<style> video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; } </style>`;
+const style = `<style>video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; }</style>`;
 
 const getPosts = (url, cb) => {
     try {
@@ -58,12 +56,10 @@ const localURL = (url) => {
 
     return `/i${origPath}`;
 };
-const thumbURL = (url) => {
-    return url.substr(0, url.lastIndexOf('.')) + 's.jpg';
-};
+const thumbURL = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
 
 const vid = (url, opts) => {
-    const autoplay = opts.autoplay ? ' autoplay muted=\'true\'' : '';
+    const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
@@ -75,7 +71,8 @@ const img = (url) => {
     return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
 const a = (url, name, newTab) => {
-    let newT = newTab ? `target="_blank"` : '';
+    const newT = newTab ? `target="_blank"` : '';
+
     return `<a href="${url}" ${newT}>${name}</a>`;
 };
 const title = (post) => {
@@ -85,10 +82,11 @@ const title = (post) => {
 };
 
 const resource = (url, params) => {
-    const imgs = [ 'jpg', 'png', 'gif', 'jpeg' ];
-    const ext = url.split('/').pop().split('.').pop();
-    // noinspection EqualityComparisonWithCoercionJS
-    params.loop = params.loop == +params.loop ? +params.loop : params.loop;
+    const ext = url.split('/')
+                   .pop()
+                   .split('.')
+                   .pop()
+                   .toLowerCase();
 
     // noinspection PointlessBooleanExpressionJS
     const autoplay = !!params.autoplay;
@@ -99,18 +97,24 @@ const resource = (url, params) => {
 
     const opts = { autoplay, loop };
 
-    const isImg = imgs.indexOf(ext) >= 0;
-    const res = isImg ? img(url) : vid(url, opts);
+    let res = '';
+    switch (ext) {
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+            res = img(url);
+            break;
+        default:
+            res = vid(url, opts);
+            break;
+    }
 
     return a(url, res, true);
 };
 
-const getUrl = (thread) => {
-    return `https://i.4cdn.org/${thread}/`;
-};
-const getApiUrl = (thread, num) => {
-    return `https://a.4cdn.org/${thread}/thread/${num}.json`;
-};
+const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
+const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
 
 app.get('/:thread/thread/:num', (req, res) => {
     res.type('html');
@@ -157,13 +161,9 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
         res.set(resp.headers);
         res.status(resp.statusCode);
 
-        resp.on('data', chunk => {
-            res.write(chunk);
-        });
-
-        resp.on('end', () => {
-            res.send();
-        });
+        resp
+            .on('data', chunk => res.write(chunk))
+            .on('end', () => res.send());
     });
 
     ireq.on('error', e => {
@@ -176,7 +176,7 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 const dater = () => (new Date).toISOString();
-const info = (...arguments) => console.log.apply(null, [ dater(), '|', ...arguments ]);
+const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...arguments ]);
 
 info('Server starting...');
 http.createServer(app)
