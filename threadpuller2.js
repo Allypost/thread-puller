@@ -6,10 +6,9 @@ const http = require('http');
 const URL = require('url');
 const os = require('os');
 
-const ENV = os.hostname() === 'ally-pc' ? 'dev' : 'prod';
-
+const ENV = process.env.NODE_ENV || os.hostname() === 'ally-pc' ? 'development' : 'production';
 const PORT = process.env.PORT
-             || ENV === 'dev' ? 80 : 8080;
+             || ENV === 'development' ? 80 : 8080;
 
 const app = express();
 
