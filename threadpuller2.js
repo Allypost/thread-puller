@@ -11,7 +11,7 @@ require('dotenv-safe').load(
 
 const app = express();
 
-Raven.config(process.env.SENTRY_URL).install();
+Raven.config(process.env.SENTRY_DSN_URL).install();
 
 const style = `<style>video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; }</style>`;
 
