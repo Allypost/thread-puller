@@ -52,58 +52,6 @@ const getPosts = (url, cb) => {
     return new Promise(new Function);
 };
 
-const dlLoc = (dir, url) => {
-    const name = url.split('/').pop();
-
-    return dir + name;
-};
-const fileName = (url) => {
-    const file = url.split('/').pop();
-    const nameArr = file.split('.');
-
-    return nameArr[ 0 ];
-};
-const dl = (dir, url, cb) => {
-    let id = fileName(url);
-
-    mkdirp(dir, (err) => {
-        if (err)
-            return;
-
-        let loc = dlLoc(dir, url);
-
-        if (fs.existsSync(loc))
-            return id;
-
-        let file = fs.createWriteStream(loc);
-
-        try {
-            http
-                .get(url, (response) => {
-                    response.pipe(file);
-                    response.on('end', function () {
-                        cb(id);
-                    });
-                })
-                .on('error', (err) => {
-                    Raven.captureException(err);
-                    file.end();
-                    fs.unlink(loc, (err) => {
-                        if (err)
-                            Raven.captureException(err);
-                    });
-                })
-                .end();
-        } catch (err) {
-            Raven.captureException(err);
-        }
-
-        console.log('Create: ' + loc);
-    });
-
-    return id;
-};
-
 const localURL = (url) => {
     const urlParts = URL.parse(url);
     const origPath = urlParts.pathname;
@@ -129,9 +77,6 @@ const img = (url, isLocal) => {
         : '';
 
     return `<img src="${mainURL}" ${error}>`;
-};
-const li = (item) => {
-    return `<li>${item}</li>`;
 };
 const a = (url, name, newTab) => {
     let newT = newTab ? `target="_blank"` : '';
@@ -167,18 +112,8 @@ const resource = (url, params, isLocal) => {
 const getUrl = (thread) => {
     return `https://i.4cdn.org/${thread}/`;
 };
-const getDlDir = (thread, num) => {
-    return `dl/${thread}/${num}/`;
-};
 const getApiUrl = (thread, num) => {
     return `https://a.4cdn.org/${thread}/thread/${num}.json`;
-};
-
-const pad = (width, string, padding) => {
-    while (width - string.length > 0)
-        string += padding;
-
-    return string;
 };
 
 app.get('/:thread/thread/:num', (req, res) => {
