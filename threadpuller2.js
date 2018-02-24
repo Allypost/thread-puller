@@ -87,12 +87,12 @@ const title = (post) => {
 };
 const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
-const resource = (url, params) => {
-    const ext = url.split('/')
-                   .pop()
-                   .split('.')
-                   .pop()
-                   .toLowerCase();
+const resource = (postUrl, fileUrl, params) => {
+    const ext = fileUrl.split('/')
+                       .pop()
+                       .split('.')
+                       .pop()
+                       .toLowerCase();
 
     // noinspection PointlessBooleanExpressionJS
     const autoplay = !!params.autoplay;
@@ -109,19 +109,20 @@ const resource = (url, params) => {
         case 'jpeg':
         case 'png':
         case 'gif':
-            res = img(url);
+            res = img(fileUrl);
             break;
         default:
-            res = vid(url, opts);
+            res = vid(fileUrl, opts);
             break;
     }
 
-    return a(url, res, true);
+    return a(postUrl, res, true);
 };
 
 const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
 const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
+const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
 
@@ -141,8 +142,9 @@ Router.get('/:thread/thread/:num', (req, res) => {
                 return;
 
             const base = getUrl(p.thread);
-            const postUrl = base + post.tim + post.ext;
-            const file = resource(postUrl, req.query);
+            const postFileUrl = base + post.tim + post.ext;
+            const postUrl = getPostUrl(p.thread, p.num, post.no);
+            const file = resource(postUrl, postFileUrl, req.query);
 
             res.write(file);
         });
