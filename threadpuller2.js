@@ -84,6 +84,7 @@ const title = (post) => {
 
     return `<title>${title}</title>`;
 };
+const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
 const resource = (url, params) => {
     const ext = url.split('/')
@@ -128,9 +129,8 @@ app.get('/:thread/thread/:num', (req, res) => {
 
     const p = req.params;
     const url = getApiUrl(p.thread, p.num);
-    const threadURL = getThreadUrl(p.thread, p.num);
 
-    res.write(`<h1 style="text-align: center;"><a href="${threadURL}" target="_blank">Go to thread</a></h1>`);
+    res.write(header(p.thread, p.num));
 
     getPosts(url, posts => {
         res.write(title(posts[ 0 ]));
