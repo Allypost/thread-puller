@@ -43,6 +43,7 @@ const getPosts = (url, cb) => {
         );
     } catch (err) {
         console.log('GET-POSTS', 'ERROR:', err);
+        cb([]);
         return new Promise(new Function);
     }
 };
