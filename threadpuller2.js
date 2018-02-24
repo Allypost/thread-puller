@@ -55,13 +55,13 @@ const getPosts = (url, cb) => {
     return new Promise(new Function);
 };
 
-const localURL = (url) => {
+const getLocalUrl = (url) => {
     const urlParts = URL.parse(url);
     const origPath = urlParts.pathname;
 
     return `https://thrdpllr.tk/i${origPath}`;
 };
-const thumbURL = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
+const getThumbUrl = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
 
 const vid = (url, opts) => {
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
@@ -70,8 +70,8 @@ const vid = (url, opts) => {
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (url) => {
-    const mainURL = localURL(url);
-    const altUrl = thumbURL(url);
+    const mainURL = getLocalUrl(url);
+    const altUrl = getThumbUrl(url);
 
     return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
