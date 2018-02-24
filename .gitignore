@@ -9,5 +9,4 @@ static/
 /server.key
 /server.key.org
 
-/error.log
-/combined.log
+/logs/*
