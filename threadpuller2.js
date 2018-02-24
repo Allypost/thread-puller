@@ -24,7 +24,7 @@ const getPosts = (url, cb) => {
         return request(
             {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+                    'User-Agent': process.env.USER_AGENT,
                     'Referer': url,
                 },
                 uri: url,
@@ -161,7 +161,7 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
         'headers': {
             'Referer': 'https://boards.4chan.org/',
             'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36',
+            'User-Agent': process.env.USER_AGENT,
             'Connection': 'keep-alive',
             'Accept-Encoding': 'gzip, deflate',
         },
