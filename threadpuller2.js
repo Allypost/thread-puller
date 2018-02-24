@@ -244,9 +244,14 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
 
 app.get('/ping', (req, res) => res.send('pong'));
 
+const dater = () => (new Date).toISOString();
+const info = (...arguments) => console.log.apply(null, [ dater(), '|', ...arguments ]);
+
+info('Server starting...');
 http.createServer(app)
     .listen(process.env.PORT, () => {
-        console.log('Server started on port: ', process.env.PORT);
+        info('Server started');
+        info('  Port:', process.env.PORT);
     })
     .on('error', err => {
         Raven.captureException(err);
