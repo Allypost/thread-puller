@@ -138,6 +138,12 @@ function a(url, name, newTab) {
     return `<a href="${url}" ${newT}>${name}</a>`;
 }
 
+function title(post) {
+    const title = post[ 'sub' ] || post[ 'com' ] || 'No title';
+
+    return `<title>${title}</title>`;
+}
+
 function resource(url, params, isLocal) {
     const imgs = [ 'jpg', 'png', 'gif', 'jpeg' ];
     const ext = url.split('/').pop().split('.').pop();
@@ -188,10 +194,7 @@ app.get('/:thread/thread/:num', (req, res) => {
     const url = getApiUrl(p.thread, p.num);
 
     getPosts(url, posts => {
-        const op = posts[ 0 ];
-        const title = op[ 'sub' ] || op[ 'com' ] || 'No title';
-
-        res.write(`<title>${title}</title>`);
+        res.write(title(posts[ 0 ]));
 
         posts.forEach(post => {
             if (!post.tim)
@@ -212,13 +215,9 @@ app.get('/:thread/thread/:num', (req, res) => {
 app.get('/i/:thread/:id.:ext', (req, res) => {
     const p = req.params;
 
-    const thread = p.thread;
-    const id = +p.id;
-    const ext = p.ext;
-
     const options = {
         'host': 'i.4cdn.org',
-        'path': `/${thread}/${id}.${ext}`,
+        'path': `/${p.thread}/${p.id}.${p.ext}`,
         'method': 'GET',
         'headers': {
             'Referer': 'https://boards.4chan.org/',
