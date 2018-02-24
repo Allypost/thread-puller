@@ -1,0 +1,12 @@
+.idea/
+dl/
+node_modules/
+run.cmd
+static/
+
+/server.crt
+/server.csr
+/server.key
+/server.key.org
+
+/*.log
