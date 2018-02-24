@@ -55,14 +55,6 @@ const getPosts = (url, cb) => {
     return new Promise(new Function);
 };
 
-const getLocalUrl = (url) => {
-    const urlParts = URL.parse(url);
-    const origPath = urlParts.pathname;
-
-    return `https://thrdpllr.tk/i${origPath}`;
-};
-const getThumbUrl = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
-
 const vid = (url, opts) => {
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
@@ -70,8 +62,8 @@ const vid = (url, opts) => {
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (url) => {
-    const mainURL = getLocalUrl(url);
-    const altUrl = getThumbUrl(url);
+    const mainURL = getImageLocalUrl(url);
+    const altUrl = getImageThumbUrl(url);
 
     return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
@@ -121,6 +113,13 @@ const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.j
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
 const getFileUrl = (thread, resourceID, extension) => getUrl(thread) + resourceID + extension;
 const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
+const getImageLocalUrl = (url) => {
+    const urlParts = URL.parse(url);
+    const origPath = urlParts.pathname;
+
+    return `https://thrdpllr.tk/i${origPath}`;
+};
+const getImageThumbUrl = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
 
