@@ -1,0 +1,21 @@
+{
+  "name": "thread-puller",
+  "version": "0.1.6",
+  "description": "Pulls videos and gifs from a 4chan thread",
+  "main": "threadpuller2.js",
+  "engines": {
+    "node": "9.3.0"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "express": "^4.16.2",
+    "mkdirp": "^0.5.1",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node threadpuller2.js"
+  },
+  "license": "ISC"
+}
