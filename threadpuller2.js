@@ -170,7 +170,10 @@ const getApiUrl = (thread, num) => {
 };
 
 const pad = (width, string, padding) => {
-    return (width <= string.length) ? string : pad(width, padding + string, padding);
+    while (width - string.length > 0)
+        string += padding;
+
+    return string;
 };
 
 app.get('/:thread/thread/:num', (req, res) => {
