@@ -8,7 +8,8 @@ const os = require('os');
 
 const ENV = os.hostname() === 'ally-pc' ? 'dev' : 'prod';
 
-const PORT = ENV === 'dev' ? 80 : 8080;
+const PORT = process.env.PORT
+             || ENV === 'dev' ? 80 : 8080;
 
 const app = express();
 
