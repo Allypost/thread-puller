@@ -87,7 +87,10 @@ const title = (post) => {
 };
 const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
-const resource = (postUrl, fileUrl, params) => {
+const resource = (post, params) => {
+    const fileUrl = getFileUrl(post.thread, post.tim, post.ext);
+    const postUrl = getPostUrl(post.thread, post.resto, post.no);
+
     const ext = fileUrl.split('/')
                        .pop()
                        .split('.')
@@ -122,6 +125,7 @@ const resource = (postUrl, fileUrl, params) => {
 const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
 const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
+const getFileUrl = (thread, resourceID, extension) => getUrl(thread) + resourceID + extension;
 const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
@@ -141,12 +145,9 @@ Router.get('/:thread/thread/:num', (req, res) => {
             if (!post.tim)
                 return;
 
-            const base = getUrl(p.thread);
-            const postFileUrl = base + post.tim + post.ext;
-            const postUrl = getPostUrl(p.thread, p.num, post.no);
-            const file = resource(postUrl, postFileUrl, req.query);
+            post.thread = p.thread;
 
-            res.write(file);
+            res.write(resource(post, req.query));
         });
 
         res.write(style);
@@ -191,8 +192,7 @@ const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...argume
 info('Server starting...');
 http.createServer(app)
     .listen(process.env.PORT, () => {
-        info('Server started');
-        info('  Port:', process.env.PORT);
+        info('Server started on port', process.env.PORT);
     })
     .on('error', err => {
         Raven.captureException(err);
