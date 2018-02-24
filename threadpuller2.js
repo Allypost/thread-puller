@@ -91,12 +91,6 @@ const resource = (post, params) => {
     const fileUrl = getFileUrl(post.thread, post.tim, post.ext);
     const postUrl = getPostUrl(post.thread, post.resto, post.no);
 
-    const ext = fileUrl.split('/')
-                       .pop()
-                       .split('.')
-                       .pop()
-                       .toLowerCase();
-
     // noinspection PointlessBooleanExpressionJS
     const autoplay = !!params.autoplay;
     const loop = typeof params.loop !== typeof undefined
@@ -107,7 +101,7 @@ const resource = (post, params) => {
     const opts = { autoplay, loop };
 
     let res = '';
-    switch (ext) {
+    switch (post.ext.substr(1)) {
         case 'jpg':
         case 'jpeg':
         case 'png':
