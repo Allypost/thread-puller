@@ -10,14 +10,17 @@
     "cheerio": "^0.22.0",
     "dotenv-safe": "^5.0.1",
     "express": "^4.16.2",
+    "helmet": "^3.11.0",
     "mkdirp": "^0.5.1",
     "raven": "^2.4.1",
     "request": "^2.83.0",
     "winston": "^3.0.0-rc1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "snyk": "^1.69.9"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "snyk test",
     "start": "node threadpuller2.js"
   },
   "license": "ISC"

@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const request = require('request');
 const http = require('http');
 const URL = require('url');
@@ -10,6 +11,8 @@ require('dotenv-safe').load(
     });
 
 const app = express();
+
+app.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
