@@ -167,20 +167,17 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
         },
     };
 
-    const ireq = http.request(options, resp => {
-        res.set(resp.headers);
-        res.status(resp.statusCode);
+    http
+        .request(options, resp => {
+            res.set(resp.headers);
+            res.status(resp.statusCode);
 
-        resp
-            .on('data', chunk => res.write(chunk))
-            .on('end', () => res.send());
-    });
-
-    ireq.on('error', e => {
-        Raven.captureException(e);
-    });
-
-    ireq.end();
+            resp
+                .on('data', chunk => res.write(chunk))
+                .on('end', () => res.send());
+        })
+        .on('error', e => Raven.captureException(e))
+        .end();
 });
 
 app.get('/ping', (req, res) => res.send('pong'));
