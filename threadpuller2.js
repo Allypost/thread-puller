@@ -12,8 +12,9 @@ require('dotenv-safe').load(
     });
 
 const app = express();
+const Router = express.Router();
 
-app.use(helmet());
+Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
@@ -122,9 +123,9 @@ const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
 const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
 
-app.use('/static', express.static(path.join(__dirname, 'public')));
+Router.use('/static', express.static(path.join(__dirname, 'public')));
 
-app.get('/:thread/thread/:num', (req, res) => {
+Router.get('/:thread/thread/:num', (req, res) => {
     res.type('html');
 
     const p = req.params;
@@ -151,7 +152,7 @@ app.get('/:thread/thread/:num', (req, res) => {
     });
 });
 
-app.get('/i/:thread/:id.:ext', (req, res) => {
+Router.get('/i/:thread/:id.:ext', (req, res) => {
     const p = req.params;
 
     const options = {
@@ -180,7 +181,9 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
         .end();
 });
 
-app.get('/ping', (req, res) => res.send('pong'));
+Router.get('/ping', (req, res) => res.send('pong'));
+
+app.use(Router);
 
 const dater = () => (new Date).toISOString();
 const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...arguments ]);
