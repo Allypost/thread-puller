@@ -57,7 +57,7 @@ const localURL = (url) => {
     const urlParts = URL.parse(url);
     const origPath = urlParts.pathname;
 
-    return `/i${origPath}`;
+    return `https://thrdpllr.tk/i${origPath}`;
 };
 const thumbURL = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
 
