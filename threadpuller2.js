@@ -4,13 +4,16 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const http = require('http');
 const URL = require('url');
-const os = require('os');
+const Raven = require('raven');
 
-const ENV = process.env.NODE_ENV || os.hostname() === 'ally-pc' ? 'development' : 'production';
-const PORT = process.env.PORT
-             || ENV === 'development' ? 80 : 8080;
+require('dotenv-safe').load(
+    {
+        allowEmptyValues: true,
+    });
 
 const app = express();
+
+Raven.config(process.env.SENTRY_URL).install();
 
 const style = `<style> video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; } </style>`;
 
@@ -34,17 +37,19 @@ const getPosts = (url, cb) => {
 
                     cb(data.posts);
                 } catch (err) {
-                    console.log('GET-POSTS', 'ERROR:', err);
+                    Raven.captureException(err);
 
                     cb([ { 'sub': 'An error occured...' } ]);
                 }
             },
         );
     } catch (err) {
-        console.log('GET-POSTS', 'ERROR:', err);
-        cb([]);
-        return new Promise(new Function);
+        Raven.captureException(err);
+
+        cb([ { 'sub': 'An error occured...' } ]);
     }
+
+    return new Promise(new Function);
 };
 
 const dlLoc = (dir, url) => {
@@ -81,16 +86,16 @@ const dl = (dir, url, cb) => {
                     });
                 })
                 .on('error', (err) => {
-                    console.log('DL:HTTP', 'ERROR:', err);
+                    Raven.captureException(err);
                     file.end();
                     fs.unlink(loc, (err) => {
                         if (err)
-                            console.log('DL:HTTP:DELETE', 'ERROR:', err);
+                            Raven.captureException(err);
                     });
                 })
                 .end();
         } catch (err) {
-            console.log('DL', 'ERROR:', err);
+            Raven.captureException(err);
         }
 
         console.log('Create: ' + loc);
@@ -231,7 +236,7 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
     });
 
     ireq.on('error', e => {
-        console.log('|> REQ-ERR:', e);
+        Raven.captureException(e);
     });
 
     ireq.end();
@@ -239,7 +244,7 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
 
 app.get('/ping', (req, res) => res.send('pong'));
 
-if (ENV === 'dev') {
+if (process.env.NODE_ENV === 'development') {
 
     app.get('/download/:thread/thread/:num', (req, res) => {
         res.type('html');
@@ -356,10 +361,9 @@ if (ENV === 'dev') {
 }
 
 http.createServer(app)
-    .listen(PORT, () => {
-        console.log('Running on hostname:\t', os.hostname());
-        console.log('Server started on port:\t', PORT);
+    .listen(process.env.PORT, () => {
+        console.log('Server started on port: ', process.env.PORT);
     })
     .on('error', err => {
-        console.log('SERVER', 'ERROR:', err);
+        Raven.captureException(err);
     });
