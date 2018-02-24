@@ -68,15 +68,11 @@ const vid = (url, opts) => {
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
-const img = (url, isLocal) => {
-    const mainURL = isLocal ? url : localURL(url);
+const img = (url) => {
+    const mainURL = localURL(url);
     const altUrl = thumbURL(url);
 
-    const error = !isLocal
-        ? `onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"`
-        : '';
-
-    return `<img src="${mainURL}" ${error}>`;
+    return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
 const a = (url, name, newTab) => {
     let newT = newTab ? `target="_blank"` : '';
@@ -88,7 +84,7 @@ const title = (post) => {
     return `<title>${title}</title>`;
 };
 
-const resource = (url, params, isLocal) => {
+const resource = (url, params) => {
     const imgs = [ 'jpg', 'png', 'gif', 'jpeg' ];
     const ext = url.split('/').pop().split('.').pop();
     // noinspection EqualityComparisonWithCoercionJS
@@ -104,7 +100,7 @@ const resource = (url, params, isLocal) => {
     const opts = { autoplay, loop };
 
     const isImg = imgs.indexOf(ext) >= 0;
-    const res = isImg ? img(url, isLocal) : vid(url, opts);
+    const res = isImg ? img(url) : vid(url, opts);
 
     return a(url, res, true);
 };
