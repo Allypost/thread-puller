@@ -10,3 +10,4 @@ static/
 /server.key.org
 
 /logs/*
+/.env

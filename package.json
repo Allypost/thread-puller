@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "cheerio": "^0.22.0",
+    "dotenv-safe": "^5.0.1",
     "express": "^4.16.2",
     "mkdirp": "^0.5.1",
     "request": "^2.83.0",
