@@ -249,6 +249,8 @@ app.get('/i/:thread/:id.:ext', (req, res) => {
     ireq.end();
 });
 
+app.get('/ping', (req, res) => res.send('pong'));
+
 if (ENV === 'dev') {
 
     app.get('/download/:thread/thread/:num', (req, res) => {
