@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const request = require('request');
+const path = require('path');
 const http = require('http');
 const URL = require('url');
 const Raven = require('raven');
@@ -118,6 +119,8 @@ const resource = (url, params) => {
 
 const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
 const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
+
+app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.get('/:thread/thread/:num', (req, res) => {
     res.type('html');
