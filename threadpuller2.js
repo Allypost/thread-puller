@@ -119,6 +119,7 @@ const resource = (url, params) => {
 
 const getUrl = (thread) => `https://i.4cdn.org/${thread}/`;
 const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
+const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
 
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
@@ -127,6 +128,9 @@ app.get('/:thread/thread/:num', (req, res) => {
 
     const p = req.params;
     const url = getApiUrl(p.thread, p.num);
+    const threadURL = getThreadUrl(p.thread, p.num);
+
+    res.write(`<h1 style="text-align: center;"><a href="${threadURL}" target="_blank">Go to thread</a></h1>`);
 
     getPosts(url, posts => {
         res.write(title(posts[ 0 ]));
