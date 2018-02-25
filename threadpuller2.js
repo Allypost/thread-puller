@@ -66,7 +66,7 @@ const img = (post) => {
     const mainURL = getImageLocalUrl(post.board, post.tim, post.ext);
     const altUrl = getImageThumbUrl(post.board, post.tim);
 
-    return `<img src="${mainURL}" data-url="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
+    return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
 const a = (url, name, newTab) => {
     const newT = newTab ? `target="_blank"` : '';
