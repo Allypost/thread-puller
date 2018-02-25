@@ -55,6 +55,43 @@ const getPosts = (url, cb) => {
     return new Promise(new Function);
 };
 
+const normalizePost = (board, post) => {
+    const newPost = {
+        meta: {
+            id: +post.no,
+            board: board,
+            thread: post.resto,
+            posted: new Date(post.time * 1000),
+        },
+        body: {
+            title: post.sub,
+            poster: post.name,
+            content: post.com || '',
+        },
+    };
+
+    if (post.tim)
+        newPost[ 'file' ] = {
+            id: +post.tim,
+            name: post.filename,
+            extension: post.ext.substring(1),
+            dimensions: {
+                main: {
+                    width: post.w,
+                    height: post.h,
+                },
+                thumbnail: {
+                    width: post.tn_w,
+                    height: post.tn_h,
+                },
+            },
+            size: post.fsize,
+            md5: post.mp5,
+        };
+
+    return newPost;
+};
+
 const vid = (post, opts) => {
     const url = getFileUrl(post.board, post.tim, post.ext);
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
