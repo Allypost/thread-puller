@@ -173,7 +173,7 @@ Router.get('/:board/thread/:thread', (req, res) => {
         });
 
         res.write(style);
-        res.send();
+        res.end();
     });
 });
 
@@ -200,7 +200,7 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
 
             resp
                 .on('data', chunk => res.write(chunk))
-                .on('end', () => res.send());
+                .on('end', () => res.end());
         })
         .on('error', e => Raven.captureException(e))
         .end();
