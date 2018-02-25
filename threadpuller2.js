@@ -34,9 +34,11 @@ const getPosts = (board, thread, cb) => {
             if (res.statusCode !== 200)
                 return cb(null);
 
+            let body = '';
             // noinspection JSUnresolvedFunction
             res.setEncoding('utf8')
-               .on('data', body => {
+               .on('data', (chunk) => body += chunk)
+               .on('end', () => {
                    const data = {};
 
                    try {
