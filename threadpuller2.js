@@ -39,6 +39,7 @@ const getPosts = (board, thread, cb) => {
 
                 try {
                     const data = JSON.parse(body);
+                    // noinspection JSUnresolvedVariable
                     const posts = data.posts || [];
 
                     cb(normalizePosts(board, posts));
@@ -59,6 +60,7 @@ const getPosts = (board, thread, cb) => {
 };
 
 const normalizePost = (board, post) => {
+    // noinspection JSUnresolvedVariable
     const newPost = {
         id: +post.no,
         board: board,
@@ -71,7 +73,9 @@ const normalizePost = (board, post) => {
         },
     };
 
+    // noinspection JSUnresolvedVariable
     if (post.tim)
+    // noinspection JSUnresolvedVariable
         newPost[ 'file' ] = {
             id: +post.tim,
             name: post.filename,
@@ -100,6 +104,7 @@ const vid = (post, opts) => {
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
 
+    // noinspection JSUnusedGlobalSymbols
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (post) => {
