@@ -64,12 +64,10 @@ const getPosts = (board, thread, cb) => {
 
 const normalizePost = (board, post) => {
     const newPost = {
-        meta: {
-            id: +post.no,
-            board: board,
-            thread: post.resto,
-            posted: new Date(post.time * 1000),
-        },
+        id: +post.no,
+        board: board,
+        thread: post.resto,
+        posted: new Date(post.time * 1000),
         body: {
             title: post.sub,
             poster: post.name,
