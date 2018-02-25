@@ -96,14 +96,14 @@ const normalizePost = (board, post) => {
 const normalizePosts = (board, posts) => posts.map(post => normalizePost(board, post));
 
 const vid = (post, opts) => {
-    const url = getFileUrl(post.board, post.file.id, post.file.extension);
+    const url = getFileUrl(post.board, post.file.filename);
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (post) => {
-    const mainURL = getImageLocalUrl(post.board, post.file.id, post.file.extension);
+    const mainURL = getImageLocalUrl(post.board, post.file.filename);
     const altUrl = getImageThumbUrl(post.board, post.file.id);
 
     return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
@@ -147,8 +147,8 @@ const resource = (post, params) => {
 const getApiUrl = (board, thread) => `https://a.4cdn.org/${board}/thread/${thread}.json`;
 const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
-const getFileUrl = (board, resourceID, extension) => `https://i.4cdn.org/${board}/${resourceID}.${extension}`;
-const getImageLocalUrl = (board, resourceID, extension) => `https://thrdpllr.tk/i/${board}/${resourceID}.${extension}`;
+const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
+const getImageLocalUrl = (board, filename) => `https://thrdpllr.tk/i/${board}/${filename}`;
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID, 's.jpg');
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
