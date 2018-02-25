@@ -41,11 +41,7 @@ const getPosts = (board, thread, cb) => {
                     const data = JSON.parse(body);
                     const posts = data.posts || [];
 
-                    cb(posts.map(el => {
-                        el[ 'board' ] = board;
-
-                        return el;
-                    }));
+                    cb(normalizePosts(board, posts));
                 } catch (err) {
                     Raven.captureException(err);
 
@@ -99,15 +95,15 @@ const normalizePost = (board, post) => {
 const normalizePosts = (board, posts) => posts.map(post => normalizePost(board, post));
 
 const vid = (post, opts) => {
-    const url = getFileUrl(post.board, post.tim, post.ext);
+    const url = getFileUrl(post.board, post.file.id, post.file.extension);
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (post) => {
-    const mainURL = getImageLocalUrl(post.board, post.tim, post.ext);
-    const altUrl = getImageThumbUrl(post.board, post.tim);
+    const mainURL = getImageLocalUrl(post.board, post.file.id, post.file.extension);
+    const altUrl = getImageThumbUrl(post.board, post.file.id);
 
     return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
@@ -116,15 +112,11 @@ const a = (url, name, newTab) => {
 
     return `<a href="${url}" ${newT}>${name}</a>`;
 };
-const title = (post) => {
-    const title = post[ 'sub' ] || post[ 'com' ] || 'No title';
-
-    return `<title>${title}</title>`;
-};
+const title = (post) => `<title>${post.body.title}</title>`;
 const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
 const resource = (post, params) => {
-    const postUrl = getPostUrl(post.board, post.resto, post.no);
+    const postUrl = getPostUrl(post.board, post.thread, post.id);
 
     // noinspection PointlessBooleanExpressionJS
     const autoplay = !!params.autoplay;
@@ -136,7 +128,7 @@ const resource = (post, params) => {
     const opts = { autoplay, loop };
 
     let res = '';
-    switch (post.ext.substr(1)) {
+    switch (post.file.extension) {
         case 'jpg':
         case 'jpeg':
         case 'png':
@@ -154,8 +146,8 @@ const resource = (post, params) => {
 const getApiUrl = (board, thread) => `https://a.4cdn.org/${board}/thread/${thread}.json`;
 const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
-const getFileUrl = (board, resourceID, extension) => `https://i.4cdn.org/${board}/${resourceID}${extension}`;
-const getImageLocalUrl = (board, resourceID, extension) => `https://thrdpllr.tk/i/${board}/${resourceID}${extension}`;
+const getFileUrl = (board, resourceID, extension) => `https://i.4cdn.org/${board}/${resourceID}.${extension}`;
+const getImageLocalUrl = (board, resourceID, extension) => `https://thrdpllr.tk/i/${board}/${resourceID}.${extension}`;
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID, 's.jpg');
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
@@ -170,7 +162,7 @@ Router.get('/:board/thread/:thread', (req, res) => {
         res.write(title(posts[ 0 ]));
 
         posts.forEach(post => {
-            if (post.tim)
+            if (post.file)
                 res.write(resource(post, req.query));
         });
 
