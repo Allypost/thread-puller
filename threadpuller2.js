@@ -75,6 +75,7 @@ const normalizePost = (board, post) => {
         newPost[ 'file' ] = {
             id: +post.tim,
             name: post.filename,
+            filename: post.tim + post.ext,
             extension: post.ext.substring(1),
             dimensions: {
                 main: {
