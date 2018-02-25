@@ -55,17 +55,18 @@ const getPosts = (url, cb) => {
     return new Promise(new Function);
 };
 
-const vid = (url, opts) => {
+const vid = (post, opts) => {
+    const url = getFileUrl(post.thread, post.tim, post.ext);
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
-const img = (url) => {
-    const mainURL = getImageLocalUrl(url);
-    const altUrl = getImageThumbUrl(url);
+const img = (post) => {
+    const mainURL = getImageLocalUrl(post.thread, post.tim, post.ext);
+    const altUrl = getImageThumbUrl(post.thread, post.tim);
 
-    return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
+    return `<img src="${mainURL}" data-url="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
 const a = (url, name, newTab) => {
     const newT = newTab ? `target="_blank"` : '';
@@ -80,7 +81,6 @@ const title = (post) => {
 const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
 const resource = (post, params) => {
-    const fileUrl = getFileUrl(post.thread, post.tim, post.ext);
     const postUrl = getPostUrl(post.thread, post.resto, post.no);
 
     // noinspection PointlessBooleanExpressionJS
@@ -98,10 +98,10 @@ const resource = (post, params) => {
         case 'jpeg':
         case 'png':
         case 'gif':
-            res = img(fileUrl);
+            res = img(post);
             break;
         default:
-            res = vid(fileUrl, opts);
+            res = vid(post, opts);
             break;
     }
 
@@ -112,8 +112,8 @@ const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.j
 const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
 const getFileUrl = (thread, resourceID, extension) => `https://i.4cdn.org/${thread}/${resourceID}${extension}`;
 const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
-const getImageLocalUrl = (url) => `https://thrdpllr.tk/i${URL.parse(url).pathname}`;
-const getImageThumbUrl = (url) => url.substr(0, url.lastIndexOf('.')) + 's.jpg';
+const getImageLocalUrl = (thread, resourceID, extension) => `https://thrdpllr.tk/i/${thread}/${resourceID}${extension}`;
+const getImageThumbUrl = (thread, resourceID) => getFileUrl(thread, resourceID, 's.jpg');
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
 
