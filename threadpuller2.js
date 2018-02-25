@@ -117,7 +117,7 @@ const a = (url, name, newTab) => {
 
     return `<a href="${url}" ${newT}>${name}</a>`;
 };
-const title = (post) => `<title>${post.body.title}</title>`;
+const title = (post) => `<title>${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
 const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
 const resource = (post, params) => {
