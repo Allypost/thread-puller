@@ -56,15 +56,15 @@ const getPosts = (url, cb) => {
 };
 
 const vid = (post, opts) => {
-    const url = getFileUrl(post.thread, post.tim, post.ext);
+    const url = getFileUrl(post.board, post.tim, post.ext);
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
 
     return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (post) => {
-    const mainURL = getImageLocalUrl(post.thread, post.tim, post.ext);
-    const altUrl = getImageThumbUrl(post.thread, post.tim);
+    const mainURL = getImageLocalUrl(post.board, post.tim, post.ext);
+    const altUrl = getImageThumbUrl(post.board, post.tim);
 
     return `<img src="${mainURL}" data-url="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
@@ -81,7 +81,7 @@ const title = (post) => {
 const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
 const resource = (post, params) => {
-    const postUrl = getPostUrl(post.thread, post.resto, post.no);
+    const postUrl = getPostUrl(post.board, post.resto, post.no);
 
     // noinspection PointlessBooleanExpressionJS
     const autoplay = !!params.autoplay;
@@ -108,22 +108,22 @@ const resource = (post, params) => {
     return a(postUrl, res, true);
 };
 
-const getApiUrl = (thread, num) => `https://a.4cdn.org/${thread}/thread/${num}.json`;
-const getThreadUrl = (thread, num) => `https://boards.4chan.org/${thread}/thread/${num}`;
-const getFileUrl = (thread, resourceID, extension) => `https://i.4cdn.org/${thread}/${resourceID}${extension}`;
-const getPostUrl = (thread, num, postNum) => `${getThreadUrl(thread, num)}#p${postNum}`;
-const getImageLocalUrl = (thread, resourceID, extension) => `https://thrdpllr.tk/i/${thread}/${resourceID}${extension}`;
-const getImageThumbUrl = (thread, resourceID) => getFileUrl(thread, resourceID, 's.jpg');
+const getApiUrl = (board, thread) => `https://a.4cdn.org/${board}/thread/${thread}.json`;
+const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
+const getFileUrl = (board, resourceID, extension) => `https://i.4cdn.org/${board}/${resourceID}${extension}`;
+const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
+const getImageLocalUrl = (board, resourceID, extension) => `https://thrdpllr.tk/i/${board}/${resourceID}${extension}`;
+const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID, 's.jpg');
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
 
-Router.get('/:thread/thread/:num', (req, res) => {
+Router.get('/:board/thread/:thread', (req, res) => {
     res.type('html');
 
     const p = req.params;
-    const url = getApiUrl(p.thread, p.num);
+    const url = getApiUrl(p.board, p.thread);
 
-    res.write(header(p.thread, p.num));
+    res.write(header(p.board, p.thread));
 
     getPosts(url, posts => {
         res.write(title(posts[ 0 ]));
@@ -132,7 +132,7 @@ Router.get('/:thread/thread/:num', (req, res) => {
             if (!post.tim)
                 return;
 
-            post.thread = p.thread;
+            post.board = p.board;
 
             res.write(resource(post, req.query));
         });
@@ -142,12 +142,12 @@ Router.get('/:thread/thread/:num', (req, res) => {
     });
 });
 
-Router.get('/i/:thread/:id.:ext', (req, res) => {
+Router.get('/i/:board/:resource.:ext', (req, res) => {
     const p = req.params;
 
     const options = {
         'host': 'i.4cdn.org',
-        'path': `/${p.thread}/${p.id}.${p.ext}`,
+        'path': `/${p.board}/${p.resource}.${p.ext}`,
         'method': 'GET',
         'headers': {
             'Referer': 'https://boards.4chan.org/',
