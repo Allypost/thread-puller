@@ -39,8 +39,13 @@ const getPosts = (board, thread, cb) => {
 
                 try {
                     const data = JSON.parse(body);
+                    const posts = data.posts || [];
 
-                    cb(data.posts);
+                    cb(posts.map(el => {
+                        el[ 'board' ] = board;
+
+                        return el;
+                    }));
                 } catch (err) {
                     Raven.captureException(err);
 
@@ -166,12 +171,8 @@ Router.get('/:board/thread/:thread', (req, res) => {
         res.write(title(posts[ 0 ]));
 
         posts.forEach(post => {
-            if (!post.tim)
-                return;
-
-            post.board = p.board;
-
-            res.write(resource(post, req.query));
+            if (post.tim)
+                res.write(resource(post, req.query));
         });
 
         res.write(style);
