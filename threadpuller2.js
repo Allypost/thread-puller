@@ -16,7 +16,7 @@ Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-const style = `<style>video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; }</style>`;
+const style = `<style>video, img { width: 24.5vw; padding: .15vw; } body { margin: 0; text-align: center; }</style>`;
 
 const getPosts = (board, thread, cb) => {
     const options = {
