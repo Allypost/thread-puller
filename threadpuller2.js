@@ -168,9 +168,11 @@ Router.get('/:board/thread/:thread', (req, res) => {
     res.write(header(p.board, p.thread));
 
     getPosts(p.board, p.thread, posts => {
-        if (!posts)
-            return res.write(`<h1>There are no posts here...<br>Please try again later</h1>`)
-                      .end();
+        if (!posts) {
+            res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
+
+            return res.end();
+        }
 
         res.write(title(posts[ 0 ]));
 
