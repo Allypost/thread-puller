@@ -1,6 +1,5 @@
 const express = require('express');
 const helmet = require('helmet');
-const request = require('request');
 const path = require('path');
 const http = require('http');
 const Raven = require('raven');
@@ -20,42 +19,46 @@ Raven.config(process.env.SENTRY_DSN_URL).install();
 const style = `<style>video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; }</style>`;
 
 const getPosts = (board, thread, cb) => {
-    const url = getApiUrl(board, thread);
+    const options = {
+        'host': 'a.4cdn.org',
+        'path': `/${getThreadUri(board, thread)}.json`,
+        'method': 'GET',
+        'headers': {
+            'Referer': getApiUrl(board, thread),
+            'User-Agent': process.env.USER_AGENT,
+        },
+    };
 
-    try {
-        return request(
-            {
-                headers: {
-                    'User-Agent': process.env.USER_AGENT,
-                    'Referer': url,
-                },
-                uri: url,
-                method: 'GET',
-            },
-            (err, resp, body) => {
-                if (err)
-                    return cb([]);
+    http
+        .request(options, res => {
+            if (res.statusCode !== 200)
+                return cb(null);
 
-                try {
-                    const data = JSON.parse(body);
-                    // noinspection JSUnresolvedVariable
-                    const posts = data.posts || [];
+            // noinspection JSUnresolvedFunction
+            res.setEncoding('utf8')
+               .on('data', body => {
+                   const data = {};
 
-                    cb(normalizePosts(board, posts));
-                } catch (err) {
-                    Raven.captureException(err);
+                   try {
+                       Object.assign(data, JSON.parse(body));
+                   } catch (err) {
+                       cb(null);
 
-                    cb([ { 'sub': 'An error occured...' } ]);
-                }
-            },
-        );
-    } catch (err) {
-        Raven.captureException(err);
+                       return Raven.captureException(err);
+                   }
 
-        cb([ { 'sub': 'An error occured...' } ]);
-    }
+                   if (data.posts)
+                       return cb(normalizePosts(board, data.posts));
 
-    return new Promise(new Function);
+                   cb(null);
+               });
+        })
+        .on('error', e => {
+            cb(null);
+
+            Raven.captureException(e);
+        })
+        .end();
 };
 
 const normalizePost = (board, post) => {
@@ -148,8 +151,9 @@ const resource = (post, params) => {
     return a(postUrl, res, true);
 };
 
-const getApiUrl = (board, thread) => `https://a.4cdn.org/${board}/thread/${thread}.json`;
-const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
+const getThreadUri = (board, thread) => `${board}/thread/${thread}`;
+const getApiUrl = (board, thread) => `https://a.4cdn.org/${getThreadUri(board, thread)}.json`;
+const getThreadUrl = (board, thread) => `https://boards.4chan.org/${getThreadUri(board, thread)}`;
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
 const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
 const getImageLocalUrl = (board, filename) => `https://thrdpllr.tk/i/${board}/${filename}`;
