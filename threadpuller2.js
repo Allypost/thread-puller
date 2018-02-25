@@ -96,6 +96,7 @@ const normalizePost = (board, post) => {
 
     return newPost;
 };
+const normalizePosts = (board, posts) => posts.map(post => normalizePost(board, post));
 
 const vid = (post, opts) => {
     const url = getFileUrl(post.board, post.tim, post.ext);
