@@ -3,7 +3,6 @@ const helmet = require('helmet');
 const request = require('request');
 const path = require('path');
 const http = require('http');
-const URL = require('url');
 const Raven = require('raven');
 
 require('dotenv-safe').load(
