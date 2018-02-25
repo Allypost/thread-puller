@@ -42,9 +42,7 @@ const getPosts = (board, thread, cb) => {
                    try {
                        Object.assign(data, JSON.parse(body));
                    } catch (err) {
-                       cb(null);
-
-                       return Raven.captureException(err);
+                       return cb(null);
                    }
 
                    if (data.posts)
