@@ -16,7 +16,7 @@ Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-const style = `<style>video, img { width: 24vw; margin: .4vw; } body { margin: 0; text-align: center; }</style>`;
+const style = `<style>video, img { width: 24vw; margin: .4vw; } body { margin: 0; text-align: center; } html { background-color: #263238; color: #eceff1; font-family: sans-serif; } a { color: #cfd8dc; } a:hover { text-decoration: none; } h1 { text-align: center; font-size: 3em; margin: .67em 0; }</style>`;
 
 const getPosts = (board, thread, cb) => {
     const options = {
@@ -121,7 +121,7 @@ const a = (url, name, newTab) => {
     return `<a href="${url}" ${newT}>${name}</a>`;
 };
 const title = (post) => `<title>${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
-const header = (thread, num) => `<h1 style="text-align: center;">${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
+const header = (thread, num) => `<h1>${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
 
 const resource = (post, params) => {
     const postUrl = getPostUrl(post.board, post.thread, post.id);
