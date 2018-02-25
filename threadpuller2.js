@@ -20,7 +20,9 @@ Raven.config(process.env.SENTRY_DSN_URL).install();
 
 const style = `<style>video, img { width: 24.3vw; padding: .15vw ; } body { margin: 0; }</style>`;
 
-const getPosts = (url, cb) => {
+const getPosts = (board, thread, cb) => {
+    const url = getApiUrl(board, thread);
+
     try {
         return request(
             {
@@ -155,14 +157,12 @@ const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID, 's
 Router.use('/static', express.static(path.join(__dirname, 'public')));
 
 Router.get('/:board/thread/:thread', (req, res) => {
-    res.type('html');
-
     const p = req.params;
-    const url = getApiUrl(p.board, p.thread);
 
+    res.type('html');
     res.write(header(p.board, p.thread));
 
-    getPosts(url, posts => {
+    getPosts(p.board, p.thread, posts => {
         res.write(title(posts[ 0 ]));
 
         posts.forEach(post => {
