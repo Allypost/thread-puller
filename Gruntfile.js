@@ -14,9 +14,9 @@ module.exports = grunt => {
      *   'DESTINATION PATH': [ 'LIST', 'OF', 'PATHS', 'TO', 'FILES' ]
      */
     const JsFileList = {
-        // 'public/js/site.min.js': [
-        //     'static/js/site.js',
-        // ],
+        'public/js/site.min.js': [
+            'static/js/site.js',
+        ],
     };
 
     const CssFileList = {
