@@ -17,7 +17,25 @@
     "winston": "^3.0.0-rc1"
   },
   "devDependencies": {
-    "snyk": "^1.69.9"
+    "snyk": "^1.69.9",
+    "autoprefixer": "^7.1.1",
+    "babel-cli": "^6.24.0",
+    "babel-preset-env": "^1.2.2",
+    "cssnano": "^3.10.0",
+    "google-closure-compiler": "^20171203.0.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-cssmin": "^2.2.0",
+    "grunt-contrib-imagemin": "^2.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-google-closure-tools-compiler": "^0.1.7",
+    "grunt-javascript-obfuscator": "^1.1.0",
+    "grunt-postcss": "^0.8.0",
+    "imagemin": "^5.3.1",
+    "javascript-obfuscator": "^0.9.4",
+    "pixrem": "^3.0.2",
+    "postcss-font-magician": "^2.0.0"
   },
   "scripts": {
     "test": "snyk test",

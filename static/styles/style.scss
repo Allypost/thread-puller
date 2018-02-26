@@ -1,0 +1,29 @@
+video, img {
+    width: 24vw;
+    margin: .4vw;
+}
+
+body {
+    margin: 0;
+    text-align: center;
+}
+
+html {
+    background-color: #263238;
+    color: #eceff1;
+    font-family: sans-serif;
+}
+
+a {
+    color: #cfd8dc;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+    margin: .67em 0;
+}

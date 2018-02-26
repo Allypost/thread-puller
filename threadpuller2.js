@@ -16,8 +16,7 @@ Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-const style = `<style>video, img { width: 24vw; margin: .4vw; } body { margin: 0; text-align: center; } html { background-color: #263238; color: #eceff1; font-family: sans-serif; } a { color: #cfd8dc; } a:hover { text-decoration: none; } h1 { text-align: center; font-size: 3em; margin: .67em 0; }</style>`;
-
+const style = `<link rel="stylesheet" href="/css/style.min.css?v=0.0.1">`;
 const getPosts = (board, thread, cb) => {
     const options = {
         'host': 'a.4cdn.org',
@@ -159,7 +158,7 @@ const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}
 const getImageLocalUrl = (board, filename) => `https://thrdpllr.tk/i/${board}/${filename}`;
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + 's.jpg');
 
-Router.use('/static', express.static(path.join(__dirname, 'public')));
+Router.use('/', express.static(path.join(__dirname, 'public')));
 
 Router.get('/:board/thread/:thread', (req, res) => {
     const p = req.params;
