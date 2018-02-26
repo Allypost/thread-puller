@@ -157,7 +157,7 @@ const getThreadUrl = (board, thread) => `https://boards.4chan.org/${getThreadUri
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
 const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
 const getImageLocalUrl = (board, filename) => `https://thrdpllr.tk/i/${board}/${filename}`;
-const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID, 's.jpg');
+const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + 's.jpg');
 
 Router.use('/static', express.static(path.join(__dirname, 'public')));
 
