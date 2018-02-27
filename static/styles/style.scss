@@ -31,16 +31,16 @@ a {
         border-radius: 8px;
         overflow: hidden;
 
-        @media only screen and (max-width: 2088px) {
-            width: 23.6vw;
+        @media only screen and (max-width: 2090px) {
+            width: 31.6vw;
         }
 
         @media #{$large-and-down} {
-            width: 31.5vw;
+            width: 47.4vw;
         }
 
         @media #{$small-and-down} {
-            width: 44.5vw;
+            width: 90.5vw;
         }
 
     }
