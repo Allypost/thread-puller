@@ -30,8 +30,8 @@ const styles = [
 ];
 
 const readFile = util.promisify(fs.readFile);
-const updateResource = async (filename, file) => {
-    const contents = await readFile(filename, 'utf8');
+const updateResource = async (file) => {
+    const contents = await readFile(file.file, 'utf8');
 
     file[ 'hash' ] = crypto.createHash(file.algo)
                            .update(contents)
@@ -50,7 +50,7 @@ styles.forEach(async style => {
     if (!style.algo)
         style.algo = 'sha256';
 
-    const hashedStyle = await updateResource(style.file, style);
+    const hashedStyle = await updateResource(style);
 
     Object.assign(style, hashedStyle);
 });
