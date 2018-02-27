@@ -4,6 +4,7 @@ const path = require('path');
 const http = require('http');
 const Raven = require('raven');
 const fs = require('fs');
+const util = require('util');
 const crypto = require('crypto');
 
 require('dotenv-safe').load(
@@ -28,21 +29,30 @@ const styles = [
     },
 ];
 
-styles.forEach(style => {
+const readFile = util.promisify(fs.readFile);
+const updateResource = async (filename, file) => {
+    const contents = await readFile(filename, 'utf8');
+
+    file[ 'hash' ] = crypto.createHash(file.algo)
+                           .update(contents)
+                           .digest('base64');
+
+    file[ 'tag' ] = crypto.createHash('md5')
+                          .update(file[ 'hash' ])
+                          .digest('hex');
+
+    return file;
+};
+
+styles.forEach(async style => {
     if (!style.file)
         style.file = path.join(__dirname, 'public/', style.link);
     if (!style.algo)
         style.algo = 'sha256';
 
-    const contents = fs.readFileSync(style.file, 'utf8');
+    const hashedStyle = await updateResource(style.file, style);
 
-    style[ 'hash' ] = crypto.createHash(style.algo)
-                            .update(contents)
-                            .digest('base64');
-
-    style[ 'tag' ] = crypto.createHash('md5')
-                           .update(style[ 'hash' ])
-                           .digest('hex');
+    Object.assign(style, hashedStyle);
 });
 
 const getPosts = (board, thread, cb) => {
