@@ -43,6 +43,15 @@ const updateResource = async (file) => {
 
     return file;
 };
+const addResourceWatcher = (file, resourceList) => {
+    const listener = async (curr, prev) => {
+        const i = resourceList.findIndex(res => res.file === file.file);
+
+        Object.assign(resourceList[ i ], await updateResource(file));
+    };
+
+    fs.watchFile(file.file, listener);
+};
 
 styles.forEach(async style => {
     if (!style.file)
@@ -50,9 +59,8 @@ styles.forEach(async style => {
     if (!style.algo)
         style.algo = 'sha256';
 
-    const hashedStyle = await updateResource(style);
-
-    Object.assign(style, hashedStyle);
+    addResourceWatcher(style, styles);
+    Object.assign(style, await updateResource(style));
 });
 
 const getPosts = (board, thread, cb) => {
