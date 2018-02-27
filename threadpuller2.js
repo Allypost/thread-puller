@@ -3,6 +3,8 @@ const helmet = require('helmet');
 const path = require('path');
 const http = require('http');
 const Raven = require('raven');
+const fs = require('fs');
+const crypto = require('crypto');
 
 require('dotenv-safe').load(
     {
@@ -16,7 +18,29 @@ Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-const style = `<link rel="stylesheet" href="/css/style.min.css?v=0.0.2">`;
+const styles = [
+    {
+        link: `/css/style.min.css`,
+    },
+];
+
+styles.forEach(style => {
+    if (!style.file)
+        style.file = path.join(__dirname, 'public/', style.link);
+    if (!style.algo)
+        style.algo = 'sha256';
+
+    const contents = fs.readFileSync(style.file, 'utf8');
+
+    style[ 'hash' ] = crypto.createHash(style.algo)
+                            .update(contents)
+                            .digest('base64');
+
+    style[ 'tag' ] = crypto.createHash('md5')
+                           .update(style[ 'hash' ])
+                           .digest('hex');
+});
+
 const getPosts = (board, thread, cb) => {
     const options = {
         'host': 'a.4cdn.org',
@@ -163,10 +187,9 @@ Router.use('/', express.static(path.join(__dirname, 'public')));
 Router.get('/:board/thread/:thread', (req, res) => {
     const p = req.params;
 
-    res.type('html');
-    res.write(header(p.board, p.thread));
-
     getPosts(p.board, p.thread, posts => {
+        res.type('html');
+
         if (!posts) {
             res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
 
@@ -174,13 +197,15 @@ Router.get('/:board/thread/:thread', (req, res) => {
         }
 
         res.write(title(posts[ 0 ]));
+        styles.forEach(({ link: style, hash: hash, algo: algo, tag: v }) => res.write(`<link rel="stylesheet" integrity="${algo}-${hash}" href="${style}?v=${v}">`));
+
+        res.write(header(p.board, p.thread));
 
         posts.forEach(post => {
             if (post.file)
                 res.write(resource(post, req.query));
         });
 
-        res.write(style);
         res.end();
     });
 });
