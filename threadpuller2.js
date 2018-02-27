@@ -16,7 +16,7 @@ Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-const style = `<link rel="stylesheet" href="/css/style.min.css?v=0.0.1">`;
+const style = `<link rel="stylesheet" href="/css/style.min.css?v=0.0.2">`;
 const getPosts = (board, thread, cb) => {
     const options = {
         'host': 'a.4cdn.org',
