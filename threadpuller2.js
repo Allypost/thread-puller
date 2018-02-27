@@ -31,6 +31,8 @@ const styles = [
 
 const readFile = util.promisify(fs.readFile);
 const updateResource = async (file) => {
+    info('Updating resource...', file.file);
+
     const contents = await readFile(file.file, 'utf8');
 
     /*
@@ -42,6 +44,8 @@ const updateResource = async (file) => {
     file[ 'tag' ] = crypto.createHash('md5')
                           .update(contents)
                           .digest('hex');
+
+    info('Updated resource', file.file);
 
     return file;
 };
