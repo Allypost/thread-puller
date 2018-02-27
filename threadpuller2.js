@@ -31,7 +31,7 @@ const styles = [
 
 const readFile = util.promisify(fs.readFile);
 const updateResource = async (file) => {
-    info('Updating resource...', file.file);
+    info('|> Updating resource...\t', file.file.replace(__dirname, ''));
 
     const contents = await readFile(file.file, 'utf8');
 
@@ -45,7 +45,7 @@ const updateResource = async (file) => {
                           .update(contents)
                           .digest('hex');
 
-    info('Updated resource', file.file);
+    info('|> Updated resource\t', file.file.replace(__dirname, ''));
 
     return file;
 };
