@@ -33,12 +33,14 @@ const readFile = util.promisify(fs.readFile);
 const updateResource = async (file) => {
     const contents = await readFile(file.file, 'utf8');
 
-    file[ 'hash' ] = crypto.createHash(file.algo)
-                           .update(contents)
-                           .digest('base64');
+    /*
+     file[ 'hash' ] = crypto.createHash(file.algo)
+     .update(contents)
+     .digest('base64');
+     */
 
     file[ 'tag' ] = crypto.createHash('md5')
-                          .update(file[ 'hash' ])
+                          .update(contents)
                           .digest('hex');
 
     return file;
@@ -219,7 +221,7 @@ Router.get('/:board/thread/:thread', (req, res) => {
         }
 
         res.write(title(posts[ 0 ]));
-        styles.forEach(({ link: style, hash: hash, algo: algo, tag: v }) => res.write(`<link rel="stylesheet" integrity="${algo}-${hash}" href="${style}?v=${v}">`));
+        styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
         res.write(header(p.board, p.thread));
 
