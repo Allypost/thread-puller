@@ -172,6 +172,7 @@ const a = (url, name, newTab) => {
     return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
 };
 const title = (post) => `<title>${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
+const meta = () => `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
 const header = (thread, num) => `<h1><a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
 
 const resource = (post, params) => {
@@ -224,6 +225,7 @@ Router.get('/:board/thread/:thread', (req, res) => {
             return res.end();
         }
 
+        res.write(meta());
         res.write(title(posts[ 0 ]));
         styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
