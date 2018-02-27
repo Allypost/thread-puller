@@ -18,6 +18,10 @@ Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
+// Logging functions
+const dater = () => (new Date).toISOString();
+const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...arguments ]);
+
 const styles = [
     {
         link: `/css/style.min.css`,
@@ -240,9 +244,6 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
 });
 
 app.use(Router);
-
-const dater = () => (new Date).toISOString();
-const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...arguments ]);
 
 info('Server starting...');
 http.createServer(app)
