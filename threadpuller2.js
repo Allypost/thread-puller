@@ -169,7 +169,7 @@ const img = (post) => {
 const a = (url, name, newTab) => {
     const newT = newTab ? `target="_blank"` : '';
 
-    return `<a href="${url}" ${newT}>${name}</a>`;
+    return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
 };
 const title = (post) => `<title>${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
 const header = (thread, num) => `<h1><a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
