@@ -4,6 +4,18 @@ video, img {
     width: 24vw;
     margin: .4vw;
     border-radius: 8px;
+
+    @media only screen and (max-width: 2088px) {
+        width: 23.6vw;
+    }
+
+    @media #{$large-and-down} {
+        width: 31.5vw;
+    }
+
+    @media #{$small-and-down} {
+        width: 44.5vw;
+    }
 }
 
 body {
