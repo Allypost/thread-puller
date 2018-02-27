@@ -172,7 +172,7 @@ const a = (url, name, newTab) => {
     return `<a href="${url}" ${newT}>${name}</a>`;
 };
 const title = (post) => `<title>${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
-const header = (thread, num) => `<h1>${a(getThreadUrl(thread, num), 'Go to thread', true)}</h1>`;
+const header = (thread, num) => `<h1><a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
 
 const resource = (post, params) => {
     const postUrl = getPostUrl(post.board, post.thread, post.id);
