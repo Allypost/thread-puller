@@ -6,11 +6,44 @@ const Raven = require('raven');
 const fs = require('fs');
 const util = require('util');
 const crypto = require('crypto');
+const bluebird = require('bluebird');
+const redisCLI = require('redis');
+
+bluebird.promisifyAll(redisCLI.RedisClient.prototype);
+bluebird.promisifyAll(redisCLI.Multi.prototype);
 
 require('dotenv-safe').load(
     {
         allowEmptyValues: true,
     });
+
+const redis = redisCLI.createClient({
+                                        password: process.env.REDIS_PASSWORD,
+                                        prefix: 'ThreadPuller:',
+                                        db: process.env.REDIS_DB,
+                                        retry_strategy(options) {
+                                            if (options.error && options.error.code === 'ECONNREFUSED') {
+                                                // End reconnecting on a specific error and flush all commands with a individual error
+                                                console.log('|> ERR', options.error);
+                                                return new Error('The server refused the connection');
+                                            }
+
+                                            if (options.total_retry_time > 1000 * 60 * 60) {
+                                                // End reconnecting after a specific timeout and flush all commands with a individual error
+                                                const err = new Error('Retry time exhausted');
+                                                console.log('|> ERR', err);
+
+                                                return err;
+                                            }
+
+                                            if (options.attempt > 10)
+                                            // End reconnecting with built in error
+                                                return undefined;
+
+                                            // reconnect after
+                                            return Math.min(options.attempt * 100, 3000);
+                                        },
+                                    });
 
 const app = express();
 const Router = express.Router();
@@ -69,7 +102,27 @@ styles.forEach(async style => {
     Object.assign(style, await updateResource(style));
 });
 
-const getPosts = (board, thread, cb) => {
+const getCachedPosts = async (board, thread) => {
+    const cacheKey = `${board}:${thread}`;
+
+    try {
+        return JSON.parse(await redis.getAsync(cacheKey));
+    } catch (e) {
+        info(`Cache corruption in \`${cacheKey}\`! Purging...`);
+
+        redis.delAsync(`${board}:${thread}`);
+
+        return await getLivePosts(board, thread);
+    }
+};
+const setCachedPosts = (board, thread, posts) => {
+    const filteredPosts = posts.filter(post => post.file);
+
+    redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', 8);
+
+    return filteredPosts;
+};
+const getLivePosts = async (board, thread) => new Promise(resolve => {
     const options = {
         'host': 'a.4cdn.org',
         'path': `/${getThreadUri(board, thread)}.json`,
@@ -79,6 +132,8 @@ const getPosts = (board, thread, cb) => {
             'User-Agent': process.env.USER_AGENT,
         },
     };
+
+    const cb = resolve;
 
     http
         .request(options, res => {
@@ -110,6 +165,17 @@ const getPosts = (board, thread, cb) => {
             Raven.captureException(e);
         })
         .end();
+});
+const getPosts = async (board, thread) => {
+    const cachedPosts = await getCachedPosts(board, thread);
+
+    if (
+        cachedPosts
+        && !!cachedPosts.length
+    )
+        return cachedPosts;
+
+    return setCachedPosts(board, thread, await getLivePosts(board, thread));
 };
 
 const normalizePost = (board, post) => {
@@ -213,31 +279,29 @@ const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + '
 
 Router.use('/', express.static(path.join(__dirname, 'public')));
 
-Router.get('/:board/thread/:thread', (req, res) => {
+Router.get('/:board/thread/:thread', async (req, res) => {
     const p = req.params;
+    const posts = await getPosts(p.board, p.thread);
 
-    getPosts(p.board, p.thread, posts => {
-        res.type('html');
+    res.type('html');
+    res.write(meta());
+    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
-        if (!posts) {
-            res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
+    if (!posts) {
+        res.write(title({ body: { title: 'Post not found...' } }));
+        res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
 
-            return res.end();
-        }
+        return res.end();
+    }
 
-        res.write(meta());
-        res.write(title(posts[ 0 ]));
-        styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
-
-        res.write(header(p.board, p.thread));
-
-        posts.forEach(post => {
-            if (post.file)
-                res.write(resource(post, req.query));
-        });
-
-        res.end();
+    res.write(header(p.board, p.thread));
+    res.write(title(posts[ 0 ]));
+    posts.forEach(post => {
+        if (post.file)
+            res.write(resource(post, req.query));
     });
+
+    res.end();
 });
 
 Router.get('/i/:board/:resource.:ext', (req, res) => {
