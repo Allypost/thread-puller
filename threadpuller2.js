@@ -118,7 +118,7 @@ const getCachedPosts = async (board, thread) => {
 const setCachedPosts = (board, thread, posts) => {
     const filteredPosts = posts.filter(post => post.file);
 
-    redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', 8);
+    redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
 
     return filteredPosts;
 };
