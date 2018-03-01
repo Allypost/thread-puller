@@ -274,7 +274,7 @@ const getApiUrl = (board, thread) => `https://a.4cdn.org/${getThreadUri(board, t
 const getThreadUrl = (board, thread) => `https://boards.4chan.org/${getThreadUri(board, thread)}`;
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
 const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
-const getImageLocalUrl = (board, filename) => `https://thrdpllr.tk/i/${board}/${filename}`;
+const getImageLocalUrl = (board, filename) => `${process.env.THREADPULLER_DOMAIN_CACHE}/i/${board}/${filename}`;
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + 's.jpg');
 
 Router.use('/', express.static(path.join(__dirname, 'public')));
