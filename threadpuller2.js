@@ -183,7 +183,7 @@ const normalizePost = (board, post) => {
     const newPost = {
         id: +post.no,
         board: board,
-        thread: post.resto,
+        thread: post.resto || post.no,
         posted: new Date(post.time * 1000),
         body: {
             title: post.sub,
