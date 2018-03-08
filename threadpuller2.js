@@ -222,9 +222,10 @@ const vid = (post, opts) => {
     const url = getFileUrl(post.board, post.file.filename);
     const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
     const loop = opts.loop ? ' loop' : '';
+    const volume = opts.volume / 100;
 
     // noinspection JSUnusedGlobalSymbols
-    return `<video controls ${autoplay + loop} onloadstart="this.volume=0.5" onerror="console.log(this)"><source src="${url}"></video>`;
+    return `<video controls ${autoplay + loop} onloadstart="this.volume=${volume}" onerror="console.log(this)"><source src="${url}"></video>`;
 };
 const img = (post) => {
     const mainURL = getImageLocalUrl(post.board, post.file.filename);
@@ -245,13 +246,16 @@ const resource = (post, params) => {
     const postUrl = getPostUrl(post.board, post.thread, post.id);
 
     // noinspection PointlessBooleanExpressionJS
-    const autoplay = !!params.autoplay;
-    const loop = typeof params.loop !== typeof undefined
-                 && params.loop !== 'false'
-                 && params.loop !== 'no'
-                 && +params.loop !== 0;
-
-    const opts = { autoplay, loop };
+    const opts = {
+        autoplay: !!params.autoplay,
+        loop: typeof params.loop !== typeof undefined
+              && params.loop !== 'false'
+              && params.loop !== 'no'
+              && +params.loop !== 0,
+        volume: typeof params.volume !== typeof undefined
+            ? +params.volume
+            : 50,
+    };
 
     let res = '';
     switch (post.file.extension) {
