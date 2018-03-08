@@ -17,33 +17,35 @@ require('dotenv-safe').load(
         allowEmptyValues: true,
     });
 
-const redis = redisCLI.createClient({
-                                        password: process.env.REDIS_PASSWORD,
-                                        prefix: 'ThreadPuller:',
-                                        db: process.env.REDIS_DB,
-                                        retry_strategy(options) {
-                                            if (options.error && options.error.code === 'ECONNREFUSED') {
-                                                // End reconnecting on a specific error and flush all commands with a individual error
-                                                console.log('|> ERR', options.error);
-                                                return new Error('The server refused the connection');
-                                            }
+const redis = !+process.env.THREADPULLER_IGNORE_REDIS_CACHE
+    ? redisCLI.createClient({
+                                password: process.env.REDIS_PASSWORD,
+                                prefix: 'ThreadPuller:',
+                                db: process.env.REDIS_DB,
+                                retry_strategy(options) {
+                                    if (options.error && options.error.code === 'ECONNREFUSED') {
+                                        // End reconnecting on a specific error and flush all commands with a individual error
+                                        console.log('|> ERR', options.error);
+                                        return new Error('The server refused the connection');
+                                    }
 
-                                            if (options.total_retry_time > 1000 * 60 * 60) {
-                                                // End reconnecting after a specific timeout and flush all commands with a individual error
-                                                const err = new Error('Retry time exhausted');
-                                                console.log('|> ERR', err);
+                                    if (options.total_retry_time > 1000 * 60 * 60) {
+                                        // End reconnecting after a specific timeout and flush all commands with a individual error
+                                        const err = new Error('Retry time exhausted');
+                                        console.log('|> ERR', err);
 
-                                                return err;
-                                            }
+                                        return err;
+                                    }
 
-                                            if (options.attempt > 10)
-                                            // End reconnecting with built in error
-                                                return undefined;
+                                    if (options.attempt > 10)
+                                    // End reconnecting with built in error
+                                        return undefined;
 
-                                            // reconnect after
-                                            return Math.min(options.attempt * 100, 3000);
-                                        },
-                                    });
+                                    // reconnect after
+                                    return Math.min(options.attempt * 100, 3000);
+                                },
+                            })
+    : null;
 
 const app = express();
 const Router = express.Router();
@@ -105,20 +107,22 @@ styles.forEach(async style => {
 const getCachedPosts = async (board, thread) => {
     const cacheKey = `${board}:${thread}`;
 
-    try {
-        return JSON.parse(await redis.getAsync(cacheKey));
-    } catch (e) {
-        info(`Cache corruption in \`${cacheKey}\`! Purging...`);
+    if (redis)
+        try {
+            return JSON.parse(await redis.getAsync(cacheKey));
+        } catch (e) {
+            info(`Cache corruption in \`${cacheKey}\`! Purging...`);
 
-        redis.delAsync(`${board}:${thread}`);
+            redis.delAsync(`${board}:${thread}`);
+        }
 
-        return await getLivePosts(board, thread);
-    }
+    return await getLivePosts(board, thread);
 };
 const setCachedPosts = (board, thread, posts) => {
     const filteredPosts = posts.filter(post => post.file);
 
-    redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
+    if (redis)
+        redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
 
     return filteredPosts;
 };
@@ -340,6 +344,10 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
 app.use(Router);
 
 info('Server starting...');
+
+if (!redis)
+    info('Starting without redis...');
+
 http.createServer(app)
     .listen(process.env.PORT, () => {
         info('Server started on port', process.env.PORT);
