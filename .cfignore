@@ -1,9 +1,8 @@
 .idea/
+.git/
 dl/
 node_modules/
 run.cmd
-public/*
-!/public/favicon.ico
 
 /server.crt
 /server.csr
@@ -11,6 +10,4 @@ public/*
 /server.key.org
 
 /logs/*
-/.env
 /.sass-cache/
-/manifest.yml
