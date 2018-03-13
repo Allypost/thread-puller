@@ -452,6 +452,8 @@ Router.get('/', async (req, res) => {
             </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
     );
 
+    res.write('<title>ThreadPuller</title>');
+
     styles.filter((_, i) => i < 2).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     res.write(links.join(''));
