@@ -107,8 +107,43 @@ styles.forEach(async style => {
     Object.assign(style, await updateResource(style));
 });
 
-const getCachedPosts = async (board, thread) => {
-    const cacheKey = `${board}:${thread}`;
+const getLiveBoards = async () => new Promise(resolve => {
+    const options = {
+        'host': 'a.4cdn.org',
+        'path': `/boards.json`,
+        'method': 'GET',
+        'headers': {
+            'Referer': `https://4chan.org/`,
+            'User-Agent': 'ThreadPuller',
+        },
+    };
+
+    http
+        .request(options, res => {
+            if (res.statusCode !== 200)
+                return resolve(null);
+
+            let body = '';
+            // noinspection JSUnresolvedFunction
+            res.setEncoding('utf8')
+               .on('data', (chunk) => body += chunk)
+               .on('end', () => {
+                   try {
+                       resolve(JSON.parse(body));
+                   } catch (e) {
+                       resolve(null);
+                   }
+               });
+        })
+        .on('error', e => {
+            Raven.captureException(e);
+
+            resolve(null);
+        })
+        .end();
+});
+const getCachedBoards = async () => {
+    const cacheKey = `boards`;
 
     if (redis)
         try {
@@ -116,19 +151,96 @@ const getCachedPosts = async (board, thread) => {
         } catch (e) {
             info(`Cache corruption in \`${cacheKey}\`! Purging...`);
 
-            redis.delAsync(`${board}:${thread}`);
+            redis.delAsync(cacheKey);
         }
 
-    return await getLivePosts(board, thread);
+    return await getLiveBoards();
 };
-const setCachedPosts = (board, thread, posts) => {
-    const filteredPosts = posts.filter(post => post.file);
+const setCachedBoards = (boards) => {
+    if (redis)
+        redis.setAsync(`boards`, JSON.stringify(boards), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
+
+    return boards;
+};
+const getBoards = async () => {
+    const cachedBoards = await getCachedBoards();
+
+    if (
+        cachedBoards
+        && !!cachedBoards.length
+    )
+        return cachedBoards;
+
+    return setCachedBoards(await getLiveBoards());
+};
+
+const getLiveThreads = async (board) => new Promise(resolve => {
+    const options = {
+        'host': 'a.4cdn.org',
+        'path': `/${board}/catalog.json`,
+        'method': 'GET',
+        'headers': {
+            'Referer': `https://boards.4chan.org/${board}/`,
+            'User-Agent': 'ThreadPuller',
+        },
+    };
+
+    http
+        .request(options, res => {
+            if (res.statusCode !== 200)
+                return resolve(null);
+
+            let body = '';
+            // noinspection JSUnresolvedFunction
+            res.setEncoding('utf8')
+               .on('data', (chunk) => body += chunk)
+               .on('end', () => {
+                   try {
+                       resolve(JSON.parse(body));
+                   } catch (e) {
+                       resolve(null);
+                   }
+               });
+        })
+        .on('error', e => {
+            Raven.captureException(e);
+
+            resolve(null);
+        })
+        .end();
+});
+const getCachedThreads = async (board) => {
+    const cacheKey = `${board}`;
 
     if (redis)
-        redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
+        try {
+            return JSON.parse(await redis.getAsync(cacheKey));
+        } catch (e) {
+            info(`Cache corruption in \`${cacheKey}\`! Purging...`);
 
-    return filteredPosts;
+            redis.delAsync(cacheKey);
+        }
+
+    return await getLiveThreads(board);
 };
+const setCachedThreads = (board, threads) => {
+    if (redis)
+        redis.setAsync(`${board}`, JSON.stringify(threads), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
+
+    return threads;
+};
+const getThreads = async (board) => {
+    const cachedThreads = await getCachedThreads(board);
+
+    if (
+        cachedThreads
+        && !!cachedThreads.length
+    )
+        return cachedThreads;
+
+    return setCachedThreads(board, await getLiveThreads(board));
+};
+
 const getLivePosts = async (board, thread) => new Promise(resolve => {
     const options = {
         'host': 'a.4cdn.org',
@@ -173,76 +285,28 @@ const getLivePosts = async (board, thread) => new Promise(resolve => {
         })
         .end();
 });
-const getLiveThreads = async (board) => new Promise(resolve => {
-    const options = {
-        'host': 'a.4cdn.org',
-        'path': `/${board}/catalog.json`,
-        'method': 'GET',
-        'headers': {
-            'Referer': `https://boards.4chan.org/${board}/`,
-            'User-Agent': 'ThreadPuller',
-        },
-    };
+const getCachedPosts = async (board, thread) => {
+    const cacheKey = `${board}:${thread}`;
 
-    http
-        .request(options, res => {
-            if (res.statusCode !== 200)
-                return resolve(null);
+    if (redis)
+        try {
+            return JSON.parse(await redis.getAsync(cacheKey));
+        } catch (e) {
+            info(`Cache corruption in \`${cacheKey}\`! Purging...`);
 
-            let body = '';
-            // noinspection JSUnresolvedFunction
-            res.setEncoding('utf8')
-               .on('data', (chunk) => body += chunk)
-               .on('end', () => {
-                   try {
-                       resolve(JSON.parse(body));
-                   } catch (e) {
-                       resolve(null);
-                   }
-               });
-        })
-        .on('error', e => {
-            Raven.captureException(e);
+            redis.delAsync(cacheKey);
+        }
 
-            resolve(null);
-        })
-        .end();
-});
-const getLiveBoards = async () => new Promise(resolve => {
-    const options = {
-        'host': 'a.4cdn.org',
-        'path': `/boards.json`,
-        'method': 'GET',
-        'headers': {
-            'Referer': `https://4chan.org/`,
-            'User-Agent': 'ThreadPuller',
-        },
-    };
+    return await getLivePosts(board, thread);
+};
+const setCachedPosts = (board, thread, posts) => {
+    const filteredPosts = posts.filter(post => post.file);
 
-    http
-        .request(options, res => {
-            if (res.statusCode !== 200)
-                return resolve(null);
+    if (redis)
+        redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
 
-            let body = '';
-            // noinspection JSUnresolvedFunction
-            res.setEncoding('utf8')
-               .on('data', (chunk) => body += chunk)
-               .on('end', () => {
-                   try {
-                       resolve(JSON.parse(body));
-                   } catch (e) {
-                       resolve(null);
-                   }
-               });
-        })
-        .on('error', e => {
-            Raven.captureException(e);
-
-            resolve(null);
-        })
-        .end();
-});
+    return filteredPosts;
+};
 const getPosts = async (board, thread) => {
     const cachedPosts = await getCachedPosts(board, thread);
 
@@ -368,7 +432,7 @@ Router.use('/', express.static(path.join(__dirname, 'public')));
 Router.get('/', async (req, res) => {
     res.type('html');
 
-    const boards = (await getLiveBoards())
+    const boards = (await getBoards())
         .boards
         .map(board => ({
             title: board.title,
@@ -397,7 +461,7 @@ Router.get('/', async (req, res) => {
 
 Router.get('/:board/', async (req, res) => {
     const board = req.params.board;
-    const rawBoardPosts = await getLiveThreads(board);
+    const rawBoardPosts = await getThreads(board);
 
     res.type('html');
 
