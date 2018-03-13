@@ -62,6 +62,9 @@ const styles = [
     {
         link: `/css/style.min.css`,
     },
+    {
+        link: `/css/index.min.css`,
+    },
 ];
 
 const readFile = util.promisify(fs.readFile);
@@ -170,6 +173,76 @@ const getLivePosts = async (board, thread) => new Promise(resolve => {
         })
         .end();
 });
+const getLiveThreads = async (board) => new Promise(resolve => {
+    const options = {
+        'host': 'a.4cdn.org',
+        'path': `/${board}/catalog.json`,
+        'method': 'GET',
+        'headers': {
+            'Referer': `https://boards.4chan.org/${board}/`,
+            'User-Agent': 'ThreadPuller',
+        },
+    };
+
+    http
+        .request(options, res => {
+            if (res.statusCode !== 200)
+                return resolve(null);
+
+            let body = '';
+            // noinspection JSUnresolvedFunction
+            res.setEncoding('utf8')
+               .on('data', (chunk) => body += chunk)
+               .on('end', () => {
+                   try {
+                       resolve(JSON.parse(body));
+                   } catch (e) {
+                       resolve(null);
+                   }
+               });
+        })
+        .on('error', e => {
+            Raven.captureException(e);
+
+            resolve(null);
+        })
+        .end();
+});
+const getLiveBoards = async () => new Promise(resolve => {
+    const options = {
+        'host': 'a.4cdn.org',
+        'path': `/boards.json`,
+        'method': 'GET',
+        'headers': {
+            'Referer': `https://4chan.org/`,
+            'User-Agent': 'ThreadPuller',
+        },
+    };
+
+    http
+        .request(options, res => {
+            if (res.statusCode !== 200)
+                return resolve(null);
+
+            let body = '';
+            // noinspection JSUnresolvedFunction
+            res.setEncoding('utf8')
+               .on('data', (chunk) => body += chunk)
+               .on('end', () => {
+                   try {
+                       resolve(JSON.parse(body));
+                   } catch (e) {
+                       resolve(null);
+                   }
+               });
+        })
+        .on('error', e => {
+            Raven.captureException(e);
+
+            resolve(null);
+        })
+        .end();
+});
 const getPosts = async (board, thread) => {
     const cachedPosts = await getCachedPosts(board, thread);
 
@@ -242,9 +315,21 @@ const a = (url, name, newTab) => {
 
     return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
 };
-const title = (post) => `<title>${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
+const title = (post) => `<title>/${post.board}/ - ${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
 const meta = () => `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
-const header = (thread, num) => `<h1><a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
+const header = (thread, num) => `<h1><a href="/${thread}/">Back</a> | <a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
+
+const getFileType = (extension) => {
+    switch (extension) {
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+            return 'image';
+        default:
+            return 'video';
+    }
+};
 
 const resource = (post, params) => {
     const postUrl = getPostUrl(post.board, post.thread, post.id);
@@ -261,20 +346,12 @@ const resource = (post, params) => {
             : 50,
     };
 
-    let res = '';
-    switch (post.file.extension) {
-        case 'jpg':
-        case 'jpeg':
-        case 'png':
-        case 'gif':
-            res = img(post);
-            break;
-        default:
-            res = vid(post, opts);
-            break;
-    }
 
-    return a(postUrl, res, true);
+    const res = getFileType(post.file.extension) === 'image'
+        ? img
+        : vid;
+
+    return a(postUrl, res(post, opts), true);
 };
 
 const getThreadUri = (board, thread) => `${board}/thread/${thread}`;
@@ -283,9 +360,86 @@ const getThreadUrl = (board, thread) => `https://boards.4chan.org/${getThreadUri
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
 const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
 const getImageLocalUrl = (board, filename) => `${process.env.THREADPULLER_DOMAIN_CACHE}/i/${board}/${filename}`;
+const getImageLocalThumbUrl = (board, resourceID) => getImageLocalUrl(board, resourceID + 's.jpg');
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + 's.jpg');
 
 Router.use('/', express.static(path.join(__dirname, 'public')));
+
+Router.get('/', async (req, res) => {
+    res.type('html');
+
+    const boards = (await getLiveBoards())
+        .boards
+        .map(board => ({
+            title: board.title,
+            board: board.board,
+            link: `/${board.board}/`,
+            description: board.meta_description,
+            nsfw: !board.ws_board,
+        }));
+
+    const links = boards.map(
+        ({ title: title, board: board, link: link, description: description, nsfw: nsfw }) => `
+            <article class="board" ${nsfw ? 'data-nsfw="1"' : ''}>
+                <header>
+                    <h1 class="title"><a href="${link}">/${board}/ - ${title}</a></h1>
+                </header>
+                <section class="description">${description}</section>
+            </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
+    );
+
+    styles.filter((_, i) => i < 2).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+
+    res.write(links.join(''));
+
+    res.end();
+});
+
+Router.get('/:board/', async (req, res) => {
+    const board = req.params.board;
+    const rawBoardPosts = await getLiveThreads(board);
+
+    res.type('html');
+
+    if (!rawBoardPosts) {
+        res.write('<h1>Not found</h1>');
+        res.end();
+    }
+
+    const boardPosts = [].concat(
+        ...rawBoardPosts.map(page => page.threads)
+                        .map(threads => threads.filter(thread => thread.images))
+                        .map(threads => normalizePosts(board, threads))//
+    );
+
+    const links = boardPosts.map(
+        post => `
+            <article class="board">
+                <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
+                    <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
+                </header>
+                <section class="content ${!post.body.content ? 'no-content' : ''}">${
+            post.file
+                ? ` <section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
+                        <img data-src-full="${getImageLocalUrl(board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
+                    </section>`
+                : ''
+            }<section class="description">${post.body.content}</section>
+            </section>
+            </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
+    );
+
+    res.write(`<title>/${board}/ - ThreadPuller</title>`);
+    res.write('<script src="/js/site.min.js"></script>');
+
+    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+
+    res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(links.join(''));
+    res.write('<script>(function() { Board.init() })()</script>');
+
+    res.end();
+});
 
 Router.get('/:board/thread/:thread', async (req, res) => {
     const p = req.params;
