@@ -168,7 +168,10 @@ const getCachedBoards = async () => {
     return await getLiveBoards();
 };
 const setCachedBoards = (boards) => {
-    if (redis)
+    if (!boards)
+        return null;
+
+    if (redis && boards.length)
         redis.setAsync(`boards`, JSON.stringify(boards), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
 
     return boards;
@@ -235,7 +238,10 @@ const getCachedThreads = async (board) => {
     return await getLiveThreads(board);
 };
 const setCachedThreads = (board, threads) => {
-    if (redis)
+    if (!threads)
+        return null;
+
+    if (redis && threads.length)
         redis.setAsync(`${board}`, JSON.stringify(threads), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
 
     return threads;
@@ -311,9 +317,12 @@ const getCachedPosts = async (board, thread) => {
     return await getLivePosts(board, thread);
 };
 const setCachedPosts = (board, thread, posts) => {
+    if (!posts)
+        return null;
+
     const filteredPosts = posts.filter(post => post.file);
 
-    if (redis)
+    if (redis && filteredPosts.length)
         redis.setAsync(`${board}:${thread}`, JSON.stringify(filteredPosts), 'EX', process.env.THREADPULLER_API_CACHE_FOR);
 
     return filteredPosts;
