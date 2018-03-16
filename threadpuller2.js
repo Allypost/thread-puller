@@ -383,7 +383,8 @@ const img = (post) => {
     const mainURL = getImageLocalUrl(post.board, post.file.filename);
     const altUrl = getImageLocalThumbUrl(post.board, post.file.id);
 
-    return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
+    //  onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"
+    return `<img src="${altUrl}" data-master-src="${mainURL}" onload="if(this.src !== this.dataset.masterSrc) { this.src = this.dataset.masterSrc }">`;
 };
 const a = (url, name, newTab) => {
     const newT = newTab ? `target="_blank"` : '';
