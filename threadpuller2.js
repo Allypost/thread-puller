@@ -491,36 +491,36 @@ Router.get('/:board/', async (req, res) => {
         res.end();
     }
 
-    const boardPosts = [].concat(
-        ...rawBoardPosts.map(page => page.threads)
-                        .map(threads => threads.filter(thread => thread.images))
-                        .map(threads => normalizePosts(board, threads))//
-    );
-
-    const links = boardPosts.map(
-        post => `
-            <article class="board">
-                <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
-                    <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
-                </header>
-                <section class="content ${!post.body.content ? 'no-content' : ''}">${
-            post.file
-                ? ` <section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
-                        <img data-src-full="${getImageLocalUrl(board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
-                    </section>`
-                : ''
-            }<section class="description">${post.body.content}</section>
-            </section>
-            </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
-    );
-
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
 
     styles.forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
     scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
-    res.write(links.join(''));
+
+    [].concat(
+        ...rawBoardPosts.map(page => page.threads)
+                        .map(threads => threads.filter(thread => thread.images))
+                        .map(threads => normalizePosts(board, threads))//
+    ).forEach(
+        post =>
+            res.write(
+                `<article class="board">
+                     <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
+                        <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
+                     </header>
+                     <section class="content ${!post.body.content ? 'no-content' : ''}">${
+                    post.file
+                        ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
+                               <img data-src-full="${getImageLocalUrl(board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
+                           </section>`
+                        : ''
+                    }<section class="description">${post.body.content}</section>
+                     </section>
+                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
+            )//
+    );
+
     res.write('<script>(function() { Board.init() })()</script>');
 
     res.end();
