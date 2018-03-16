@@ -488,15 +488,17 @@ Router.get('/:board/', async (req, res) => {
     res.type('html');
     res.write(meta());
 
+    styles.forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+
     if (!rawBoardPosts) {
-        res.write('<h1>Not found</h1>');
-        res.end();
+        res.write(`<title>/404/ - Board Not Found</title>`);
+        res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+        res.write(`<h1>Can't find the board \`${board}\`</h1>`);
+        return res.end();
     }
 
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
-
-    styles.forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
 
@@ -538,13 +540,15 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     if (!posts) {
         res.write(title({ body: { title: 'Post not found...' } }));
+        res.write(header(p.board, p.thread));
         res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
 
         return res.end();
     }
 
-    res.write(header(p.board, p.thread));
     res.write(title(posts[ 0 ]));
+    res.write(header(p.board, p.thread));
+
     posts.forEach(post => {
         if (post.file)
             res.write(resource(post, req.query));
