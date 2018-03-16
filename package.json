@@ -12,6 +12,7 @@
     "dotenv-safe": "^5.0.1",
     "express": "^4.16.2",
     "helmet": "^3.11.0",
+    "html-entities": "^1.2.1",
     "mkdirp": "^0.5.1",
     "raven": "^2.4.1",
     "redis": "^2.8.0",
