@@ -450,6 +450,7 @@ Router.use('/', express.static(path.join(__dirname, 'public')));
 
 Router.get('/', async (req, res) => {
     res.type('html');
+    res.write(meta());
 
     const boards = (await getBoards())
         .boards
@@ -485,6 +486,7 @@ Router.get('/:board/', async (req, res) => {
     const rawBoardPosts = await getThreads(board);
 
     res.type('html');
+    res.write(meta());
 
     if (!rawBoardPosts) {
         res.write('<h1>Not found</h1>');
