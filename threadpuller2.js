@@ -548,7 +548,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     if (!posts) {
-        res.write(title({ body: { title: 'Post not found...' } }));
+        res.write(title({ board: p.board, body: { title: 'Post not found...' } }));
         res.write(header(p.board, p.thread));
         res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
 
