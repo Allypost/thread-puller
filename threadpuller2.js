@@ -381,7 +381,7 @@ const vid = (post, opts) => {
 };
 const img = (post) => {
     const mainURL = getImageLocalUrl(post.board, post.file.filename);
-    const altUrl = getImageThumbUrl(post.board, post.file.id);
+    const altUrl = getImageLocalThumbUrl(post.board, post.file.id);
 
     return `<img src="${mainURL}" onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }">`;
 };
