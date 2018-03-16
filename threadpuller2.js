@@ -383,8 +383,15 @@ const img = (post) => {
     const mainURL = getImageLocalUrl(post.board, post.file.filename);
     const altUrl = getImageLocalThumbUrl(post.board, post.file.id);
 
+    const height = post.file.dimensions.main.height;
+    const width = post.file.dimensions.main.width;
+
+    const ratio = height && width ? height / width : 0;
+
+    const load = ratio !== 0 ? `onloadstart="this.setAttribute('height', this.offsetWidth * ${ratio} + 'px');"` : '';
+
     //  onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"
-    return `<img src="${altUrl}" data-master-src="${mainURL}" onload="if(this.src !== this.dataset.masterSrc) { this.src = this.dataset.masterSrc }">`;
+    return `<img src="${altUrl}" data-master-src="${mainURL}" ${load} onload="if(this.src !== this.dataset.masterSrc) { this.src = this.dataset.masterSrc }">`;
 };
 const a = (url, name, newTab) => {
     const newT = newTab ? `target="_blank"` : '';
