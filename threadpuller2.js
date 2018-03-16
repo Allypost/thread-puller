@@ -69,7 +69,7 @@ const styles = [
 
 const scripts = [
     {
-        link: `/js/site.min.js`,
+        link: `/js/Board.min.js`,
     },
 ];
 
