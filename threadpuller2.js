@@ -67,6 +67,12 @@ const styles = [
     },
 ];
 
+const scripts = [
+    {
+        link: `/js/site.min.js`,
+    },
+];
+
 const readFile = util.promisify(fs.readFile);
 const updateResource = async (file) => {
     info('|> Updating resource...\t', file.file.replace(__dirname, ''));
@@ -97,15 +103,20 @@ const addResourceWatcher = (file, resourceList) => {
     fs.watchFile(file.file, listener);
 };
 
-styles.forEach(async style => {
-    if (!style.file)
-        style.file = path.join(__dirname, 'public/', style.link);
-    if (!style.algo)
-        style.algo = 'sha256';
+const getResourceWatcher = (resourceList) => {
+    return async resource => {
+        if (!resource.file)
+            resource.file = path.join(__dirname, 'public/', resource.link);
+        if (!resource.algo)
+            resource.algo = 'sha256';
 
-    addResourceWatcher(style, styles);
-    Object.assign(style, await updateResource(style));
-});
+        addResourceWatcher(resource, resourceList);
+        Object.assign(resource, await updateResource(resource));
+    };
+};
+
+styles.forEach(getResourceWatcher(styles));
+scripts.forEach(getResourceWatcher(scripts));
 
 const getLiveBoards = async () => new Promise(resolve => {
     const options = {
@@ -496,9 +507,9 @@ Router.get('/:board/', async (req, res) => {
     );
 
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
-    res.write('<script src="/js/site.min.js"></script>');
 
-    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+    styles.forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
     res.write(links.join(''));
