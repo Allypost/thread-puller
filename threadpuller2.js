@@ -487,7 +487,7 @@ Router.get('/', async (req, res) => {
 
     res.write('<title>ThreadPuller</title>');
 
-    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+    styles.filter((_, i) => i > 0).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     (await getBoards())
         .boards
@@ -516,7 +516,7 @@ Router.get('/:board/', async (req, res) => {
     res.type('html');
     res.write(meta());
 
-    styles.forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    styles.filter((_, i) => i < 2).forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
     scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!rawBoardPosts) {
