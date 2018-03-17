@@ -74,6 +74,12 @@ const scripts = [
     {
         link: `/js/Board.min.js`,
     },
+    {
+        href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify.min.js`,
+    },
+    {
+        href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify-html.min.js`,
+    },
 ];
 
 const readFile = util.promisify(fs.readFile);
@@ -105,9 +111,21 @@ const addResourceWatcher = (file, resourceList) => {
 
     fs.watchFile(file.file, listener);
 };
+const hrefResource = (resource, resourceList) => {
+    const i = resourceList.findIndex(res => res.href === resource.href);
+
+    Object.assign(resourceList[ i ], {
+        link: resource.href,
+        tag: crypto.createHash('md5')
+                   .update(resource.href)
+                   .digest('hex'),
+    });
+};
 
 const getResourceWatcher = (resourceList) => {
     return async resource => {
+        if (resource.href)
+            return hrefResource(resource, resourceList);
         if (!resource.file)
             resource.file = path.join(__dirname, 'public/', resource.link);
         if (!resource.algo)
