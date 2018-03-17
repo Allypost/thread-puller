@@ -66,7 +66,7 @@ const styles = [
         link: `/css/style.min.css`,
     },
     {
-        link: `/css/index.min.css`,
+        link: `/css/global.min.css`,
     },
 ];
 
