@@ -20,7 +20,7 @@ module.exports = grunt => {
     };
 
     const CssFileList = {
-        'public/css/style.min.css': 'static/styles/style.scss',
+        'public/css/global.min.css': 'static/styles/global.scss',
         'public/css/index.min.css': 'static/styles/index.scss',
     };
 
