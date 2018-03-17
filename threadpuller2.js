@@ -529,6 +529,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
 
     res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(`<h1>Board: /${board}/</h1>`);
 
     [].concat(
         ...rawBoardPosts.map(page => page.threads)
@@ -579,6 +580,8 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     res.write(title(posts[ 0 ]));
     res.write(header(p.board, p.thread));
+    res.write(`<h1>Board: /${p.board}/</h1>`);
+    res.write(`<h1>Thread: ${posts[0].body.title || posts[0].body.content.substr(0, 150) || 'No title'}</h1>`);
 
     posts.forEach(post => {
         if (post.file)
