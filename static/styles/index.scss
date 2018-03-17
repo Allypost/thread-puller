@@ -152,7 +152,7 @@ body {
             max-height: $maxTextHeight;
             min-height: 85px;
             padding: .35em .5em;
-            text-align: justify;
+            text-align: left;
             transition: height #{$transition-smooth};
 
             &::after {
