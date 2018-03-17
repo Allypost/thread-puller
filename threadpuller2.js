@@ -85,6 +85,8 @@ const scripts = [
     },
 ];
 
+const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.THREADPULLER_GA_KEY}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.THREADPULLER_GA_KEY}');</script>`;
+
 const readFile = util.promisify(fs.readFile);
 const updateResource = async (file) => {
     info('|> Updating resource...\t', file.file.replace(__dirname, ''));
@@ -506,6 +508,7 @@ Router.get('/', async (req, res) => {
                 <section class="description">${description}</section>
             </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')));
 
+    res.write(GoogleAnalytics);
     res.end();
 });
 
@@ -556,6 +559,7 @@ Router.get('/:board/', async (req, res) => {
 
     res.write('<script>(function() { Board.init() })()</script>');
 
+    res.write(GoogleAnalytics);
     res.end();
 });
 
@@ -581,13 +585,14 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.write(title(posts[ 0 ]));
     res.write(header(p.board, p.thread));
     res.write(`<h1>Board: /${p.board}/</h1>`);
-    res.write(`<h1>Thread: ${posts[0].body.title || posts[0].body.content.substr(0, 150) || 'No title'}</h1>`);
+    res.write(`<h1>Thread: ${posts[ 0 ].body.title || posts[ 0 ].body.content.substr(0, 150) || 'No title'}</h1>`);
 
     posts.forEach(post => {
         if (post.file)
             res.write(resource(post, req.query));
     });
 
+    res.write(GoogleAnalytics);
     res.end();
 });
 
