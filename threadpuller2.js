@@ -480,6 +480,19 @@ const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}
 const getImageLocalUrl = (board, filename) => `${process.env.THREADPULLER_DOMAIN_CACHE}/i/${board}/${filename}`;
 const getImageLocalThumbUrl = (board, resourceID) => getImageLocalUrl(board, resourceID + 's.jpg');
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + 's.jpg');
+const getYlylPosts = async (board) => [].concat(
+    ...(await getThreads(board) || [])
+        .map(
+            page =>
+                (page.threads || [])
+                    .filter(
+                        thread =>
+                            (thread.sub || thread.com || '')
+                                .toLowerCase()
+                                .includes('ylyl'),
+                    )//
+        )//
+);
 
 Router.use('/', express.static(path.join(__dirname, 'public')));
 
@@ -509,6 +522,52 @@ Router.get('/', async (req, res) => {
                 </header>
                 <section class="description">${description}</section>
             </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')));
+
+    res.write(GoogleAnalytics);
+    res.end();
+});
+
+Router.get('/ylyl/', async (req, res) => {
+    const board = 'gif';
+    const posts = normalizePosts(board, await getYlylPosts(board) || []);
+
+    res.type('html');
+    res.write(meta());
+
+    styles.filter((_, i) => i < 2).forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+
+    if (!posts.length) {
+        res.write(`<title>/ylyl/ - No laughs found</title>`);
+        res.write(`<h1><a href="/">Back</a></h1>`);
+        res.write(`<h1>Can't find any ylyl posts</h1>`);
+        return res.end();
+    }
+
+    res.write(`<title>/meta/ylyl/ - ThreadPuller</title>`);
+    res.write(`<h1><a href="/">Back</a>`);
+    res.write(`<h1>Meta Board: /ylyl/</h1>`);
+
+    posts.forEach(
+        post =>
+            res.write(
+                `<article class="board">
+                     <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
+                        <h1 class="title"><a href="${`/${post.board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
+                     </header>
+                     <section class="content ${!post.body.content ? 'no-content' : ''}">${
+                    post.file
+                        ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
+                               <img data-src-full="${getImageLocalUrl(post.board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(post.board, post.file.id)}" src="${getImageLocalThumbUrl(post.board, post.file.id)}" alt="${post.file.name}">
+                           </section>`
+                        : ''
+                    }<section class="description">${post.body.content}</section>
+                     </section>
+                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
+            )//
+    );
+
+    res.write('<script>(function() { Board.init() })()</script>');
 
     res.write(GoogleAnalytics);
     res.end();
