@@ -106,10 +106,25 @@ const Board = {
         document.querySelectorAll('img')
                 .forEach(el => el.addEventListener('load', (evt) => this.markLongPost(evt.path.find(el => el.classList.contains('board')).querySelector('.description'))));
     },
+    removeWbrTags() {
+        const wbrs = document.getElementsByTagName('wbr');
+
+        while (wbrs.length) {
+            wbrs[ 0 ].parentNode.removeChild(wbrs[ 0 ]);
+        }
+    },
+    linkifyDescriptions() {
+        document.querySelectorAll('.description')
+                .forEach(el => el.innerHTML = linkifyHtml(el.innerHTML));
+    },
     init() {
         // this.markLongPosts();
         this.fixQuoteLinks();
         this.addExpandListeners();
         this.addImageLoadListener();
+        document.addEventListener('DOMContentLoaded', () => {
+            this.removeWbrTags();
+            this.linkifyDescriptions();
+        });
     },
 };

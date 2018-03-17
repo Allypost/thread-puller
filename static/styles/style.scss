@@ -45,6 +45,10 @@ a {
         }
 
     }
+
+    &.linkified {
+        display: inline;
+    }
 }
 
 video, img {
