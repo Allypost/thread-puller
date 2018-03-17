@@ -482,7 +482,11 @@ Router.get('/', async (req, res) => {
     res.type('html');
     res.write(meta());
 
-    const boards = (await getBoards())
+    res.write('<title>ThreadPuller</title>');
+
+    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+
+    (await getBoards())
         .boards
         .map(board => ({
             title: board.title,
@@ -490,23 +494,14 @@ Router.get('/', async (req, res) => {
             link: `/${board.board}/`,
             description: board.meta_description,
             nsfw: !board.ws_board,
-        }));
-
-    const links = boards.map(
-        ({ title: title, board: board, link: link, description: description, nsfw: nsfw }) => `
+        }))
+        .forEach(({ title: title, board: board, link: link, description: description, nsfw: nsfw }) => res.write(`
             <article class="board" ${nsfw ? 'data-nsfw="1"' : ''}>
                 <header>
                     <h1 class="title"><a href="${link}">/${board}/ - ${title}</a></h1>
                 </header>
                 <section class="description">${description}</section>
-            </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
-    );
-
-    res.write('<title>ThreadPuller</title>');
-
-    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
-
-    res.write(links.join(''));
+            </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')));
 
     res.end();
 });
