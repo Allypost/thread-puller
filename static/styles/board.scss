@@ -46,34 +46,6 @@ a {
 
     }
 
-    &[data-nsfw] {
-        background-color: #ff9e9e;
-
-        header::before {
-            display: inline-block;
-            content: "NSFW";
-            font-size: .8em;
-            position: relative;
-            margin-right: .5em;
-            padding: .2em .4em;
-            border-radius: 4px;
-            bottom: 3px;
-            color: #ffffff;
-            text-shadow: 1px 1px 1px #000000;
-            background: red;
-        }
-
-        .description {
-            background-color: #664040;
-
-            &::after {
-                background-image: linear-gradient(to bottom, transparent, #664040 90%);
-            }
-
-        }
-
-    }
-
     header {
         margin-bottom: .3em;
 
