@@ -99,6 +99,14 @@ body {
         color: #ffffff;
         background-color: #424242;
 
+        %extended-description {
+            max-height: none;
+
+            &::after {
+                display: none;
+            }
+        }
+
         &.no-content {
             text-align: center;
 
@@ -124,6 +132,11 @@ body {
                 max-width: none;
                 max-height: none;
                 height: initial;
+
+                & + .description {
+                    @extend %extended-description;
+                }
+
             }
 
         }
@@ -149,12 +162,7 @@ body {
             }
 
             &.extended {
-                max-height: none;
-
-                &::after {
-                    display: none;
-                }
-
+                @extend %extended-description;
             }
 
             .quote {
