@@ -8,6 +8,7 @@ const util = require('util');
 const crypto = require('crypto');
 const bluebird = require('bluebird');
 const redisCLI = require('redis');
+const Entities = new (require('html-entities').AllHtmlEntities);
 
 bluebird.promisifyAll(redisCLI.RedisClient.prototype);
 bluebird.promisifyAll(redisCLI.Multi.prototype);
@@ -46,6 +47,8 @@ const redis = !+process.env.THREADPULLER_IGNORE_REDIS_CACHE
                                 },
                             })
     : null;
+
+const htmlentities = Entities.encode;
 
 const app = express();
 const Router = express.Router();
@@ -491,7 +494,7 @@ Router.get('/', async (req, res) => {
 });
 
 Router.get('/:board/', async (req, res) => {
-    const board = req.params.board;
+    const board = htmlentities(req.params.board);
     const rawBoardPosts = await getThreads(board);
 
     res.type('html');
@@ -540,7 +543,10 @@ Router.get('/:board/', async (req, res) => {
 });
 
 Router.get('/:board/thread/:thread', async (req, res) => {
-    const p = req.params;
+    const p = Object.entries(req.params)
+                    .map(([ key, value ]) => [ key, htmlentities(value) ])
+                    .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
+
     const posts = await getPosts(p.board, p.thread);
 
     res.type('html');
