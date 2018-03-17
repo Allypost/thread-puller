@@ -63,6 +63,9 @@ const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...argume
 
 const styles = [
     {
+        link: `/css/board.min.css`,
+    },
+    {
         link: `/css/global.min.css`,
     },
     {

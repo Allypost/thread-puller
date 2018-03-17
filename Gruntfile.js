@@ -22,6 +22,7 @@ module.exports = grunt => {
     const CssFileList = {
         'public/css/global.min.css': 'static/styles/global.scss',
         'public/css/index.min.css': 'static/styles/index.scss',
+        'public/css/board.min.css': 'static/styles/board.scss',
     };
 
     const gruntConfig = {
@@ -37,7 +38,7 @@ module.exports = grunt => {
             options: {
                 map: true,
                 processors: [
-                    require('postcss-font-magician')({}),
+                    // require('postcss-font-magician')({}),
                     require('pixrem')(),
                     require('autoprefixer')({ browsers: '> 0.01%' }),
                     require('cssnano')(),

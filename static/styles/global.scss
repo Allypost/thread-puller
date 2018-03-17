@@ -1,9 +1,17 @@
 @import "modules/include";
 
+::selection {
+    background: #000000;
+    color: #ffffff;
+}
+
 html {
+    font-size: 1rem;
+    margin: 0;
     background-color: #263238;
     color: #eceff1;
     font-family: sans-serif;
+    text-align: center;
 }
 
 body {
@@ -26,32 +34,8 @@ a {
         text-decoration: none;
     }
 
-    &.resource {
-        width: 24vw;
-        margin: .4vw;
-        border-radius: 8px;
-        overflow: hidden;
-
-        @media only screen and (max-width: 2090px) {
-            width: 31.6vw;
-        }
-
-        @media #{$large-and-down} {
-            width: 47.4vw;
-        }
-
-        @media #{$small-and-down} {
-            width: 90.5vw;
-        }
-
-    }
-
-    &.linkified {
-        display: inline;
-    }
 }
 
 video, img {
     width: 100%;
 }
-
