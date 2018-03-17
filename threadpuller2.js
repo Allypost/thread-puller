@@ -491,6 +491,8 @@ Router.get('/', async (req, res) => {
 
     styles.filter((_, i) => i > 0).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
+    res.write(`<h1>ThreadPuller - Pull 4chan image threads</h1>`);
+
     (await getBoards())
         .boards
         .map(board => ({
