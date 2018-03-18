@@ -489,7 +489,11 @@ const getYlylPosts = async (board) => [].concat(
                         thread =>
                             (thread.sub || thread.com || '')
                                 .toLowerCase()
-                                .includes('ylyl'),
+                                .includes('ylyl')
+                            ||
+                            (thread.com || '')
+                                .toLowerCase()
+                                .includes('ylyl')//
                     )//
         )//
 );
