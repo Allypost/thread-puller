@@ -531,52 +531,6 @@ Router.get('/', async (req, res) => {
     res.end();
 });
 
-Router.get('/ylyl/', async (req, res) => {
-    const board = 'gif';
-    const posts = normalizePosts(board, await getYlylPosts(board) || []);
-
-    res.type('html');
-    res.write(meta());
-
-    styles.filter((_, i) => i < 2).forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
-
-    if (!posts.length) {
-        res.write(`<title>/ylyl/ - No laughs found</title>`);
-        res.write(`<h1><a href="/">Back</a></h1>`);
-        res.write(`<h1>Can't find any ylyl posts</h1>`);
-        return res.end();
-    }
-
-    res.write(`<title>/meta/ylyl/ - ThreadPuller</title>`);
-    res.write(`<h1><a href="/">Back</a>`);
-    res.write(`<h1>Meta Board: /ylyl/</h1>`);
-
-    posts.forEach(
-        post =>
-            res.write(
-                `<article class="board">
-                     <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
-                        <h1 class="title"><a href="${`/${post.board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
-                     </header>
-                     <section class="content ${!post.body.content ? 'no-content' : ''}">${
-                    post.file
-                        ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
-                               <img data-src-full="${getImageLocalUrl(post.board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(post.board, post.file.id)}" src="${getImageLocalThumbUrl(post.board, post.file.id)}" alt="${post.file.name}">
-                           </section>`
-                        : ''
-                    }<section class="description">${post.body.content}</section>
-                     </section>
-                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
-            )//
-    );
-
-    res.write('<script>(function() { Board.init() })()</script>');
-
-    res.write(GoogleAnalytics);
-    res.end();
-});
-
 Router.get('/:board/', async (req, res) => {
     const board = htmlentities(req.params.board);
     const rawBoardPosts = await getThreads(board);
@@ -614,6 +568,52 @@ Router.get('/:board/', async (req, res) => {
                     post.file
                         ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
                                <img data-src-full="${getImageLocalUrl(board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
+                           </section>`
+                        : ''
+                    }<section class="description">${post.body.content}</section>
+                     </section>
+                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
+            )//
+    );
+
+    res.write('<script>(function() { Board.init() })()</script>');
+
+    res.write(GoogleAnalytics);
+    res.end();
+});
+
+Router.get('/:board/ylyl/', async (req, res) => {
+    const board = htmlentities(req.params.board);
+    const posts = normalizePosts(board, await getYlylPosts(board) || []);
+
+    res.type('html');
+    res.write(meta());
+
+    styles.filter((_, i) => i < 2).forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+
+    if (!posts.length) {
+        res.write(`<title>/${board}/ylyl/ - No laughs found</title>`);
+        res.write(`<h1><a href="/">Back</a></h1>`);
+        res.write(`<h1>Can't find any ylyl posts in /${board}/</h1>`);
+        return res.end();
+    }
+
+    res.write(`<title>/${board}/ylyl/ - ThreadPuller</title>`);
+    res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(`<h1>Meta Board: /${board}/ylyl/</h1>`);
+
+    posts.forEach(
+        post =>
+            res.write(
+                `<article class="board">
+                     <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
+                        <h1 class="title"><a href="${`/${post.board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
+                     </header>
+                     <section class="content ${!post.body.content ? 'no-content' : ''}">${
+                    post.file
+                        ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
+                               <img data-src-full="${getImageLocalUrl(post.board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(post.board, post.file.id)}" src="${getImageLocalThumbUrl(post.board, post.file.id)}" alt="${post.file.name}">
                            </section>`
                         : ''
                     }<section class="description">${post.body.content}</section>
