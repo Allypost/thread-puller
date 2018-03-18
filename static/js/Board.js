@@ -62,7 +62,7 @@ const Board = {
                          const src = document.createElement('source');
 
                          vid.autoplay = true;
-                         vid.volume = 0;
+                         vid.volume = 0.5;
                          vid.controls = true;
 
                          src.src = img.dataset.srcFull;
