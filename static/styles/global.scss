@@ -5,18 +5,30 @@
     color: #ffffff;
 }
 
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
 html {
+    height: 100%;
+    box-sizing: border-box;
     font-size: 1rem;
     margin: 0;
-    background-color: #263238;
+    background-color: $background-color;
     color: #eceff1;
     font-family: sans-serif;
     text-align: center;
 }
 
 body {
+    position: relative;
     margin: 0;
+    min-height: 100%;
     text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
@@ -38,4 +50,18 @@ a {
 
 video, img {
     width: 100%;
+}
+
+#wrap {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+    margin-top: 2em;
+    padding: 10px 0;
+    text-align: center;
+    background: darken($background-color, 5%);
+
+    @include no-select();
 }

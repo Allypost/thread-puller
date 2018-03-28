@@ -85,6 +85,8 @@ const scripts = [
     },
 ];
 
+const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | <a href="https://paypal.me/allypost" target="_blank" rel="noopener noreferrer">Donate to keep it going</a></footer>`;
+
 const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.THREADPULLER_GA_KEY}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.THREADPULLER_GA_KEY}');</script>`;
 
 const readFile = util.promisify(fs.readFile);
@@ -509,6 +511,7 @@ Router.get('/', async (req, res) => {
 
     styles.filter((_, i) => i > 0).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
+    res.write(`<div id="wrap">`);
     res.write(`<h1>ThreadPuller - Pull 4chan image threads</h1>`);
 
     (await getBoards())
@@ -528,6 +531,7 @@ Router.get('/', async (req, res) => {
                 <section class="description">${description}</section>
             </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')));
 
+    res.write(`</div>${FOOTER}`);
     res.write(GoogleAnalytics);
     res.end();
 });
@@ -544,13 +548,16 @@ Router.get('/:board/', async (req, res) => {
 
     if (!rawBoardPosts) {
         res.write(`<title>/404/ - Board Not Found</title>`);
+        res.write(`<div id="wrap">`);
         res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
         res.write(`<h1>Can't find the board \`${board}\`</h1>`);
+        res.write(`</div>${FOOTER}`);
         return res.end();
     }
 
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
 
+    res.write(`<div id="wrap">`);
     res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
     res.write(`<h1>Board: /${board}/</h1>`);
 
@@ -576,6 +583,7 @@ Router.get('/:board/', async (req, res) => {
                  </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
             )//
     );
+    res.write(`</div>${FOOTER}`);
 
     res.write('<script>(function() { Board.init() })()</script>');
 
@@ -595,12 +603,15 @@ Router.get('/:board/ylyl/', async (req, res) => {
 
     if (!posts.length) {
         res.write(`<title>/${board}/ylyl/ - No laughs found</title>`);
+        res.write(`<div id="wrap">`);
         res.write(`<h1><a href="/">Back</a></h1>`);
         res.write(`<h1>Can't find any ylyl posts in /${board}/</h1>`);
+        res.write(`</div>${FOOTER}`);
         return res.end();
     }
 
     res.write(`<title>/${board}/ylyl/ - ThreadPuller</title>`);
+    res.write(`<div id="wrap">`);
     res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
     res.write(`<h1>Meta Board: /${board}/ylyl/</h1>`);
 
@@ -622,6 +633,7 @@ Router.get('/:board/ylyl/', async (req, res) => {
                  </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
             )//
     );
+    res.write(`</div>${FOOTER}`);
 
     res.write('<script>(function() { Board.init() })()</script>');
 
@@ -642,13 +654,16 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     if (!posts) {
         res.write(title({ board: p.board, body: { title: 'Post not found...' } }));
+        res.write(`<div id="wrap">`);
         res.write(header(p.board, p.thread));
         res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
+        res.write(`</div>${FOOTER}`);
 
         return res.end();
     }
 
     res.write(title(posts[ 0 ]));
+    res.write(`<div id="wrap">`);
     res.write(header(p.board, p.thread));
     res.write(`<h1>Board: /${p.board}/</h1>`);
     res.write(`<h1>Thread: ${posts[ 0 ].body.title || posts[ 0 ].body.content.substr(0, 150) || 'No title'}</h1>`);
@@ -658,6 +673,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
             res.write(resource(post, req.query));
     });
 
+    res.write(`</div>${FOOTER}`);
     res.write(GoogleAnalytics);
     res.end();
 });
