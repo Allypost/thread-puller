@@ -479,6 +479,7 @@ const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p
 const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
 const getImageLocalUrl = (board, filename) => `${process.env.THREADPULLER_DOMAIN_CACHE}/i/${board}/${filename}`;
 const getImageLocalThumbUrl = (board, resourceID) => getImageLocalUrl(board, resourceID + 's.jpg');
+const getResourceUrl = (post) => (getFileType(post.file.extension) === 'video' ? getFileUrl : getImageLocalUrl).apply(this, [ post.board, post.file.filename ]);
 const getImageThumbUrl = (board, resourceID) => getFileUrl(board, resourceID + 's.jpg');
 const getYlylPosts = async (board) => [].concat(
     ...(await getThreads(board) || [])
@@ -567,7 +568,7 @@ Router.get('/:board/', async (req, res) => {
                      <section class="content ${!post.body.content ? 'no-content' : ''}">${
                     post.file
                         ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
-                               <img data-src-full="${getImageLocalUrl(board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
+                               <img data-src-full="${getResourceUrl(post)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
                            </section>`
                         : ''
                     }<section class="description">${post.body.content}</section>
@@ -613,7 +614,7 @@ Router.get('/:board/ylyl/', async (req, res) => {
                      <section class="content ${!post.body.content ? 'no-content' : ''}">${
                     post.file
                         ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
-                               <img data-src-full="${getImageLocalUrl(post.board, post.file.filename)}" data-src-thumb="${getImageLocalThumbUrl(post.board, post.file.id)}" src="${getImageLocalThumbUrl(post.board, post.file.id)}" alt="${post.file.name}">
+                               <img data-src-full="${getResourceUrl(post)}" data-src-thumb="${getImageLocalThumbUrl(post.board, post.file.id)}" src="${getImageLocalThumbUrl(post.board, post.file.id)}" alt="${post.file.name}">
                            </section>`
                         : ''
                     }<section class="description">${post.body.content}</section>
