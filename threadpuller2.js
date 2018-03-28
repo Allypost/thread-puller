@@ -454,17 +454,16 @@ const getFileType = (extension) => {
 const resource = (post, params) => {
     const postUrl = getPostUrl(post.board, post.thread, post.id);
 
-    // noinspection PointlessBooleanExpressionJS
-    const opts = {
-        autoplay: !!params.autoplay,
-        loop: typeof params.loop !== typeof undefined
-              && params.loop !== 'false'
-              && params.loop !== 'no'
-              && +params.loop !== 0,
-        volume: typeof params.volume !== typeof undefined
-            ? +params.volume
-            : 50,
-    };
+    const autoplay = !!params.autoplay;
+    const loop = autoplay || typeof params.loop !== typeof undefined
+                 && params.loop !== 'false'
+                 && params.loop !== 'no'
+                 && +params.loop !== 0;
+    const volume = typeof params.volume !== typeof undefined
+        ? +params.volume
+        : 50;
+
+    const opts = { autoplay, loop, volume };
 
 
     const res = getFileType(post.file.extension) === 'image'
