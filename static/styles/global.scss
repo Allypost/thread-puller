@@ -29,6 +29,17 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
+
+    > footer {
+        flex-shrink: 0;
+        margin-top: 2em;
+        padding: 10px 0;
+        text-align: center;
+        background: darken($background-color, 5%);
+
+        @include no-select();
+    }
+
 }
 
 h1 {
@@ -54,14 +65,4 @@ video, img {
 
 #wrap {
     flex: 1 0 auto;
-}
-
-> footer {
-    flex-shrink: 0;
-    margin-top: 2em;
-    padding: 10px 0;
-    text-align: center;
-    background: darken($background-color, 5%);
-
-    @include no-select();
 }
