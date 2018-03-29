@@ -33,6 +33,8 @@ a {
     $content-background-color: darken($board-background-color, 40%);
     $meta-background-color: lighten($content-background-color, 15%);
 
+    @extend %card-shadow;
+
     display: inline-block;
     vertical-align: middle;
     font-size: 1.4em;

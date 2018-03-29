@@ -1,6 +1,8 @@
 @import "modules/include";
 
 .board {
+    @extend %card-shadow;
+
     display: inline-block;
     vertical-align: middle;
     font-size: 1.4em;
