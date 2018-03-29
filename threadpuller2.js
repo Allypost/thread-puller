@@ -590,7 +590,7 @@ Router.get('/:board/', async (req, res) => {
                         : ''
                     }<section class="description">${post.body.content}</section>
                      </section>
-                     <footer class="meta">${post.meta.images} images | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a></footer>
+                     <footer class="meta">${post.meta.images} images<!-- | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
                  </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
             )//
     );
