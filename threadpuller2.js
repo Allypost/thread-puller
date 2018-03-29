@@ -462,9 +462,7 @@ const getFileType = (extension) => {
     }
 };
 
-const resource = (post, params) => {
-    const postUrl = getPostUrl(post.board, post.thread, post.id);
-
+const getOpts = (params) => {
     const autoplay = !!params.autoplay;
     const loop = autoplay || typeof params.loop !== typeof undefined
                  && params.loop !== 'false'
@@ -474,9 +472,12 @@ const resource = (post, params) => {
         ? +params.volume
         : 50;
 
-    const opts = { autoplay, loop, volume };
+    return { autoplay, loop, volume };
+};
 
-
+const resource = (post, params) => {
+    const opts = getOpts(params);
+    const postUrl = getPostUrl(post.board, post.thread, post.id);
     const res = getFileType(post.file.extension) === 'image'
         ? img
         : vid;
