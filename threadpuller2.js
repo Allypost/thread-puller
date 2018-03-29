@@ -453,7 +453,7 @@ const a = (url, name, newTab) => {
 };
 const title = (post) => `<title>/${post.board}/ - ${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
 const meta = () => `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
-const header = (thread, num) => `<h1><a href="/${thread}/">Back</a> | <a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
+const header = (thread, num) => `<h1 class="no-select"><a href="/${thread}/">Back</a> | <a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
 
 const getFileType = (extension) => {
     switch (extension) {
@@ -546,7 +546,7 @@ Router.get('/', async (req, res) => {
     styles.filter((_, i) => i > 0).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     res.write(`<div id="wrap">`);
-    res.write(`<h1>ThreadPuller - Pull 4chan image threads</h1>`);
+    res.write(`<h1 class="no-select">ThreadPuller - Pull 4chan image threads</h1>`);
 
     (await getBoards())
         .boards
@@ -592,8 +592,8 @@ Router.get('/:board/', async (req, res) => {
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
 
     res.write(`<div id="wrap">`);
-    res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
-    res.write(`<h1>Board: /${board}/</h1>`);
+    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(`<h1 class="no-select">Board: /${board}/</h1>`);
 
     [].concat(
         ...rawBoardPosts.map(page => page.threads)
@@ -640,15 +640,15 @@ Router.get('/:board/ylyl/', async (req, res) => {
         res.write(`<title>/${board}/ylyl/ - No laughs found</title>`);
         res.write(`<div id="wrap">`);
         res.write(`<h1><a href="/">Back</a></h1>`);
-        res.write(`<h1>Can't find any ylyl posts in /${board}/</h1>`);
+        res.write(`<h1 class="no-select">Can't find any ylyl posts in /${board}/</h1>`);
         res.write(`</div>${FOOTER}`);
         return res.end();
     }
 
     res.write(`<title>/${board}/ylyl/ - ThreadPuller</title>`);
     res.write(`<div id="wrap">`);
-    res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
-    res.write(`<h1>Meta Board: /${board}/ylyl/</h1>`);
+    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(`<h1 class="no-select">Meta Board: /${board}/ylyl/</h1>`);
 
     posts.forEach(
         post =>
@@ -691,7 +691,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
         res.write(title({ board: p.board, body: { title: 'Post not found...' } }));
         res.write(`<div id="wrap">`);
         res.write(header(p.board, p.thread));
-        res.write(`<h1>There are no posts here...<br>Please try again later</h1>`);
+        res.write(`<h1 class="no-select">There are no posts here...<br>Please try again later</h1>`);
         res.write(`</div>${FOOTER}`);
 
         return res.end();
@@ -700,8 +700,8 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.write(title(posts[ 0 ]));
     res.write(`<div id="wrap">`);
     res.write(header(p.board, p.thread));
-    res.write(`<h1>Board: /${p.board}/</h1>`);
-    res.write(`<h1>Thread: ${posts[ 0 ].body.title || posts[ 0 ].body.content.substr(0, 150) || 'No title'}</h1>`);
+    res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
+    res.write(`<h1 class="no-select">Thread: ${posts[ 0 ].body.title || posts[ 0 ].body.content.substr(0, 150) || 'No title'}</h1>`);
 
     posts.forEach(post => {
         if (post.file)

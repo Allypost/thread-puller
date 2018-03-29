@@ -66,3 +66,7 @@ video, img {
 #wrap {
     flex: 1 0 auto;
 }
+
+.no-select {
+    @include no-select();
+}
