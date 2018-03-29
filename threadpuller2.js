@@ -718,16 +718,6 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
         .end();
 });
 
-Router.get('/test/:board/thread/:thread', async (req, res) => {
-    const p = Object.entries(req.params)
-                    .map(([ key, value ]) => [ key, htmlentities(value) ])
-                    .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
-
-    const normal = await getPosts(p.board, p.thread);
-
-    res.json(normal);
-});
-
 app.use(Router);
 
 info('Server starting...');
