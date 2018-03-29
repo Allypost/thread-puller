@@ -29,6 +29,10 @@ a {
 }
 
 .board {
+    $board-background-color: #9e9e9e;
+    $content-background-color: darken($board-background-color, 40%);
+    $meta-background-color: lighten($content-background-color, 15%);
+
     display: inline-block;
     vertical-align: middle;
     font-size: 1.4em;
@@ -36,7 +40,7 @@ a {
     margin: .5em;
     padding: .5em;
     border-radius: 4px;
-    background-color: #9e9e9e;
+    background-color: $board-background-color;
 
     &.long {
 
@@ -84,9 +88,9 @@ a {
 
         min-height: $maxTextHeight;
         overflow: hidden;
-        border-radius: 6px;
+        border-radius: 6px 6px 0 0;
         color: #ffffff;
-        background-color: #424242;
+        background-color: $content-background-color;
 
         %extended-description {
             max-height: none;
@@ -151,7 +155,7 @@ a {
                 height: 2em;
                 left: 0;
                 top: calc(#{$maxTextHeight} - 1em);
-                background-image: linear-gradient(to bottom, transparent, #424242 75%);
+                background-image: linear-gradient(to bottom, transparent, #{$content-background-color} 75%);
             }
 
             &.extended {
@@ -164,6 +168,15 @@ a {
 
         }
 
+    }
+
+    .meta {
+        font-size: .8em;
+        padding: .2em 0;
+        border-radius: 0 0 6px 6px;
+        background-color: $meta-background-color;
+
+        @include no-select();
     }
 
 }

@@ -403,6 +403,17 @@ const normalizePost = (board, post) => {
             md5: post.mp5,
         };
 
+    Object.entries({ replies: post.replies, images: post.images })
+          .forEach(([ key, value ]) => {
+              if (!value)
+                  return;
+
+              if (!newPost[ 'meta' ])
+                  newPost[ 'meta' ] = {};
+
+              newPost[ 'meta' ][ key ] = value;
+          });
+
     return newPost;
 };
 const normalizePosts = (board, posts) => posts.map(post => normalizePost(board, post));
@@ -579,6 +590,7 @@ Router.get('/:board/', async (req, res) => {
                         : ''
                     }<section class="description">${post.body.content}</section>
                      </section>
+                     <footer class="meta">${post.meta.images} images | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a></footer>
                  </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
             )//
     );
@@ -704,6 +716,16 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
         })
         .on('error', e => Raven.captureException(e))
         .end();
+});
+
+Router.get('/test/:board/thread/:thread', async (req, res) => {
+    const p = Object.entries(req.params)
+                    .map(([ key, value ]) => [ key, htmlentities(value) ])
+                    .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
+
+    const normal = await getPosts(p.board, p.thread);
+
+    res.json(normal);
 });
 
 app.use(Router);
