@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const bluebird = require('bluebird');
 const redisCLI = require('redis');
 const Entities = new (require('html-entities').AllHtmlEntities);
+const cookieParser = require('cookie-parser');
 
 bluebird.promisifyAll(redisCLI.RedisClient.prototype);
 bluebird.promisifyAll(redisCLI.Multi.prototype);
@@ -53,6 +54,7 @@ const htmlentities = Entities.encode;
 const app = express();
 const Router = express.Router();
 
+Router.use(cookieParser());
 Router.use(helmet());
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
@@ -76,6 +78,9 @@ const styles = [
 const scripts = [
     {
         link: `/js/Board.min.js`,
+    },
+    {
+        href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
     },
     {
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify.min.js`,
@@ -462,7 +467,25 @@ const getFileType = (extension) => {
     }
 };
 
-const getOpts = (params) => {
+const getOpts = (params, cookies) => {
+    const cookieSettingsKeys = [ 'autoplay', 'volume', 'loop' ];
+    const cookieSettings = {};
+
+    try {
+        const rawSettings = cookies[ 'thread_puller_settings' ];
+
+        Object.assign(cookieSettings, JSON.parse(rawSettings));
+    } catch (e) {
+    }
+
+    // Override unset url params from settings
+    cookieSettingsKeys.forEach(setting => {
+        if (typeof cookieSettings[ setting ] === typeof undefined)
+            return;
+
+        params[ setting ] = typeof params[ setting ] === typeof undefined ? cookieSettings[ setting ] : params[ setting ];
+    });
+
     const autoplay = !!params.autoplay;
     const loop = autoplay || typeof params.loop !== typeof undefined
                  && params.loop !== 'false'
@@ -475,8 +498,8 @@ const getOpts = (params) => {
     return { autoplay, loop, volume };
 };
 
-const resource = (post, params) => {
-    const opts = getOpts(params);
+const resource = (post, params, cookies) => {
+    const opts = getOpts(params, cookies);
     const postUrl = getPostUrl(post.board, post.thread, post.id);
     const res = getFileType(post.file.extension) === 'image'
         ? img
@@ -682,7 +705,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     posts.forEach(post => {
         if (post.file)
-            res.write(resource(post, req.query));
+            res.write(resource(post, req.query, req.cookies));
     });
 
     res.write(`</div>${FOOTER}`);
