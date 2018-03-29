@@ -85,7 +85,7 @@ const scripts = [
     },
 ];
 
-const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | <a href="https://paypal.me/allypost" target="_blank" rel="noopener noreferrer">Donate to keep it going</a></footer>`;
+const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | All content is courtesy of <a href="https://www.4chan.org" target="_blank" rel="noopener noreferrer">4chan</a> | <a href="https://paypal.me/allypost" target="_blank" rel="noopener noreferrer">Donate to keep it going</a></footer>`;
 
 const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.THREADPULLER_GA_KEY}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.THREADPULLER_GA_KEY}');</script>`;
 
