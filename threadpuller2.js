@@ -447,13 +447,13 @@ const img = (post) => {
     return `<img src="${altUrl}" data-master-src="${mainURL}" ${load} onload="if(this.src !== this.dataset.masterSrc) { this.src = this.dataset.masterSrc }">`;
 };
 const a = (url, name, newTab) => {
-    const newT = newTab ? `target="_blank"` : '';
+    const newT = newTab ? `target="_blank" rel="noopener noreferrer"` : '';
 
     return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
 };
 const title = (post) => `<title>/${post.board}/ - ${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
 const meta = () => `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
-const header = (thread, num) => `<h1 class="no-select"><a href="/${thread}/">Back</a> | <a href="${getThreadUrl(thread, num)}" target="_blank">Go to thread</a></h1>`;
+const header = (thread, num) => `<h1 class="no-select"><a href="/${thread}/">Back</a> | <a href="${getThreadUrl(thread, num)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`;
 
 const getFileType = (extension) => {
     switch (extension) {
@@ -583,7 +583,7 @@ Router.get('/:board/', async (req, res) => {
     if (!rawBoardPosts) {
         res.write(`<title>/404/ - Board Not Found</title>`);
         res.write(`<div id="wrap">`);
-        res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+        res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
         res.write(`<h1>Can't find the board \`${board}\`</h1>`);
         res.write(`</div>${FOOTER}`);
         return res.end();
@@ -592,7 +592,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(`<title>/${board}/ - ThreadPuller</title>`);
 
     res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
     res.write(`<h1 class="no-select">Board: /${board}/</h1>`);
 
     [].concat(
@@ -647,7 +647,7 @@ Router.get('/:board/ylyl/', async (req, res) => {
 
     res.write(`<title>/${board}/ylyl/ - ThreadPuller</title>`);
     res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank">Go to board</a></h1>`);
+    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
     res.write(`<h1 class="no-select">Meta Board: /${board}/ylyl/</h1>`);
 
     posts.forEach(
