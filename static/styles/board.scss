@@ -42,6 +42,18 @@ a {
     border-radius: 4px;
     background-color: $board-background-color;
 
+    @media only screen and (max-width: 1650px) {
+        width: calc(33% - 2em);
+    }
+
+    @media #{$large-and-down} {
+        width: calc(50% - 2em);
+    }
+
+    @media #{$small-and-down} {
+        width: calc(100% - 2em);
+    }
+
     &.long {
 
         .description {
