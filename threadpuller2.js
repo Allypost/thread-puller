@@ -512,7 +512,7 @@ const getThreadUri = (board, thread) => `${board}/thread/${thread}`;
 const getApiUrl = (board, thread) => `https://a.4cdn.org/${getThreadUri(board, thread)}.json`;
 const getThreadUrl = (board, thread) => `https://boards.4chan.org/${getThreadUri(board, thread)}`;
 const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
-const getFileUrl = (board, filename) => `https://i.4cdn.org/${board}/${filename}`;
+const getFileUrl = (board, filename) => `http://i.4cdn.org/${board}/${filename}`;
 const getImageLocalUrl = (board, filename) => `${process.env.THREADPULLER_DOMAIN_CACHE}/i/${board}/${filename}`;
 const getImageLocalThumbUrl = (board, resourceID) => getImageLocalUrl(board, resourceID + 's.jpg');
 const getResourceUrl = (post) => (getFileType(post.file.extension) === 'video' ? getFileUrl : getImageLocalUrl).apply(this, [ post.board, post.file.filename ]);
