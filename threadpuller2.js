@@ -10,6 +10,7 @@ const bluebird = require('bluebird');
 const redisCLI = require('redis');
 const Entities = new (require('html-entities').AllHtmlEntities);
 const cookieParser = require('cookie-parser');
+const URL = require('url');
 
 bluebird.promisifyAll(redisCLI.RedisClient.prototype);
 bluebird.promisifyAll(redisCLI.Multi.prototype);
@@ -715,6 +716,17 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
 Router.get('/i/:board/:resource.:ext', (req, res) => {
     const p = req.params;
+
+    const referrer = (req.headers || {})[ 'referer' ] || '';
+    const parsedReferrer = URL.parse(referrer);
+
+    const threadPullerDomain = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
+
+    if (!parsedReferrer || parsedReferrer[ 'host' ] !== threadPullerDomain[ 'host' ]) {
+        console.log('|> Invalid request from:', (referrer || 'undefined').toString());
+        res.status(403);
+        return res.end();
+    }
 
     const options = {
         'host': 'i.4cdn.org',
