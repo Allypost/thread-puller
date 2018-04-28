@@ -724,8 +724,12 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
     const threadPullerDomain = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
 
     if (!parsedReferrer || parsedReferrer[ 'host' ] !== threadPullerDomain[ 'host' ]) {
-        if (redis)
-            redis.setAsync(`invalid-request:${UUID()}`, JSON.stringify({ referrer, headers: req.headers }), 'EX', 60 * 60 * 24);
+        if (redis) {
+            const data = JSON.stringify({ referrer, headers: req.headers });
+            redis.setAsync(`invalid-request:${UUID()}`, data, 'EX', 60 * 60 * 24);
+            redis.publish('invalid-request', data);
+        }
+
         res.status(403);
         return res.end();
     }
