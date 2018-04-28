@@ -52,12 +52,35 @@ const redis = !+process.env.THREADPULLER_IGNORE_REDIS_CACHE
     : null;
 
 const htmlentities = Entities.encode;
+const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
+const cacheUrl = URL.parse(process.env.THREADPULLER_DOMAIN_CACHE);
 
 const app = express();
 const Router = express.Router();
 
 Router.use(cookieParser());
 Router.use(helmet());
+
+
+Router.use((req, res, next) => {
+    const isImage = String(req.url).substr(0, 3) === '/i/';
+
+    if (siteUrl[ 'hostname' ] === req.hostname) {
+        if (isImage)
+            return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_CACHE}${req.url}`);
+
+        return next();
+    }
+
+    if (cacheUrl[ 'hostname' ] === req.hostname) {
+        if (!isImage)
+            return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_MAIN}${req.url}`);
+
+        return next();
+    }
+
+    return res.status(403).send('Something went horribly wrong...');
+});
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
