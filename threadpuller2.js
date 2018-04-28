@@ -22,34 +22,34 @@ require('dotenv-safe').load(
     });
 
 const redis = !+process.env.THREADPULLER_IGNORE_REDIS_CACHE
-    ? redisCLI.createClient({
-                                password: process.env.REDIS_PASSWORD,
-                                prefix: 'ThreadPuller:',
-                                db: process.env.REDIS_DB,
-                                retry_strategy(options) {
-                                    if (options.error && options.error.code === 'ECONNREFUSED') {
-                                        // End reconnecting on a specific error and flush all commands with a individual error
-                                        console.log('|> ERR', options.error);
-                                        return new Error('The server refused the connection');
-                                    }
+              ? redisCLI.createClient({
+                                          password: process.env.REDIS_PASSWORD,
+                                          prefix: 'ThreadPuller:',
+                                          db: process.env.REDIS_DB,
+                                          retry_strategy(options) {
+                                              if (options.error && options.error.code === 'ECONNREFUSED') {
+                                                  // End reconnecting on a specific error and flush all commands with a individual error
+                                                  console.log('|> ERR', options.error);
+                                                  return new Error('The server refused the connection');
+                                              }
 
-                                    if (options.total_retry_time > 1000 * 60 * 60) {
-                                        // End reconnecting after a specific timeout and flush all commands with a individual error
-                                        const err = new Error('Retry time exhausted');
-                                        console.log('|> ERR', err);
+                                              if (options.total_retry_time > 1000 * 60 * 60) {
+                                                  // End reconnecting after a specific timeout and flush all commands with a individual error
+                                                  const err = new Error('Retry time exhausted');
+                                                  console.log('|> ERR', err);
 
-                                        return err;
-                                    }
+                                                  return err;
+                                              }
 
-                                    if (options.attempt > 10)
-                                    // End reconnecting with built in error
-                                        return undefined;
+                                              if (options.attempt > 10)
+                                              // End reconnecting with built in error
+                                                  return undefined;
 
-                                    // reconnect after
-                                    return Math.min(options.attempt * 100, 3000);
-                                },
-                            })
-    : null;
+                                              // reconnect after
+                                              return Math.min(options.attempt * 100, 3000);
+                                          },
+                                      })
+              : null;
 
 const htmlentities = Entities.encode;
 const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
@@ -517,8 +517,8 @@ const getOpts = (params, cookies) => {
                  && params.loop !== 'no'
                  && +params.loop !== 0;
     const volume = typeof params.volume !== typeof undefined
-        ? +params.volume
-        : 50;
+                   ? +params.volume
+                   : 50;
 
     return { autoplay, loop, volume };
 };
@@ -527,8 +527,8 @@ const resource = (post, params, cookies) => {
     const opts = getOpts(params, cookies);
     const postUrl = getPostUrl(post.board, post.thread, post.id);
     const res = getFileType(post.file.extension) === 'image'
-        ? img
-        : vid;
+                ? img
+                : vid;
 
     return a(postUrl, res(post, opts), true);
 };
@@ -555,9 +555,9 @@ const getYlylPosts = async (board) => [].concat(
                             ||
                             (thread.com || '')
                                 .toLowerCase()
-                                .includes('ylyl')//
-                    )//
-        )//
+                                .includes('ylyl'),
+                    ),
+        ),
 );
 
 Router.use('/', express.static(path.join(__dirname, 'public')));
@@ -623,7 +623,7 @@ Router.get('/:board/', async (req, res) => {
     [].concat(
         ...rawBoardPosts.map(page => page.threads)
                         .map(threads => threads.filter(thread => thread.images))
-                        .map(threads => normalizePosts(board, threads))//
+                        .map(threads => normalizePosts(board, threads)),
     ).forEach(
         post =>
             res.write(
@@ -633,15 +633,15 @@ Router.get('/:board/', async (req, res) => {
                      </header>
                      <section class="content ${!post.body.content ? 'no-content' : ''}">${
                     post.file
-                        ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
+                    ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
                                <img data-src-full="${getResourceUrl(post)}" data-src-thumb="${getImageLocalThumbUrl(board, post.file.id)}" src="${getImageLocalThumbUrl(board, post.file.id)}" alt="${post.file.name}">
                            </section>`
-                        : ''
+                    : ''
                     }<section class="description">${post.body.content}</section>
                      </section>
                      <footer class="meta">${post.meta.images} images<!-- | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
-                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
-            )//
+                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><'),
+            ),
     );
     res.write(`</div>${FOOTER}`);
 
@@ -684,14 +684,14 @@ Router.get('/:board/ylyl/', async (req, res) => {
                      </header>
                      <section class="content ${!post.body.content ? 'no-content' : ''}">${
                     post.file
-                        ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
+                    ? `<section class="post-image-container" data-is-video="${(getFileType(post.file.extension) === 'video') ? '1' : '0'}">
                                <img data-src-full="${getResourceUrl(post)}" data-src-thumb="${getImageLocalThumbUrl(post.board, post.file.id)}" src="${getImageLocalThumbUrl(post.board, post.file.id)}" alt="${post.file.name}">
                            </section>`
-                        : ''
+                    : ''
                     }<section class="description">${post.body.content}</section>
                      </section>
-                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')//
-            )//
+                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><'),
+            ),
     );
     res.write(`</div>${FOOTER}`);
 
