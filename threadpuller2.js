@@ -11,6 +11,7 @@ const redisCLI = require('redis');
 const Entities = new (require('html-entities').AllHtmlEntities);
 const cookieParser = require('cookie-parser');
 const URL = require('url');
+const UUID = require('uuid/v1');
 
 bluebird.promisifyAll(redisCLI.RedisClient.prototype);
 bluebird.promisifyAll(redisCLI.Multi.prototype);
@@ -723,7 +724,8 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
     const threadPullerDomain = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
 
     if (!parsedReferrer || parsedReferrer[ 'host' ] !== threadPullerDomain[ 'host' ]) {
-        console.log('|> Invalid request from:', (referrer || 'undefined').toString());
+        if (redis)
+            redis.setAsync(`invalid-request:${UUID()}`, JSON.stringify({ referrer, headers: req.headers }), 'EX', 60 * 60 * 24);
         res.status(403);
         return res.end();
     }
