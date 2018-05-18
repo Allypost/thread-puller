@@ -101,6 +101,10 @@ const styles = [
         name: 'index',
         link: `/css/index.min.css`,
     },
+    {
+        name: 'thread',
+        link: `/css/thread.min.css`,
+    },
 ];
 
 const scripts = [
@@ -182,6 +186,13 @@ const getResourceWatcher = (resourceList) => {
 
 styles.forEach(getResourceWatcher(styles));
 scripts.forEach(getResourceWatcher(scripts));
+
+const getAssets = (assetList, ...assetNames) => {
+    const assetNamesFlattened = assetNames.reduce((acc, val) => acc.concat(val), []);
+
+    return assetList.filter(asset => assetNamesFlattened.includes(asset.name))
+                    .map(asset => ({ link: asset.link, tag: asset.tag }));
+};
 
 const getLiveBoards = async () => new Promise(resolve => {
     const options = {
@@ -575,7 +586,7 @@ Router.get('/', async (req, res) => {
 
     res.write('<title>ThreadPuller</title>');
 
-    styles.filter((_, i) => i > 0).forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+    getAssets(styles, 'global', 'index').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     res.write(`<div id="wrap">`);
     res.write(`<h1 class="no-select">ThreadPuller - Pull 4chan image threads</h1>`);
@@ -609,8 +620,8 @@ Router.get('/:board/', async (req, res) => {
     res.type('html');
     res.write(meta());
 
-    styles.filter((_, i) => i < 2).forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!rawBoardPosts) {
         res.write(`<title>/404/ - Board Not Found</title>`);
@@ -665,8 +676,8 @@ Router.get('/:board/ylyl/', async (req, res) => {
     res.type('html');
     res.write(meta());
 
-    styles.filter((_, i) => i < 2).forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    scripts.forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
+    getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts.length) {
         res.write(`<title>/${board}/ylyl/ - No laughs found</title>`);
@@ -717,7 +728,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     res.type('html');
     res.write(meta());
-    styles.forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+    getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     if (!posts) {
         res.write(title({ board: p.board, body: { title: 'Post not found...' } }));
