@@ -90,27 +90,34 @@ const info = (...arguments) => console.log.apply(this, [ dater(), '|', ...argume
 
 const styles = [
     {
+        name: 'board',
         link: `/css/board.min.css`,
     },
     {
+        name: 'global',
         link: `/css/global.min.css`,
     },
     {
+        name: 'index',
         link: `/css/index.min.css`,
     },
 ];
 
 const scripts = [
     {
+        name: 'board',
         link: `/js/Board.min.js`,
     },
     {
+        name: 'cookie',
         href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
     },
     {
+        name: 'linkify',
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify.min.js`,
     },
     {
+        name: 'linkify',
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify-html.min.js`,
     },
 ];
