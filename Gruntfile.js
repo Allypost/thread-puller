@@ -23,6 +23,7 @@ module.exports = grunt => {
         'public/css/global.min.css': 'static/styles/global.scss',
         'public/css/index.min.css': 'static/styles/index.scss',
         'public/css/board.min.css': 'static/styles/board.scss',
+        'public/css/thread.min.css': 'static/styles/thread.scss',
     };
 
     const gruntConfig = {

@@ -2,26 +2,6 @@
 
 a {
 
-    &.resource {
-        width: calc(25% - 2em);
-        margin: .4vw;
-        border-radius: 8px;
-        overflow: hidden;
-
-        @media only screen and (max-width: 1650px) {
-            width: calc(33% - 2em);
-        }
-
-        @media #{$large-and-down} {
-            width: calc(50% - 2em);
-        }
-
-        @media #{$small-and-down} {
-            width: calc(100% - 2em);
-        }
-
-    }
-
     &.linkified {
         display: inline;
     }
