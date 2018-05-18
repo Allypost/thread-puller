@@ -12,19 +12,19 @@
     "cookie-parser": "^1.4.3",
     "dotenv-safe": "^5.0.1",
     "express": "^4.16.3",
-    "helmet": "^3.12.0",
+    "helmet": "^3.12.1",
     "html-entities": "^1.2.1",
     "mkdirp": "^0.5.1",
-    "raven": "^2.6.0",
+    "raven": "^2.6.2",
     "redis": "^2.8.0",
-    "request": "^2.85.0",
+    "request": "^2.86.0",
     "uuid": "^3.2.1",
     "winston": "^3.0.0-rc5"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel-cli": "^6.24.0",
-    "babel-preset-env": "^1.2.2",
+    "babel-preset-env": "^1.7.0",
     "cssnano": "^3.10.0",
     "google-closure-compiler": "^20171203.0.0",
     "grunt": "^1.0.1",
@@ -32,7 +32,7 @@
     "grunt-contrib-imagemin": "^2.0.1",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-sass": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.1",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-google-closure-tools-compiler": "^0.1.7",
     "grunt-javascript-obfuscator": "^1.1.0",
     "grunt-postcss": "^0.8.0",
@@ -40,7 +40,7 @@
     "javascript-obfuscator": "^0.9.4",
     "pixrem": "^3.0.2",
     "postcss-font-magician": "^2.1.1",
-    "snyk": "^1.74.0"
+    "snyk": "^1.80.1"
   },
   "scripts": {
     "test": "snyk test",
