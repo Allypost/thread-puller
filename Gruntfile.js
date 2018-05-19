@@ -4,7 +4,6 @@ module.exports = grunt => {
             allowEmptyValues: true,
         });
 
-    const fs = require('fs');
     const domainLock = [ '.thread-puller.tk' ];
 
     /**
@@ -49,7 +48,7 @@ module.exports = grunt => {
                 files: {},
             },
         },
-        closurecompiler: {},
+        'closure-compiler': {},
         javascript_obfuscator: {
             options: {
                 debugProtection: true,
@@ -86,7 +85,7 @@ module.exports = grunt => {
                             removeViewBox: false,
                         },
                     ],
-                    use: [] // Example plugin usage
+                    use: [],
                 },
             },
             dynamic: {
@@ -107,32 +106,34 @@ module.exports = grunt => {
             //domainLock,
         };
 
-    Object.keys(JsFileList).forEach(final => {
-        const name = final.substring(10, final.length - 7);
-        const jsFiles = JsFileList[ final ];
+    Object.entries(JsFileList)
+          .forEach(([ finalName, files ]) => {
+              const compileName = finalName.substring(finalName.lastIndexOf('/') + 1, finalName.length - '.min.js'.length);
 
-        /**
-         * CLOSURE COMPILER SETTINGS
-         */
-        gruntConfig.closurecompiler[ name ] = {
-            'options': {
-                language_out: 'ECMASCRIPT5',
-                create_source_map: false,
-            },
-            files: {
-                [ final ]: jsFiles,
-            },
-        };
+              gruntConfig[ 'closure-compiler' ][ compileName ] = {
+                  files: {
+                      [ finalName ]: files,
+                  },
+                  options: {
+                      compilation_level: 'SIMPLE',
+                      language_in: 'ECMASCRIPT_NEXT',
+                      language_out: 'ECMASCRIPT3',
+                      use_types_for_optimization: false,
+                      rewrite_polyfills: true,
+                  },
+              };
 
-        /**
-         * JAVASCRIPT OBFUSCATOR SETTINGS
-         */
-        gruntConfig.javascript_obfuscator.main.files[ final ] = final;
-    });
+              /**
+               * JAVASCRIPT OBFUSCATOR SETTINGS
+               */
+              gruntConfig.javascript_obfuscator.main.files[ finalName ] = finalName;
+          });
 
     Object.keys(CssFileList).forEach(final => {
         gruntConfig.postcss.dist.files[ final ] = final;
     });
+
+    require('google-closure-compiler').grunt(grunt);
 
     grunt.initConfig(gruntConfig);
 
@@ -140,36 +141,46 @@ module.exports = grunt => {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-javascript-obfuscator');
     grunt.loadNpmTasks('grunt-postcss');
-    grunt.loadNpmTasks('grunt-google-closure-tools-compiler');
     grunt.loadNpmTasks('grunt-contrib-imagemin');
 
-    grunt.task.registerTask('cleanup', 'Clean up after tasks', function () {
-        let test = 0;
+    grunt.registerMultiTask('closure-compiler-manual', 'Closure compiler alternative that uses raw system calls for compilation', async function () {
+        const chalk = require('chalk');
+        const exec = require('util').promisify(require('child_process').exec);
+        const resolve = require('path').resolve;
 
         const done = this.async();
-        const deleteFiles = Object.keys(JsFileList)
-                                  .map(el => el + '.map');
+        const compilerPath = resolve(require('google-closure-compiler').compiler.COMPILER_PATH);
 
-        if (deleteFiles.length === 0)
-            return done(true);
+        const files = this.files.pop();
 
-        for (let i = 0; i < deleteFiles.length; i++) {
-            test ^= i + 1;
+        const outName = resolve(files.dest);
+        const inNames = files.src
+                             .map(name => resolve(name))
+                             .join('" "');
 
-            fs.unlink(deleteFiles[ i ], (err) => {
-                if (err && err.code !== 'ENOENT')
-                    grunt.log.error('Failed deleting ' + deleteFiles[ i ] + '\t|\t' + err);
-                else
-                    grunt.log.writeln('Deleted ' + deleteFiles[ i ]);
+        const optionsObject = Object.assign({}, this.options(), { js_output_file: outName });
+        const options = Object.entries(optionsObject)
+                              .map(([ name, value ]) => `--${name}="${value}"`)
+                              .join(' ');
 
-                test ^= i + 1;
+        try {
+            const { stdout, stderr } = await exec(`java -jar "${compilerPath}" ${options} "${inNames}"`);
 
-                if (test === 0)
-                    done(true);
-            });
+            if (stdout)
+                grunt.log.writeln(stdout.trim().replace(/^(.*)$/gm, (_, line) => `${chalk.green('>>')} ${line}`));
+            if (stderr)
+                grunt.log.writeln(stderr.trim().replace(/^(.*)$/gm, (_, line) => `${chalk.red('>>')} ${line}`));
+
+            grunt.log.writeln(`${chalk.green('>>')} ${chalk.cyan(files.dest)} created`);
+        } catch (e) {
+            const stderr = e.toString();
+            grunt.log.writeln(stderr.trim().replace(/^(.*)$/gm, (_, line) => `${chalk.red('>>')} ${line}`));
+            grunt.log.writeln(`${chalk.red('>>')} ${chalk.cyan(files.dest)} ${chalk.bold('not')} created`);
         }
+
+        done();
     });
 
-    //grunt.registerTask('default', [ 'sass', 'postcss', 'closurecompiler', 'javascript_obfuscator', 'cleanup', 'imagemin' ]);
-    grunt.registerTask('default', [ 'sass', 'postcss', 'closurecompiler', 'cleanup', 'imagemin' ]);
+    //grunt.registerTask('default', [ 'sass', 'postcss', 'closure-compiler', 'javascript_obfuscator', 'imagemin' ]);
+    grunt.registerTask('default', [ 'sass', 'postcss', 'closure-compiler', 'imagemin' ]);
 };
