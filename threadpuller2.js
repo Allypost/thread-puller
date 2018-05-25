@@ -97,6 +97,7 @@ const scripts = [
 ];
 
 const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | All content is courtesy of <a href="https://www.4chan.org" target="_blank" rel="noopener noreferrer">4chan</a> | <a href="https://paypal.me/allypost" target="_blank" rel="noopener noreferrer">Donate to keep it going</a></footer>`;
+const META = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
 // noinspection JSUnresolvedVariable
 const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.THREADPULLER_GA_KEY}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.THREADPULLER_GA_KEY}');</script>`;
 
@@ -131,7 +132,6 @@ const a = (url, name, newTab) => {
 
     return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
 };
-const meta = () => `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
 
 const getOpts = (params, cookies) => {
     const cookieSettingsKeys = [ 'autoplay', 'volume', 'loop' ];
@@ -181,7 +181,7 @@ Router.use('/', express.static(path.join(__dirname, 'public')));
 
 Router.get('/', async (req, res) => {
     res.type('html');
-    res.write(meta());
+    res.write(META);
 
     res.write('<title>ThreadPuller</title>');
 
@@ -209,7 +209,7 @@ Router.get('/:board/', async (req, res) => {
     const rawBoardPosts = await Threads.get(board);
 
     res.type('html');
-    res.write(meta());
+    res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
     ResourceWatcher.getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
@@ -267,7 +267,7 @@ Router.get('/:board/ylyl/', async (req, res) => {
         );
 
     res.type('html');
-    res.write(meta());
+    res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
     ResourceWatcher.getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
@@ -320,7 +320,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const posts = await Posts.get(p.board, p.thread);
 
     res.type('html');
-    res.write(meta());
+    res.write(META);
     ResourceWatcher.getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     if (!posts) {
