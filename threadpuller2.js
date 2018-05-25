@@ -357,9 +357,7 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
     const referrer = (req.headers || {})[ 'referer' ] || '';
     const parsedReferrer = URL.parse(referrer);
 
-    const threadPullerDomain = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
-
-    if (!parsedReferrer || parsedReferrer[ 'host' ] !== threadPullerDomain[ 'host' ]) {
+    if (!parsedReferrer || parsedReferrer[ 'host' ] !== siteUrl[ 'host' ]) {
         if (redis) {
             const data = JSON.stringify({ referrer, headers: req.headers });
             redis.setAsync(`invalid-request:${UUID()}`, data, 'EX', 60 * 60 * 24);
