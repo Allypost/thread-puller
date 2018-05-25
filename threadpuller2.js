@@ -6,7 +6,6 @@ const Raven = require('raven');
 const Entities = new (require('html-entities').AllHtmlEntities);
 const cookieParser = require('cookie-parser');
 const URL = require('url');
-const UUID = require('uuid/v1');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
 
@@ -357,16 +356,11 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
     const referrer = (req.headers || {})[ 'referer' ] || '';
     const parsedReferrer = URL.parse(referrer);
 
-    if (!parsedReferrer || parsedReferrer[ 'host' ] !== siteUrl[ 'host' ]) {
-        if (redis) {
-            const data = JSON.stringify({ referrer, headers: req.headers });
-            redis.setAsync(`invalid-request:${UUID()}`, data, 'EX', 60 * 60 * 24);
-            redis.publish('invalid-request', data);
-        }
-
-        res.status(403);
-        return res.end();
-    }
+    if (
+        !parsedReferrer
+        || parsedReferrer[ 'host' ] !== siteUrl[ 'host' ]
+    )
+        return res.status(403).end();
 
     const options = {
         'host': 'i.4cdn.org',
