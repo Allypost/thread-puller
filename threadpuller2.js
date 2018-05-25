@@ -104,8 +104,6 @@ const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gta
 ResourceWatcher.watch(styles);
 ResourceWatcher.watch(scripts);
 
-const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
-
 Router.use('/', express.static(path.join(__dirname, 'public')));
 
 Router.get('/', async (req, res) => {
@@ -255,7 +253,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     if (!posts) {
         res.write(`<title>/404/ - Thread Not Found...</title>`);
         res.write(`<div id="wrap">`);
-        res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${getThreadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
+        res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
         res.write(`<h1 class="no-select">There are no posts here...<br>Please try again later</h1>`);
         res.write(`</div>${FOOTER}`);
 
@@ -266,7 +264,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     res.write(`<title>/${firstPost.board}/ - ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</title>`);
     res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${getThreadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
+    res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
     res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
     res.write(`<h1 class="no-select">Thread: ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</h1>`);
 
