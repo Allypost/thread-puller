@@ -131,9 +131,7 @@ const a = (url, name, newTab) => {
 
     return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
 };
-const title = (post) => `<title>/${post.board}/ - ${post.body.title || post.body.content.substr(0, 150) || 'No title'}</title>`;
 const meta = () => `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
-const header = (thread, num) => `<h1 class="no-select"><a href="/${thread}/">Back</a> | <a href="${getThreadUrl(thread, num)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`;
 
 const getOpts = (params, cookies) => {
     const cookieSettingsKeys = [ 'autoplay', 'volume', 'loop' ];
@@ -326,9 +324,9 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     ResourceWatcher.getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
 
     if (!posts) {
-        res.write(title({ board: p.board, body: { title: 'Post not found...' } }));
+        res.write(`<title>/404/ - Thread Not Found...</title>`);
         res.write(`<div id="wrap">`);
-        res.write(header(p.board, p.thread));
+        res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${getThreadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
         res.write(`<h1 class="no-select">There are no posts here...<br>Please try again later</h1>`);
         res.write(`</div>${FOOTER}`);
 
@@ -337,9 +335,9 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     const firstPost = posts[ 0 ];
 
-    res.write(title(firstPost));
+    res.write(`<title>/${firstPost.board}/ - ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</title>`);
     res.write(`<div id="wrap">`);
-    res.write(header(p.board, p.thread));
+    res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${getThreadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
     res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
     res.write(`<h1 class="no-select">Thread: ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</h1>`);
 
