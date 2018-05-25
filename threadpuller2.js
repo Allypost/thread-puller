@@ -7,6 +7,7 @@ const Entities = new (require('html-entities').AllHtmlEntities);
 const cookieParser = require('cookie-parser');
 const URL = require('url');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
+const PostResource = require('./lib/Posts/PostResource');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
 
 require('dotenv-safe').load(
@@ -102,76 +103,6 @@ const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gta
 
 ResourceWatcher.watch(styles);
 ResourceWatcher.watch(scripts);
-
-const vid = (post, opts) => {
-    const url = post.file.meta.fullSrc;
-    const autoplay = opts.autoplay ? ' autoplay muted="true"' : '';
-    const loop = opts.loop ? ' loop' : '';
-    const volume = opts.volume / 100;
-
-    // noinspection JSUnusedGlobalSymbols
-    return `<video controls ${autoplay + loop} onloadstart="this.volume=${volume}" onerror="console.log(this)"><source src="${url}"></video>`;
-};
-const img = (post) => {
-    const mainURL = post.file.meta.fullSrc;
-    const altUrl = post.file.meta.thumbSrc;
-
-    const height = post.file.dimensions.main.height;
-    const width = post.file.dimensions.main.width;
-
-    const ratio = height && width ? height / width : 0;
-
-    const load = ratio !== 0 ? `onloadstart="this.setAttribute('height', this.offsetWidth * ${ratio} + 'px');"` : '';
-
-    //  onerror="if(this.src !== '${altUrl}') { this.src = '${altUrl}' }"
-    return `<img src="${altUrl}" data-master-src="${mainURL}" ${load} onload="if(this.src !== this.dataset.masterSrc) { this.src = this.dataset.masterSrc }">`;
-};
-const a = (url, name, newTab) => {
-    const newT = newTab ? `target="_blank" rel="noopener noreferrer"` : '';
-
-    return `<a href="${url}" class="resource" ${newT}>${name}</a>`;
-};
-
-const getOpts = (params, cookies) => {
-    const cookieSettingsKeys = [ 'autoplay', 'volume', 'loop' ];
-    const cookieSettings = {};
-
-    try {
-        const rawSettings = cookies[ 'thread_puller_settings' ];
-
-        Object.assign(cookieSettings, JSON.parse(rawSettings));
-    } catch (e) {
-    }
-
-    // Override unset url params from settings
-    cookieSettingsKeys.forEach(setting => {
-        if (typeof cookieSettings[ setting ] === typeof undefined)
-            return;
-
-        params[ setting ] = typeof params[ setting ] === typeof undefined ? cookieSettings[ setting ] : params[ setting ];
-    });
-
-    const autoplay = !!params.autoplay;
-    const loop = autoplay || typeof params.loop !== typeof undefined
-                 && params.loop !== 'false'
-                 && params.loop !== 'no'
-                 && +params.loop !== 0;
-    const volume = typeof params.volume !== typeof undefined
-                   ? +params.volume
-                   : 50;
-
-    return { autoplay, loop, volume };
-};
-
-const resource = (post, params, cookies) => {
-    const opts = getOpts(params, cookies);
-    const postUrl = `${getThreadUrl(post.board, post.thread)}#p${post.id}`;
-    const res = post.file.meta.isVideo
-                ? vid
-                : img;
-
-    return a(postUrl, res(post, opts), true);
-};
 
 const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
 
@@ -341,7 +272,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     posts.forEach(post => {
         if (post.file)
-            res.write(resource(post, req.query, req.cookies));
+            res.write(PostResource.get(post, req.query, req.cookies));
     });
 
     res.write(`</div>${FOOTER}`);
