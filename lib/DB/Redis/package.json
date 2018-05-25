@@ -1,0 +1,4 @@
+{
+  "name": "Redis",
+  "main": "Redis.js"
+}
