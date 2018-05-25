@@ -165,7 +165,7 @@ const getOpts = (params, cookies) => {
 
 const resource = (post, params, cookies) => {
     const opts = getOpts(params, cookies);
-    const postUrl = getPostUrl(post.board, post.thread, post.id);
+    const postUrl = `${getThreadUrl(post.board, post.thread)}#p${post.id}`;
     const res = post.file.meta.isVideo
                 ? vid
                 : img;
@@ -174,7 +174,6 @@ const resource = (post, params, cookies) => {
 };
 
 const getThreadUrl = (board, thread) => `https://boards.4chan.org/${board}/thread/${thread}`;
-const getPostUrl = (board, thread, postNum) => `${getThreadUrl(board, thread)}#p${postNum}`;
 
 Router.use('/', express.static(path.join(__dirname, 'public')));
 
