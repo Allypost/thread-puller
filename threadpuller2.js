@@ -335,11 +335,13 @@ Router.get('/:board/thread/:thread', async (req, res) => {
         return res.end();
     }
 
-    res.write(title(posts[ 0 ]));
+    const firstPost = posts[ 0 ];
+
+    res.write(title(firstPost));
     res.write(`<div id="wrap">`);
     res.write(header(p.board, p.thread));
     res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
-    res.write(`<h1 class="no-select">Thread: ${posts[ 0 ].body.title || posts[ 0 ].body.content.substr(0, 150) || 'No title'}</h1>`);
+    res.write(`<h1 class="no-select">Thread: ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</h1>`);
 
     posts.forEach(post => {
         if (post.file)
