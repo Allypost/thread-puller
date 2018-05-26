@@ -183,13 +183,15 @@ Router.get('/:board/', async (req, res) => {
     res.end();
 });
 
-Router.get('/:board/ylyl/', async (req, res) => {
+Router.get('/:board/:query', async (req, res) => {
     const board = htmlentities(req.params.board);
+    const query = String(req.params.query || req.query.q).toLowerCase();
     const posts = (await Threads.get(board) || [])
         .filter(
             post =>
-                [ post.body.title || '', post.body.content || '' ]
-                    .map(text => String(text).toLowerCase().includes('ylyl'))
+                [ post.body.title, post.body.content ]
+                    .map(String)
+                    .map(text => String(text).toLowerCase().includes(query))
                     .includes(true),
         );
 
@@ -200,18 +202,18 @@ Router.get('/:board/ylyl/', async (req, res) => {
     ResourceWatcher.getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts.length) {
-        res.write(`<title>/${board}/ylyl/ - No laughs found</title>`);
+        res.write(`<title>/${board}/${htmlentities(query)}/ - No laughs found</title>`);
         res.write(`<div id="wrap">`);
-        res.write(`<h1><a href="/">Back</a></h1>`);
-        res.write(`<h1 class="no-select">Can't find any ylyl posts in /${board}/</h1>`);
+        res.write(`<h1><a href="/${board}/">Back</a></h1>`);
+        res.write(`<h1 class="no-select">Can't find any \`${htmlentities(query)}\` posts in /${board}/</h1>`);
         res.write(`</div>${FOOTER}`);
         return res.end();
     }
 
-    res.write(`<title>/${board}/ylyl/ - ThreadPuller</title>`);
+    res.write(`<title>/${board}/${htmlentities(query)}/ - ThreadPuller</title>`);
     res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
-    res.write(`<h1 class="no-select">Meta Board: /${board}/ylyl/</h1>`);
+    res.write(`<h1 class="no-select"><a href="/${board}/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
+    res.write(`<h1 class="no-select">Board Search: /${board}/${htmlentities(query)}/</h1>`);
 
     posts.forEach(
         post =>
