@@ -9,6 +9,7 @@ const URL = require('url');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
 const PostResource = require('./lib/Posts/PostResource');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
+const Fuse = require('fuse.js');
 
 require('dotenv-safe').load(
     {
@@ -183,17 +184,32 @@ Router.get('/:board/', async (req, res) => {
     res.end();
 });
 
-Router.get('/:board/:query', async (req, res) => {
+Router.get('/:board/:query([a-zA-Z0-9_]{2,})', async (req, res) => {
     const board = htmlentities(req.params.board);
-    const query = String(req.params.query || req.query.q).toLowerCase();
-    const posts = (await Threads.get(board) || [])
-        .filter(
-            post =>
-                [ post.body.title, post.body.content ]
-                    .map(String)
-                    .map(text => String(text).toLowerCase().includes(query))
-                    .includes(true),
-        );
+    const searchOptions = {
+        caseSensitive: true,
+        shouldSort: true,
+        tokenize: true,
+        threshold: 0.3,
+        location: 0,
+        distance: 20,
+        maxPatternLength: 32,
+        minMatchCharLength: 2,
+        keys: [
+            {
+                name: 'body.title',
+                weight: 0.7,
+            },
+            {
+                name: 'body.content',
+                weight: 0.3,
+            },
+        ],
+    };
+    const rawPosts = await Threads.get(board) || [];
+    const fuse = new Fuse(rawPosts, searchOptions);
+    const query = String(req.params.query || req.query.q || '');
+    const posts = fuse.search(query);
 
     res.type('html');
     res.write(META);
