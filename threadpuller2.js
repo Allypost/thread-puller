@@ -41,6 +41,9 @@ const cacheUrl = URL.parse(process.env.THREADPULLER_DOMAIN_CACHE);
 Router.use((req, res, next) => {
     const isImage = String(req.url).substr(0, 3) === '/i/';
 
+    if (siteUrl[ 'hostname' ] === cacheUrl[ 'hostname' ])
+        return next();
+
     if (siteUrl[ 'hostname' ] === req.hostname) {
         if (isImage)
             return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_CACHE}${req.url}`);
@@ -299,14 +302,14 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 Router.get('/i/:board/:resource.:ext', (req, res) => {
     const p = req.params;
 
-    const referrer = (req.headers || {})[ 'referer' ] || '';
-    const parsedReferrer = URL.parse(referrer);
+    /*const referrer = (req.headers || {})[ 'referer' ] || '';
+     const parsedReferrer = URL.parse(referrer);
 
-    if (
-        !parsedReferrer
-        || parsedReferrer[ 'host' ] !== siteUrl[ 'host' ]
-    )
-        return res.status(403).end();
+     if (
+     !parsedReferrer
+     || parsedReferrer[ 'host' ] !== siteUrl[ 'host' ]
+     )
+     return res.status(403).end();*/
 
     const options = {
         'host': 'i.4cdn.org',
