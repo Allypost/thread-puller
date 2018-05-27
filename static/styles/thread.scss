@@ -7,6 +7,12 @@ a {
         margin: .4vw;
         border-radius: 8px;
         overflow: hidden;
+        transition: filter 250ms #{$transition-smooth};
+        transform: translateZ(0);
+
+        &.loading {
+            filter: blur(6px);
+        }
 
         @media only screen and (max-width: 1650px) {
             width: calc(33% - 2em);
