@@ -61,6 +61,30 @@ Router.use((req, res, next) => {
     return res.status(403).send('Something went horribly wrong...');
 });
 
+Router.use((req, res, next) => {
+    const cookieName = PostResource.settingsCookieName();
+    const cookies = req.cookies;
+    const cookie = cookies[ cookieName ] || {};
+
+    if (req.hostname !== siteUrl.hostname)
+        return next();
+
+    const defaultSettings = {
+        volume: 50,
+        autoplay: false,
+        loop: false,
+    };
+
+    const value = Object.assign({}, defaultSettings, cookie);
+
+    res.cookie(cookieName, value, {
+        domain: `.${siteUrl.hostname}`,
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
+
+    return next();
+});
+
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
 const styles = [
