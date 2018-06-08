@@ -4,6 +4,7 @@ module.exports = grunt => {
             allowEmptyValues: true,
         });
 
+    const URL = require('url');
     const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
     const domainLock = [ `.${siteUrl.hostname}` ];
 
@@ -64,8 +65,8 @@ module.exports = grunt => {
         watch: {
             scripts: {
                 files: [ 'static/**/*.js', '!static/js/*.min.js' ],
-                //tasks: [ 'closurecompiler', 'javascript_obfuscator', 'cleanup' ],
-                tasks: [ 'closure-compiler-manual', 'cleanup' ],
+                //tasks: [ 'closure-compiler-manual', 'javascript_obfuscator' ],
+                tasks: [ 'closure-compiler-manual' ],
                 options: {
                     spawn: true,
                 },
