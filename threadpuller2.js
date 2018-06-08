@@ -70,7 +70,7 @@ Router.use((req, res, next) => {
         return next();
 
     const defaultSettings = {
-        volume: 50,
+        volume: 0,
         autoplay: false,
         loop: false,
     };
