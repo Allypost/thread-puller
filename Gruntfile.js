@@ -4,7 +4,8 @@ module.exports = grunt => {
             allowEmptyValues: true,
         });
 
-    const domainLock = [ '.thread-puller.tk' ];
+    const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
+    const domainLock = [ `.${siteUrl.hostname}` ];
 
     /**
      * List of files to process
@@ -49,6 +50,7 @@ module.exports = grunt => {
             },
         },
         'closure-compiler': {},
+        'closure-compiler-manual': {},
         javascript_obfuscator: {
             options: {
                 debugProtection: true,
@@ -63,7 +65,7 @@ module.exports = grunt => {
             scripts: {
                 files: [ 'static/**/*.js', '!static/js/*.min.js' ],
                 //tasks: [ 'closurecompiler', 'javascript_obfuscator', 'cleanup' ],
-                tasks: [ 'closurecompiler', 'cleanup' ],
+                tasks: [ 'closure-compiler-manual', 'cleanup' ],
                 options: {
                     spawn: true,
                 },
@@ -77,17 +79,6 @@ module.exports = grunt => {
             },
         },
         imagemin: {
-            static: {
-                options: {
-                    optimizationLevel: 4,
-                    svgoPlugins: [
-                        {
-                            removeViewBox: false,
-                        },
-                    ],
-                    use: [],
-                },
-            },
             dynamic: {
                 files: [
                     {
@@ -97,6 +88,16 @@ module.exports = grunt => {
                         dest: 'public/images/',
                     },
                 ],
+                options: {
+                    optimizationLevel: 4,
+                    svgoPlugins: [
+                        {
+                            removeViewBox: false,
+                        },
+                    ],
+                    progressive: true,
+                    interlaced: true,
+                },
             },
         },
     };
@@ -110,7 +111,7 @@ module.exports = grunt => {
           .forEach(([ finalName, files ]) => {
               const compileName = finalName.substring(finalName.lastIndexOf('/') + 1, finalName.length - '.min.js'.length);
 
-              gruntConfig[ 'closure-compiler' ][ compileName ] = {
+              gruntConfig[ 'closure-compiler-manual' ][ compileName ] = {
                   files: {
                       [ finalName ]: files,
                   },
@@ -182,5 +183,5 @@ module.exports = grunt => {
     });
 
     //grunt.registerTask('default', [ 'sass', 'postcss', 'closure-compiler', 'javascript_obfuscator', 'imagemin' ]);
-    grunt.registerTask('default', [ 'sass', 'postcss', 'closure-compiler', 'imagemin' ]);
+    grunt.registerTask('default', [ 'sass', 'postcss', 'closure-compiler-manual', 'imagemin' ]);
 };
