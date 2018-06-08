@@ -18,6 +18,9 @@ module.exports = grunt => {
         'public/js/Board.min.js': [
             'static/js/Board.js',
         ],
+        'public/js/Thread.min.js': [
+            'static/js/Thread.js',
+        ],
     };
 
     const CssFileList = {

@@ -111,6 +111,10 @@ const scripts = [
         link: `/js/Board.min.js`,
     },
     {
+        name: 'thread',
+        link: `/js/Thread.min.js`,
+    },
+    {
         name: 'cookie',
         href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
     },
@@ -121,6 +125,10 @@ const scripts = [
     {
         name: 'linkify',
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify-html.min.js`,
+    },
+    {
+        name: 'mobile-detect',
+        href: `https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.1/mobile-detect.min.js`,
     },
 ];
 
@@ -167,7 +175,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!rawBoardPosts) {
         res.write(`<title>/404/ - Board Not Found</title>`);
@@ -211,7 +219,7 @@ Router.get('/:board/', async (req, res) => {
     res.end();
 });
 
-Router.get('/:board/:query([a-zA-Z0-9_]{2,})', async (req, res) => {
+Router.get('/:board/:query([a-zA-Z0-9_ ]{2,})', async (req, res) => {
     const board = htmlentities(req.params.board);
     const searchOptions = {
         caseSensitive: true,
@@ -242,7 +250,7 @@ Router.get('/:board/:query([a-zA-Z0-9_]{2,})', async (req, res) => {
     res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'board', 'cookie', 'linkify').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts.length) {
         res.write(`<title>/${board}/${htmlentities(query)}/ - No laughs found</title>`);
@@ -294,6 +302,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.type('html');
     res.write(META);
     ResourceWatcher.getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts) {
         res.write(`<title>/404/ - Thread Not Found...</title>`);
@@ -319,6 +328,9 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     });
 
     res.write(`</div>${FOOTER}`);
+
+    res.write('<script>(function() { Thread.init() })()</script>');
+
     res.write(GoogleAnalytics);
     res.end();
 });
