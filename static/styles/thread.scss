@@ -23,6 +23,7 @@ a {
         }
 
         @media #{$small-and-down} {
+            margin: .8vmax .4vw;
             width: calc(100% - 2em);
         }
 
