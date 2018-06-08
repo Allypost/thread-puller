@@ -219,12 +219,12 @@ Router.get('/:board/', async (req, res) => {
     res.end();
 });
 
-Router.get('/:board/:query([a-zA-Z0-9_ ]{2,})', async (req, res) => {
+Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     const board = htmlentities(req.params.board);
     const searchOptions = {
         caseSensitive: true,
         shouldSort: true,
-        tokenize: true,
+        tokenize: false,
         threshold: 0.3,
         location: 0,
         distance: 20,
