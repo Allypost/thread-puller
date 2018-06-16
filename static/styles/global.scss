@@ -88,3 +88,7 @@ video, img {
 .no-select {
     @include no-select();
 }
+
+.bold {
+    font-weight: bold;
+}
