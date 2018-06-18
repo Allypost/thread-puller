@@ -9,7 +9,6 @@ a {
 }
 
 .board {
-    $board-background-color: #9e9e9e;
     $content-background-color: darken($board-background-color, 40%);
     $meta-background-color: lighten($content-background-color, 15%);
 
