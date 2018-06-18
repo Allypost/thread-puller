@@ -78,7 +78,7 @@ Router.use((req, res, next) => {
     const value = Object.assign({}, defaultSettings, cookie);
 
     res.cookie(cookieName, value, {
-        domain: `.${siteUrl.hostname}`,
+        domain: `${siteUrl.hostname}`,
         maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
