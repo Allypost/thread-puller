@@ -115,6 +115,10 @@ const scripts = [
         link: `/js/Thread.min.js`,
     },
     {
+        name: 'settings',
+        link: `/js/Settings.min.js`,
+    },
+    {
         name: 'cookie',
         href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
     },
@@ -132,6 +136,7 @@ const scripts = [
     },
 ];
 
+const SETTINGS = `<img src="/images/cog.png" alt="Settings" id="settings" title="Settings" /><div id="settings-modal"><div class="settings-modal-content"></div></div><script>(function () { Settings && Settings.init && Settings.init() })();</script>`;
 const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | All content is courtesy of <a href="https://www.4chan.org" target="_blank" rel="noopener noreferrer">4chan</a> | <a href="https://paypal.me/allypost" target="_blank" rel="noopener noreferrer">Donate to keep it going</a></footer>`;
 const META = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
 // noinspection JSUnresolvedVariable
@@ -175,7 +180,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!rawBoardPosts) {
         res.write(`<title>/404/ - Board Not Found</title>`);
@@ -191,6 +196,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(`<div id="wrap">`);
     res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
     res.write(`<h1 class="no-select">Board: /${board}/</h1>`);
+    res.write(SETTINGS);
 
     rawBoardPosts.forEach(
         post =>
@@ -250,7 +256,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts.length) {
         res.write(`<title>/${board}/${htmlentities(query)}/ - No laughs found</title>`);
@@ -265,6 +271,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     res.write(`<div id="wrap">`);
     res.write(`<h1 class="no-select"><a href="/${board}/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
     res.write(`<h1 class="no-select">Board Search: /${board}/${htmlentities(query)}/</h1>`);
+    res.write(SETTINGS);
 
     posts.forEach(
         post =>
@@ -302,7 +309,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.type('html');
     res.write(META);
     ResourceWatcher.getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread', 'settings').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts) {
         res.write(`<title>/404/ - Thread Not Found...</title>`);
@@ -321,6 +328,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
     res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
     res.write(`<h1 class="no-select">Thread: ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</h1>`);
+    res.write(SETTINGS);
 
     posts.forEach(post => {
         if (post.file)

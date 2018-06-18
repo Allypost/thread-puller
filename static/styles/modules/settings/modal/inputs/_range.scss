@@ -1,0 +1,40 @@
+@import "../../../include";
+
+input[type="range"] {
+    appearance: none;
+    width: 80%;
+    height: 24px;
+    margin: 1em auto;
+    outline: none;
+    background: #36484f;
+    border-radius: 3px;
+
+    transition: opacity .2s #{$transition-smooth};
+
+    &:focus {
+        outline: none;
+    }
+
+}
+
+$thumb-list: -webkit-slider-thumb -moz-range-thumb -ms-thumb;
+$thumb-color: lighten($background-color, 30%);
+
+@each $thumb in $thumb-list {
+    input[type="range"]::#{$thumb} {
+        appearance: none;
+        width: 2.8em;
+        height: 2.8em;
+        border-radius: 5px;
+        background-color: lighten($thumb-color, 5%);
+        box-shadow: 1px 1px 4px rgba(0, 0, 0, .69);
+        cursor: pointer;
+
+        transition: background-color .35s #{$transition-smooth}, opacity .35s #{$transition-smooth};
+    }
+
+    input[type="range"]::#{$thumb}:hover {
+        background-color: $thumb-color;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, .8), 0 0 3px rgba(0, 0, 0, .5);
+    }
+}
