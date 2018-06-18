@@ -123,7 +123,10 @@ const Settings = {
         const settingsCookie = this._settingsCookie;
         const newSettings = this.getCookieSettingsString();
 
-        Cookies.set(settingsCookie, newSettings);
+        Cookies.set(settingsCookie, newSettings, {
+            domain: `${window.location.hostname}`,
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+        });
     },
 
     _addSettingElement(modalContentElement, [ valueName, data ]) {
