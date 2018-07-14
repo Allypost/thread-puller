@@ -25,7 +25,7 @@ const redis = new (require('./lib/DB/Redis'))(redisConf).redis;
 const Boards = new (require('./lib/API/Boards'))(redis);
 const Threads = new (require('./lib/API/Threads'))(redis);
 const Posts = new (require('./lib/API/Posts'))(redis);
-const API = new (require('./lib/API/API'))();
+const API = new (require('./lib/API/API'))(`${process.env.THREADPULLER_DOMAIN_API}/v1`, 'v1');
 
 const app = express();
 const Router = express.Router({});
