@@ -47,6 +47,7 @@
   "scripts": {
     "test": "snyk test",
     "start": "node threadpuller2.js",
+    "start-api": "node threadpuller-api.js",
     "compile": "node node_modules/grunt/bin/grunt"
   },
   "license": "ISC"
