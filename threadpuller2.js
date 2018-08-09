@@ -137,7 +137,7 @@ const scripts = [
 ];
 
 const SETTINGS = `<img src="/images/cog.png" alt="Settings" id="settings" title="Settings" /><div id="settings-modal"><div class="settings-modal-content"></div></div><script>(function () { Settings && Settings.init && Settings.init() })();</script>`;
-const DONATE = process.env.THREADPULLER_DONATE_LINK ? ` | <a href="${process.env.THREADPULLER_DONATE_LINK}" target="_blank" rel="noopener noreferrer">Donate if you like the site</a>` : '';
+const DONATE = process.env.THREADPULLER_DONATE_LINK ? ` | <a href="${process.env.THREADPULLER_DONATE_LINK}" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>` : '';
 const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | All content is courtesy of <a href="https://www.4chan.org" target="_blank" rel="noopener noreferrer">4chan</a>${DONATE}</footer>`;
 const META = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
 // noinspection JSUnresolvedVariable
