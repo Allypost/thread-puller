@@ -1,7 +1,5 @@
 const http = require('http');
 const express = require('express');
-const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
 const Raven = require('raven');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
 
@@ -21,11 +19,9 @@ const redis = new (require('./lib/DB/Redis'))(
 const app = express();
 const Router = (require('./lib/Router/API/v1'))(redis);
 
-Router.use(cookieParser());
-Router.use(helmet());
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-app.get('/', (req, res) =>  {
+app.get('/', (req, res) => {
     return res.redirect('v1/');
 });
 
