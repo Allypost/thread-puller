@@ -119,6 +119,10 @@ const scripts = [
         link: `/js/Settings.min.js`,
     },
     {
+        name: 'download',
+        link: `/js/Download.min.js`,
+    },
+    {
         name: 'cookie',
         href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
     },
@@ -181,7 +185,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!rawBoardPosts) {
         res.write(`<title>/404/ - Board Not Found</title>`);
@@ -202,7 +206,7 @@ Router.get('/:board/', async (req, res) => {
     rawBoardPosts.forEach(
         post =>
             res.write(
-                `<article class="board">
+                `<article class="board" id="post-${post.id}" data-board="${post.board}" data-thread="${post.thread}">
                      <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
                         <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
                      </header>
@@ -221,6 +225,7 @@ Router.get('/:board/', async (req, res) => {
     res.write(`</div>${FOOTER}`);
 
     res.write('<script>(function() { Board.init() })()</script>');
+    res.write('<script>(function() { new Download("article.board") })()</script>');
 
     res.write(GoogleAnalytics);
     res.end();
@@ -310,7 +315,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.type('html');
     res.write(META);
     ResourceWatcher.getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread', 'settings').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread', 'settings', 'download').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts) {
         res.write(`<title>/404/ - Thread Not Found...</title>`);
@@ -326,7 +331,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     res.write(`<title>/${firstPost.board}/ - ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</title>`);
     res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
+    res.write(`<h1 class="no-select topbar"><a href="/${p.board}/">Back</a><span id="download" data-shown="no" data-board="${p.board}" data-thread="${p.thread}"></span><a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
     res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
     res.write(`<h1 class="no-select">Thread: ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</h1>`);
     res.write(SETTINGS);
@@ -339,6 +344,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     res.write(`</div>${FOOTER}`);
 
     res.write('<script>(function() { Thread.init() })()</script>');
+    res.write('<script>(function() { new Download("#download") })()</script>');
 
     res.write(GoogleAnalytics);
     res.end();

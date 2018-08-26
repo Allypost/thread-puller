@@ -1,5 +1,39 @@
 @import "modules/include";
 
+.topbar {
+    display: inline-block;
+
+    > * {
+        display: inline-block;
+        vertical-align: top;
+
+        &::after {
+            content: '|';
+            color: #ffffff;
+            padding: 0 .5em;
+            @include no-select()
+        }
+
+        &:last-child {
+            &::after {
+                display: none;
+            }
+        }
+    }
+
+    #download {
+        text-shadow: none;
+
+        .download {
+            display: inline-block;
+        }
+    }
+
+    [data-shown="no"] {
+        display: none;
+    }
+}
+
 a {
 
     &.resource {

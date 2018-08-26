@@ -163,6 +163,12 @@ a {
 
     }
 
+    &[data-shown="no"] {
+        .download {
+            display: none;
+        }
+    }
+
     .meta {
         font-size: .8em;
         padding: .2em 0;
