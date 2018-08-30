@@ -26,8 +26,30 @@ const Settings = {
         this._inputs = [];
 
         this._settings = this.hydrateSettings(this._settings);
+        this._settings = this.getProxied(this._settings, this._settingsProxyHandler());
 
         this.addEventListeners();
+    },
+
+    getProxied(settings, proxy) {
+        return Object.entries(Object.assign({}, settings))
+                     .map(([ key, data ]) => [ key, new Proxy(data, proxy) ])
+                     .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
+    },
+
+    _settingsProxyHandler() {
+        return {
+            set: (obj, key, val) => {
+                if (obj[ key ] === val)
+                    return true;
+
+                obj[ key ] = val;
+
+                this.saveSettings();
+
+                return true;
+            },
+        };
     },
 
     initModal(isOpen) {
@@ -80,7 +102,7 @@ const Settings = {
 
     hydrateSettings(settings) {
         return Object.entries(Object.assign({}, settings))
-                     .map(([ key, data ]) => [ key, Object.assign(data, { value: this.getSetting(key) }) ])
+                     .map(([ key, data ]) => [ key, Object.assign(data, { key, value: this.getSetting(key) }) ])
                      .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
     },
 
@@ -245,24 +267,19 @@ const Settings = {
                 }
             };
 
-            const oldSettings = Object.entries(this._settings)
-                                      .map(([ key, value ]) => [ key, Object.assign({}, value) ])
-                                      .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
+            const oldSettings =
+                      Object.entries(this._settings)
+                            .map(([ k, v ]) => [ k, Object.assign({}, v) ])
+                            .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
 
             inputs.forEach(({ name: name, el: el }) => this._settings[ name ].value = getVal(el));
 
-            const newSettings = Object.entries(this._settings)
-                                      .map(([ key, value ]) => [ key, Object.assign({}, value) ])
-                                      .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
-
             const hasDiff =
                       Object.entries(oldSettings)
-                            .map(([ k, v ]) => newSettings[ k ].value === v.value)
-                            .filter(i => !i)
-                          .length
-                      !== 0;
+                            .map(([ k, v ]) => [ this._settings[ k ], v ])
+                            .filter(([ o, n ]) => o.value !== n.value)
+                          .length;
 
-            this.saveSettings();
             this.destroyModal();
 
             if (hasDiff)
