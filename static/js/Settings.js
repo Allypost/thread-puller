@@ -31,6 +31,16 @@ class Settings {
         this.addEventListeners();
     }
 
+    get() {
+        return this._settings;
+    }
+
+    setting(key) {
+        const settings = this.get();
+
+        return (settings[ key ] || {}).value;
+    }
+
     getProxied(settings, proxy) {
         return Object.entries(Object.assign({}, settings))
                      .map(([ key, data ]) => [ key, new Proxy(data, proxy) ])
@@ -61,7 +71,7 @@ class Settings {
 
     createModal() {
         const modalContent = this.$modalContent;
-        const settings = this._settings;
+        const settings = this.get();
 
         Object.entries(settings)
               .forEach(this._addSettingElement.bind(this, modalContent));
@@ -109,7 +119,7 @@ class Settings {
     }
 
     getCookieSettingsString() {
-        const settings = this._settings;
+        const settings = this.get();
         const bareSettings =
                   Object.entries(settings)
                         .map(([ key, data ]) => [ key, data.value ])
@@ -262,18 +272,19 @@ class Settings {
                         return el.value;
                 }
             };
+            const settings = this.get();
 
             const oldSettings =
-                      Object.entries(this._settings)
+                      Object.entries(settings)
                             .map(([ k, v ]) => [ k, Object.assign({}, v) ])
                             .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
 
-            inputs.forEach(({ name: name, el: el }) => this._settings[ name ].value = getVal(el));
+            inputs.forEach(({ name: name, el: el }) => settings[ name ].value = getVal(el));
 
             const hasDiff =
                       Object.entries(oldSettings)
-                            .map(([ k, v ]) => [ this._settings[ k ], v ])
-                            .filter(([ o, n ]) => o.value !== n.value)
+                            .map(([ k, v ]) => [ this.setting(k), v.value ])
+                            .filter(([ o, n ]) => o !== n)
                           .length;
 
             this.destroyModal();
