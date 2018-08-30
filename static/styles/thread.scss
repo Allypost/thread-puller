@@ -53,6 +53,10 @@ a {
             filter: blur(6px);
         }
 
+        &[data-visible="no"] {
+            visibility: hidden;
+        }
+
         @media only screen and (max-width: 1650px) {
             width: calc(33% - 2em);
         }
