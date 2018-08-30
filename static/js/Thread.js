@@ -26,20 +26,37 @@ function isAnyPartOfElementInViewport(el) {
 const Thread = {
     init() {
         this.md = new MobileDetect(window.navigator.userAgent);
+        this.isMobile = this.md.mobile();
 
-        this.fixMobileVideos();
         this.addListeners();
         this.updateElementVisibility();
+        this.preloadVideos();
     },
 
-    fixMobileVideos() {
-        const md = this.md;
+    preloadVideos() {
+        const videos = Array.from(this.getVideos());
 
-        if (!md.mobile())
-            return;
+        videos
+            .filter((video) => video.parentNode.dataset.visible === 'yes')
+            .map(this.preloadVideo);
+    },
 
-        this.getVideos()
-            .forEach(el => el.setAttribute('poster', el.dataset.poster));
+    preloadVideo(video) {
+        if (this.isMobile)
+            return video;
+
+        if (!video.poster)
+            return video;
+
+        video.preload = 'metadata';
+        video.addEventListener('loadedmetadata', () => {
+            if (!video.poster)
+                return;
+
+            video.removeAttribute('poster');
+        });
+
+        return video;
     },
 
     getVideos() {
@@ -58,8 +75,22 @@ const Thread = {
 
                     el.dataset.visible = isVisible ? 'yes' : 'no';
 
-                    if (!isVisible && video)
-                        video.pause();
+                    if (video)
+                        this.updateVideoElement(video, isVisible);
                 });
+    },
+
+    updateVideoElement(el) {
+        const isVisible = el.parentNode.dataset.visible === 'yes';
+        const autoplay = window.settings && window.settings.setting('autoplay');
+
+        if (!isVisible)
+            return el.pause();
+
+        if (!this.isMobile)
+            this.preloadVideo(el);
+
+        if (autoplay && el.paused && !el.ended)
+            return el.play();
     },
 };
