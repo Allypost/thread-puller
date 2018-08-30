@@ -55,11 +55,27 @@ class Settings {
 
                 obj[ key ] = val;
 
+                this._handleSettingChange(obj.key, val);
                 this.saveSettings();
 
                 return true;
             },
         };
+    }
+
+    _handleSettingChange(key, value) {
+        const handlers = {
+            volume: (value) => {
+                document.querySelectorAll('.resource video').forEach((el) => el.volume = value / 100);
+            },
+            loop: (value) => {
+                document.querySelectorAll('.resource video').forEach((el) => el.loop = value);
+            },
+        };
+
+        const handler = handlers[ key ] || (() => !0);
+
+        return handler(value);
     }
 
     initModal(isOpen) {
@@ -274,23 +290,9 @@ class Settings {
             };
             const settings = this.get();
 
-            const oldSettings =
-                      Object.entries(settings)
-                            .map(([ k, v ]) => [ k, Object.assign({}, v) ])
-                            .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
-
             inputs.forEach(({ name: name, el: el }) => settings[ name ].value = getVal(el));
 
-            const hasDiff =
-                      Object.entries(oldSettings)
-                            .map(([ k, v ]) => [ this.setting(k), v.value ])
-                            .filter(([ o, n ]) => o !== n)
-                          .length;
-
             this.destroyModal();
-
-            if (hasDiff)
-                window.location.reload();
         };
 
         const container = document.createElement('div');
