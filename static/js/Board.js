@@ -22,10 +22,11 @@ const Board = {
         if (!el || el === document)
             return;
 
-        const func = Array.from(el.classList)
-                          .includes('extended')
-            ? el.classList.remove.bind(el.classList)
-            : el.classList.add.bind(el.classList);
+        const func =
+                  Array.from(el.classList)
+                       .includes('extended')
+                  ? el.classList.remove.bind(el.classList)
+                  : el.classList.add.bind(el.classList);
 
         func('extended');
     },
@@ -51,9 +52,10 @@ const Board = {
                      const isVid = classList.contains('large');
                      const img = el.getElementsByTagName('img')[ 0 ];
 
-                     const func = isVid
-                         ? classList.remove.bind(classList)
-                         : classList.add.bind(classList);
+                     const func =
+                               isVid
+                               ? classList.remove.bind(classList)
+                               : classList.add.bind(classList);
 
                      func('large');
 
@@ -83,9 +85,10 @@ const Board = {
 
                      const classList = el.parentNode.classList;
 
-                     const func = index
-                         ? classList.remove.bind(classList)
-                         : classList.add.bind(classList);
+                     const func =
+                               index
+                               ? classList.remove.bind(classList)
+                               : classList.add.bind(classList);
 
                      func('large');
 
