@@ -63,9 +63,19 @@ const Board = {
                          const vid = document.createElement('video');
                          const src = document.createElement('source');
 
-                         vid.autoplay = true;
-                         vid.volume = 0.5;
+                         const hasSettings = window.settings && window.settings.setting;
+
                          vid.controls = true;
+                         if (hasSettings) {
+                             const getSetting = hasSettings.bind(settings);
+
+                             vid.volume = getSetting('volume') / 100;
+                             vid.autoplay = getSetting('autoplay');
+                             vid.loop = getSetting('loop');
+                         } else {
+                             vid.volume = 0.5;
+                             vid.autoplay = true;
+                         }
 
                          src.src = img.dataset.srcFull;
 
