@@ -1,41 +1,41 @@
-const Settings = {
-    _settingsCookie: 'threadpuller_settings',
+class Settings {
 
-    _settings: {
-        volume: {
-            title: 'Video volume',
-            text: 'This is the volume that the video will be set to by default. You can change it in-video during playback as usual.',
-            value: null,
-        },
-        autoplay: {
-            title: 'Play on load',
-            text: 'Whether to automatically play videos when you load a page.',
-            value: null,
-        },
-        loop: {
-            title: 'Loop video',
-            text: 'Whether to loop videos after they\'ve finished.',
-            value: null,
-        },
-    },
+    constructor() {
+        this._settingsCookie = 'threadpuller_settings';
+        this._inputs = [];
 
-    init() {
         this.$cog = document.getElementById('settings');
         this.$modalWindow = document.getElementById('settings-modal');
         this.$modalContent = this.$modalWindow.querySelector('.settings-modal-content');
-        this._inputs = [];
 
+        this._settings = {
+            volume: {
+                title: 'Video volume',
+                text: 'This is the volume that the video will be set to by default. You can change it in-video during playback as usual.',
+                value: null,
+            },
+            autoplay: {
+                title: 'Play on load',
+                text: 'Whether to automatically play videos when you load a page.',
+                value: null,
+            },
+            loop: {
+                title: 'Loop video',
+                text: 'Whether to loop videos after they\'ve finished.',
+                value: null,
+            },
+        };
         this._settings = this.hydrateSettings(this._settings);
         this._settings = this.getProxied(this._settings, this._settingsProxyHandler());
 
         this.addEventListeners();
-    },
+    }
 
     getProxied(settings, proxy) {
         return Object.entries(Object.assign({}, settings))
                      .map(([ key, data ]) => [ key, new Proxy(data, proxy) ])
                      .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
-    },
+    }
 
     _settingsProxyHandler() {
         return {
@@ -50,14 +50,14 @@ const Settings = {
                 return true;
             },
         };
-    },
+    }
 
     initModal(isOpen) {
         if (isOpen)
             this.destroyModal();
         else
             this.createModal();
-    },
+    }
 
     createModal() {
         const modalContent = this.$modalContent;
@@ -69,7 +69,7 @@ const Settings = {
         this._addButtons();
 
         document.body.classList.add('settings-open');
-    },
+    }
 
     destroyModal() {
         const modalContent = this.$modalContent;
@@ -80,14 +80,14 @@ const Settings = {
         this._inputs = [];
 
         document.body.classList.remove('settings-open');
-    },
+    }
 
     addEventListeners() {
         const els = [ this.$cog, this.$modalWindow ];
         const listener = () => this.initModal(document.body.classList.contains('settings-open'));
 
         els.forEach((el) => this.addPreciseClickListener(el, listener));
-    },
+    }
 
     addPreciseClickListener(el, listener) {
         const events = [ 'click', 'tap' ];
@@ -98,19 +98,15 @@ const Settings = {
             el.removeEventListener(eventName, fn);
             el.addEventListener(eventName, fn);
         });
-    },
+    }
 
     hydrateSettings(settings) {
-        return Object.entries(Object.assign({}, settings))
-                     .map(([ key, data ]) => [ key, Object.assign(data, { key, value: this.getSetting(key) }) ])
-                     .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
-    },
-
-    getSettings() {
-        const drySettings = this._settings;
-
-        return this.hydrateSettings(drySettings);
-    },
+        return (
+            Object.entries(settings)
+                  .map(([ key, data ]) => [ key, Object.assign(data, { key, value: this.getSetting(key) }) ])
+                  .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {})
+        );
+    }
 
     getCookieSettingsString() {
         const settings = this._settings;
@@ -122,7 +118,7 @@ const Settings = {
         const stringyfiedSettings = JSON.stringify(bareSettings);
 
         return `j:${stringyfiedSettings}`;
-    },
+    }
 
     getSetting(name) {
         const cookieKey = this._settingsCookie;
@@ -139,7 +135,7 @@ const Settings = {
         }
 
         return parsedCookie[ name ];
-    },
+    }
 
     saveSettings() {
         const settingsCookie = this._settingsCookie;
@@ -149,7 +145,7 @@ const Settings = {
             domain: `${window.location.hostname}`,
             maxAge: 1000 * 60 * 60 * 24 * 365,
         });
-    },
+    }
 
     _addSettingElement(modalContentElement, [ valueName, data ]) {
         let elements = [];
@@ -176,7 +172,7 @@ const Settings = {
         this._inputs.push({ name: valueName, el: input.querySelector('input') });
 
         modalContentElement.appendChild(container);
-    },
+    }
 
     _createInputElement([ valueName, data ]) {
         const inputID = `input-${valueName}`;
@@ -219,14 +215,14 @@ const Settings = {
         container.classList.add(`${input.getAttribute('type')}-container`);
 
         return container;
-    },
+    }
 
     _createInputLabelElement(inputID) {
         const label = document.createElement('label');
         label.setAttribute('for', inputID);
 
         return label;
-    },
+    }
 
     _doShowValue(valueName) {
         switch (valueName) {
@@ -235,7 +231,7 @@ const Settings = {
             default:
                 return false;
         }
-    },
+    }
 
     _getSettingValueDisplayElement(inputElement, initialData = undefined) {
         const valueContainer = document.createElement('div');
@@ -253,7 +249,7 @@ const Settings = {
             value.innerText = initialData.value;
 
         return valueContainer;
-    },
+    }
 
     _addButtons() {
         const saveListener = () => {
@@ -302,6 +298,6 @@ const Settings = {
         container.appendChild(save);
 
         this.$modalContent.appendChild(container);
-    },
+    }
 
-};
+}
