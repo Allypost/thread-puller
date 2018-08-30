@@ -10,6 +10,7 @@ const SimpleLogger = require('./lib/Logging/SimpleLogger');
 const PostResource = require('./lib/Posts/PostResource');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
 const Fuse = require('fuse.js');
+const striptags = require('striptags');
 
 require('dotenv-safe').load(
     {
@@ -329,11 +330,28 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     const firstPost = posts[ 0 ];
 
-    res.write(`<title>/${firstPost.board}/ - ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</title>`);
+    const rawTitle =
+              (firstPost.body.title || firstPost.body.content || 'No title')
+                  .replace(/<br>\s*(<br>)+/gi, '<br>');
+
+    const strippedTitle = striptags(rawTitle, '<br>');
+    const title = ((title) => {
+        const maxLen = 149;
+
+        if (title.length <= maxLen)
+            return title;
+
+        const trimmedTitle = title.substr(0, maxLen + 1);
+        const lastSpace = Math.min(Math.max(0, trimmedTitle.lastIndexOf(' ')) || maxLen, maxLen);
+
+        return trimmedTitle.substr(0, lastSpace) + '&hellip;';
+    })(strippedTitle);
+
+    res.write(`<title>/${firstPost.board}/ - ${title}</title>`);
     res.write(`<div id="wrap">`);
     res.write(`<h1 class="no-select topbar"><a href="/${p.board}/">Back</a><span id="download" data-shown="no" data-board="${p.board}" data-thread="${p.thread}"></span><a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
-    res.write(`<h1 class="no-select">Board: /${p.board}/</h1>`);
-    res.write(`<h1 class="no-select">Thread: ${firstPost.body.title || firstPost.body.content.substr(0, 150) || 'No title'}</h1>`);
+    res.write(`<h1 class="no-select">Board: <div class="title-text">/${p.board}/</div></h1>`);
+    res.write(`<h1 class="no-select">Thread:<div class="title-text">${title}</div></h1>`);
     res.write(SETTINGS);
 
     posts.forEach(post => {
