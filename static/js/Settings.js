@@ -3,6 +3,7 @@ class Settings {
     constructor() {
         this._settingsCookie = 'threadpuller_settings';
         this._inputs = [];
+        this._listeners = {};
 
         this.$cog = document.getElementById('settings');
         this.$modalWindow = document.getElementById('settings-modal');
@@ -41,6 +42,28 @@ class Settings {
         return (settings[ key ] || {}).value;
     }
 
+    onChange(setting = '*', handler = (() => 1)) {
+        const listeners = this._listeners;
+
+        if (setting === '*') {
+            Object.keys(this.get())
+                  .forEach((key) => this.onChange(key, handler));
+
+            return;
+        }
+
+        if (!listeners[ setting ])
+            listeners[ setting ] = [];
+
+        listeners[ setting ].push(handler);
+    }
+
+    _trigger(setting, value) {
+        const listeners = this._listeners[ setting ] || [];
+
+        listeners.forEach((listener) => listener(setting, value));
+    }
+
     getProxied(settings, proxy) {
         return Object.entries(Object.assign({}, settings))
                      .map(([ key, data ]) => [ key, new Proxy(data, proxy) ])
@@ -50,32 +73,18 @@ class Settings {
     _settingsProxyHandler() {
         return {
             set: (obj, key, val) => {
+                this._trigger(obj.key, val);
+
                 if (obj[ key ] === val)
                     return true;
 
                 obj[ key ] = val;
 
-                this._handleSettingChange(obj.key, val);
                 this.saveSettings();
 
                 return true;
             },
         };
-    }
-
-    _handleSettingChange(key, value) {
-        const handlers = {
-            volume: (value) => {
-                document.querySelectorAll('.resource video').forEach((el) => el.volume = value / 100);
-            },
-            loop: (value) => {
-                document.querySelectorAll('.resource video').forEach((el) => el.loop = value);
-            },
-        };
-
-        const handler = handlers[ key ] || (() => !0);
-
-        return handler(value);
     }
 
     initModal(isOpen) {

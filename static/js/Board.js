@@ -130,11 +130,27 @@ const Board = {
         document.querySelectorAll('.description')
                 .forEach(el => el.innerHTML = linkifyHtml(el.innerHTML));
     },
+    _handleSettingChange(key, value) {
+        const handlers = {
+            volume: (value) => {
+                document.querySelectorAll('.board .content video').forEach((el) => el.volume = value / 100);
+            },
+            loop: (value) => {
+                document.querySelectorAll('.board .content video').forEach((el) => el.loop = value);
+            },
+        };
+
+        const handler = handlers[ key ] || (() => !0);
+
+        return handler(value);
+    },
     init() {
         // this.markLongPosts();
         this.fixQuoteLinks();
         this.addExpandListeners();
         this.addImageLoadListener();
+        if (window.settings)
+            window.settings.onChange('*', this._handleSettingChange.bind(this));
         document.addEventListener('DOMContentLoaded', () => {
             this.removeWbrTags();
             this.linkifyDescriptions();

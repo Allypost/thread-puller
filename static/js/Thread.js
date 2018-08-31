@@ -65,6 +65,24 @@ const Thread = {
 
     addListeners() {
         window.addEventListener('scroll', () => this.updateElementVisibility());
+
+        if (window.settings)
+            window.settings.onChange('*', this._handleSettingChange.bind(this));
+    },
+
+    _handleSettingChange(key, value) {
+        const handlers = {
+            volume: (value) => {
+                this.getVideos().forEach((el) => el.volume = value / 100);
+            },
+            loop: (value) => {
+                this.getVideos().forEach((el) => el.loop = value);
+            },
+        };
+
+        const handler = handlers[ key ] || (() => !0);
+
+        return handler(value);
     },
 
     updateElementVisibility() {
