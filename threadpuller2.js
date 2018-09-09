@@ -282,9 +282,9 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     posts.forEach(
         post =>
             res.write(
-                `<article class="board">
+                `<article class="board" id="post-${post.id}" data-board="${post.board}" data-thread="${post.thread}">
                      <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
-                        <h1 class="title"><a href="${`/${post.board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
+                        <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
                      </header>
                      <section class="content ${!post.body.content ? 'no-content' : ''}">${
                     post.file
@@ -294,12 +294,14 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
                     : ''
                     }<section class="description">${post.body.content}</section>
                      </section>
+                     <footer class="meta">${post.meta.images} images<!-- | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
                  </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><'),
             ),
     );
     res.write(`</div>${FOOTER}`);
 
     res.write('<script>(function() { Board.init() })()</script>');
+    res.write('<script>(function() { new Download("article.board") })()</script>');
 
     res.write(GoogleAnalytics);
     res.end();
