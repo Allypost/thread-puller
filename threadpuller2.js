@@ -10,7 +10,6 @@ const SimpleLogger = require('./lib/Logging/SimpleLogger');
 const PostResource = require('./lib/Posts/PostResource');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
 const Fuse = require('fuse.js');
-const striptags = require('striptags');
 
 require('dotenv-safe').load(
     {
@@ -329,23 +328,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     }
 
     const firstPost = posts[ 0 ];
-
-    const rawTitle =
-              (firstPost.body.title || firstPost.body.content || 'No title')
-                  .replace(/<br>\s*(<br>)+/gi, '<br>');
-
-    const strippedTitle = striptags(rawTitle, '<br>');
-    const title = ((title) => {
-        const maxLen = 149;
-
-        if (title.length <= maxLen)
-            return title;
-
-        const trimmedTitle = title.substr(0, maxLen + 1);
-        const lastSpace = Math.min(Math.max(0, trimmedTitle.lastIndexOf(' ')) || maxLen, maxLen);
-
-        return trimmedTitle.substr(0, lastSpace) + '&hellip;';
-    })(strippedTitle);
+    const title = PostResource.sanitizedTitle(firstPost);
 
     res.write(`<title>/${firstPost.board}/ - ${title}</title>`);
     res.write(`<div id="wrap">`);
