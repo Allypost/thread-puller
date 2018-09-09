@@ -262,7 +262,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     res.write(META);
 
     ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
 
     if (!posts.length) {
         res.write(`<title>/${board}/${htmlentities(query)}/ - No laughs found</title>`);
