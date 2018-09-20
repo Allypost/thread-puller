@@ -10,6 +10,7 @@ const SimpleLogger = require('./lib/Logging/SimpleLogger');
 const PostResource = require('./lib/Posts/PostResource');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
 const Fuse = require('fuse.js');
+const ffmpeg = require('fluent-ffmpeg');
 
 require('dotenv-safe').load(
     {
@@ -389,6 +390,28 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
         })
         .on('error', e => Raven.captureException(e))
         .end();
+});
+
+Router.get('/thumb/:board/:resource.:ext.png', (req, res) => {
+    const { board, resource, ext } = req.params;
+
+    res.type('png');
+
+    ffmpeg()
+        .input(`https://i.4cdn.org/${board}/${resource}.${ext}`)
+        .frames(1)
+        .output(res, { end: false })
+        .outputOptions('-f image2pipe')
+        .outputOptions('-vcodec png')
+        .on('error', (err) => {
+            Raven.captureException(err);
+
+            res.status(404).end();
+        })
+        .on('end', () => {
+            res.end();
+        })
+        .run();
 });
 
 app.use(Router);
