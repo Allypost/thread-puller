@@ -45,15 +45,16 @@ const Thread = {
         if (this.isMobile)
             return video;
 
-        if (!video.poster)
+        if (!video.dataset.poster)
             return video;
 
         video.preload = 'metadata';
         video.addEventListener('loadedmetadata', () => {
-            if (!video.poster)
+            if (!video.dataset.poster)
                 return;
 
-            video.removeAttribute('poster');
+            video.setAttribute('poster', video.dataset.poster);
+            video.removeAttribute('data-poster');
         });
 
         return video;
