@@ -6,7 +6,7 @@ class Download {
         this.options.downloaderActive = false;
         this.options.selector = selector;
 
-        this.init();
+        // this.init();
     }
 
     getElements() {
