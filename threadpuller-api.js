@@ -1,6 +1,7 @@
 const http = require('http');
 const express = require('express');
 const Raven = require('raven');
+const path = require('path');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
 
 require('dotenv-safe').load(
@@ -24,6 +25,8 @@ Raven.config(process.env.SENTRY_DSN_URL).install();
 app.get('/', (req, res) => {
     return res.redirect('v1/');
 });
+
+app.get('/favicon.ico', (req, res) => res.sendFile(path.resolve('./public/favicon.ico')));
 
 app.use('/v1/', Router);
 
