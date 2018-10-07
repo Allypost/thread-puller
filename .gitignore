@@ -14,3 +14,5 @@ public/*
 /.env
 /.sass-cache/
 /manifest.yml
+
+/test.js
