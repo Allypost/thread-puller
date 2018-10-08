@@ -1,0 +1,29 @@
+<!doctype html>
+<%
+if (!locals.page) {
+    locals.settings = false;
+    locals.title = 'ThreadPuller - 404';
+    locals.styles = ResourceWatcher.getAssets($_styles, 'global');
+}
+-%>
+<html lang="en">
+    <head>
+        <%- include _/head.ejs -%>
+    </head>
+    <body>
+        <div id="wrap">
+            <% if(!locals.page) { -%>
+                <%- include 404.ejs -%>
+            <% } else { -%>
+                <%- include _/scripts.ejs -%>
+                <%- include(locals.page, locals) -%>
+
+                <% if(settings) { %>
+                    <%- include _/settings.ejs -%>
+                <% } -%>
+            <% } %>
+        </div>
+        <%- include _/footer.ejs -%>
+        <%- include _/analytics.ejs -%>
+    </body>
+</html>

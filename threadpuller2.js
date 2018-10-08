@@ -34,6 +34,7 @@ const htmlentities = Entities.encode;
 const app = express();
 const Router = express.Router({});
 
+app.set('view engine', 'ejs');
 app.use((req, res, next) => {
     try {
         decodeURIComponent(req.path);
@@ -96,6 +97,12 @@ Router.use((req, res, next) => {
     return next();
 });
 
+Router.use((req, res, next) => {
+    req.app.locals.req = req;
+
+    next();
+});
+
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
 const styles = [
@@ -151,6 +158,19 @@ const scripts = [
     },
 ];
 
+app.locals = {
+    donateLink: process.env.THREADPULLER_DONATE_LINK,
+    title: 'ThreadPuller',
+    settings: true,
+    $_styles: styles,
+    $_scripts: scripts,
+    ga: {
+        key: process.env.THREADPULLER_GA_KEY,
+    },
+    rmWhitespace: true,
+    ResourceWatcher,
+};
+
 const SETTINGS = `<img src="/images/cog.png" alt="Settings" id="settings" title="Settings" /><div id="settings-modal"><div class="settings-modal-content"></div></div><script>var settings = new Settings();</script>`;
 const DONATE = process.env.THREADPULLER_DONATE_LINK ? ` | <a href="${process.env.THREADPULLER_DONATE_LINK}" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>` : '';
 const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | All content is courtesy of <a href="https://www.4chan.org" target="_blank" rel="noopener noreferrer">4chan</a>${DONATE}</footer>`;
@@ -164,82 +184,40 @@ ResourceWatcher.watch(scripts);
 Router.use('/', express.static(path.join(__dirname, 'public')));
 
 Router.get('/', async (req, res) => {
-    res.type('html');
-    res.write(META);
+    const opts = {
+        page: 'boards/show',
+        styles: ResourceWatcher.getAssets(styles, 'global', 'index'),
+        settings: false,
+        boards: await Boards.get(),
+    };
 
-    res.write('<title>ThreadPuller</title>');
-
-    ResourceWatcher.getAssets(styles, 'global', 'index').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
-
-    res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select">ThreadPuller - Pull 4chan image threads</h1>`);
-
-    (await Boards.get())
-        .forEach(({ title: title, board: board, link: link, description: description, nsfw: nsfw }) => res.write(`
-            <article class="board" ${nsfw ? 'data-nsfw="1"' : ''}>
-                <header>
-                    <h1 class="title"><a href="${link}">/${board}/ - ${title}</a></h1>
-                </header>
-                <section class="description">${description}</section>
-            </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><')));
-
-    res.write(`</div>${FOOTER}`);
-    res.write(GoogleAnalytics);
-    res.end();
+    res.render('base', opts);
 });
 
 Router.get('/:board/', async (req, res) => {
     const board = htmlentities(req.params.board);
-    const rawBoardPosts = await Threads.get(board);
+    const threads = await Threads.get(board);
 
-    res.type('html');
-    res.write(META);
+    const opts = {
+        styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
+        scripts: ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download'),
+        threads,
+        board,
+    };
 
-    ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    if (!threads) {
+        opts.title = '/404/ - Board Not Found';
+        opts.page = 'board/not-found';
+        opts.settings = false;
 
-    if (!rawBoardPosts) {
-        res.write(`<title>/404/ - Board Not Found</title>`);
-        res.write(`<div id="wrap">`);
-        res.write(`<h1><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
-        res.write(`<h1>Can't find the board \`${board}\`</h1>`);
-        res.write(`</div>${FOOTER}`);
-        return res.end();
+        res.status(404);
+        return res.render('base', opts);
     }
 
-    res.write(`<title>/${board}/ - ThreadPuller</title>`);
+    opts.title = `/${board}/ - ThreadPuller`;
+    opts.page = 'board/show';
 
-    res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
-    res.write(`<h1 class="no-select">Board: /${board}/</h1>`);
-    res.write(SETTINGS);
-
-    rawBoardPosts.forEach(
-        post =>
-            res.write(
-                `<article class="board" id="post-${post.id}" data-board="${post.board}" data-thread="${post.thread}">
-                     <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
-                        <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
-                     </header>
-                     <section class="content ${!post.body.content ? 'no-content' : ''}">${
-                    post.file
-                    ? `<section class="post-image-container" data-is-video="${post.file.meta.isVideo}">
-                           <img data-src-full="${post.file.meta.fullSrc}" data-src-thumb="${post.file.meta.thumbSrc}" src="${post.file.meta.thumbSrc}" alt="${post.file.name}">
-                       </section>`
-                    : ''
-                    }<section class="description">${post.body.content}</section>
-                     </section>
-                     <footer class="meta">${post.meta.images} images<!-- | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
-                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><'),
-            ),
-    );
-    res.write(`</div>${FOOTER}`);
-
-    res.write('<script>(function() { Board.init() })()</script>');
-    res.write('<script>(function() { new Download("article.board") })()</script>');
-
-    res.write(GoogleAnalytics);
-    res.end();
+    res.render('base', opts);
 });
 
 Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
@@ -267,114 +245,71 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     const rawPosts = await Threads.get(board) || [];
     const fuse = new Fuse(rawPosts, searchOptions);
     const query = String(req.params.query || req.query.q || '');
-    const posts = fuse.search(query);
+    const threads = fuse.search(query);
 
-    res.type('html');
-    res.write(META);
+    const opts = {
+        styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
+        scripts: ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download'),
+        query,
+        threads,
+        board,
+    };
 
-    ResourceWatcher.getAssets(styles, 'global', 'board').forEach(({ link: src, tag: v }) => res.write(`<link rel="stylesheet" href="${src}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    if (!threads.length) {
+        opts.title = `/${board}/${htmlentities(query)}/ - No laughs found`;
+        opts.page = 'board/no-search-results';
+        opts.settings = false;
 
-    if (!posts.length) {
-        res.write(`<title>/${board}/${htmlentities(query)}/ - No laughs found</title>`);
-        res.write(`<div id="wrap">`);
-        res.write(`<h1><a href="/${board}/">Back</a></h1>`);
-        res.write(`<h1 class="no-select">Can't find any \`${htmlentities(query)}\` posts in /${board}/</h1>`);
-        res.write(`</div>${FOOTER}`);
-        return res.end();
+        res.status(404);
+        return res.render('base', opts);
     }
 
-    res.write(`<title>/${board}/${htmlentities(query)}/ - ThreadPuller</title>`);
-    res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select"><a href="/${board}/">Back</a> | <a href="https://boards.4chan.org/${board}/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>`);
-    res.write(`<h1 class="no-select">Board Search: /${board}/${htmlentities(query)}/</h1>`);
-    res.write(SETTINGS);
+    opts.title = `/${board}/${query}/ - ThreadPuller`;
+    opts.page = 'board/search';
 
-    posts.forEach(
-        post =>
-            res.write(
-                `<article class="board" id="post-${post.id}" data-board="${post.board}" data-thread="${post.thread}">
-                     <header ${!post.body.title ? 'data-missing-title="1"' : ''}>
-                        <h1 class="title"><a href="${`/${board}/thread/${post.thread}`}">${post.body.title || '<i>No title</i>'}</a></h1>
-                     </header>
-                     <section class="content ${!post.body.content ? 'no-content' : ''}">${
-                    post.file
-                    ? `<section class="post-image-container" data-is-video="${post.file.meta.isVideo}">
-                           <img data-src-full="${post.file.meta.fullSrc}" data-src-thumb="${post.file.meta.thumbSrc}" src="${post.file.meta.thumbSrc}" alt="${post.file.name}">
-                       </section>`
-                    : ''
-                    }<section class="description">${post.body.content}</section>
-                     </section>
-                     <footer class="meta">${post.meta.images} images<!-- | <a href="https://boards.4chan.org/${post.board}/thread/${post.thread}/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
-                 </article>`.trim().replace(/\s+/g, ' ').replace(/> </, '><'),
-            ),
-    );
-    res.write(`</div>${FOOTER}`);
-
-    res.write('<script>(function() { Board.init() })()</script>');
-    res.write('<script>(function() { new Download("article.board") })()</script>');
-
-    res.write(GoogleAnalytics);
-    res.end();
+    res.render('base', opts);
 });
 
-Router.get('/:board/thread/:thread', async (req, res) => {
+Router.get('/swag/:board/thread/:thread', async (req, res) => {
     const p = Object.entries(req.params)
                     .map(([ key, value ]) => [ key, htmlentities(value) ])
                     .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
 
+    const { board, thread } = p;
     const posts = await Posts.get(p.board, p.thread);
 
-    res.type('html');
-    res.write(META);
-    ResourceWatcher.getAssets(styles, 'global', 'thread').forEach(({ link: style, tag: v }) => res.write(`<link rel="stylesheet" href="${style}?v=${v}">`));
-    ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread', 'settings', 'download').forEach(({ link: src, tag: v }) => res.write(`<script src="${src}?v=${v}"></script>`));
+    const opts = {
+        styles: ResourceWatcher.getAssets(styles, 'global', 'thread'),
+        scripts: ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread', 'settings', 'download'),
+        threadUrl: Posts.constructor.threadUrl(board, thread),
+        board,
+        thread,
+        posts,
+    };
 
     if (!posts) {
-        res.write(`<title>/404/ - Thread Not Found...</title>`);
-        res.write(`<div id="wrap">`);
-        res.write(`<h1 class="no-select"><a href="/${p.board}/">Back</a> | <a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
-        res.write(`<h1 class="no-select">There are no posts here...<br>Please try again later</h1>`);
-        res.write(`</div>${FOOTER}`);
+        opts.title = '/404/ - Thread Not Found';
+        opts.page = 'thread/not-found';
+        opts.settings = false;
 
-        return res.end();
+        res.status(404);
+        return res.render('base', opts);
     }
 
     const firstPost = posts[ 0 ];
     const title = PostResource.sanitizedTitle(firstPost);
 
-    res.write(`<title>/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80, '')}</title>`);
-    res.write(`<div id="wrap">`);
-    res.write(`<h1 class="no-select topbar"><a href="/${p.board}/">Back</a><span id="download" data-shown="no" data-board="${p.board}" data-thread="${p.thread}"></span><a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
-    res.write(`<h1 class="no-select">Board: <div class="title-text">/${p.board}/</div></h1>`);
-    res.write(`<h1 class="no-select">Thread:<div class="title-text">${title}</div></h1>`);
-    res.write(SETTINGS);
+    opts.page = 'thread/show';
+    opts.title = `/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80, '')}`;
+    opts.postTitle = title;
+    opts.renderPost = PostResource.get;
+    opts.renderParams = [ req.query, req.cookies ];
 
-    posts.forEach(post => {
-        if (post.file)
-            res.write(PostResource.get(post, req.query, req.cookies));
-    });
-
-    res.write(`</div>${FOOTER}`);
-
-    res.write('<script>(function() { Thread.init() })()</script>');
-    res.write('<script>(function() { new Download("#download") })()</script>');
-
-    res.write(GoogleAnalytics);
-    res.end();
+    res.render('base', opts);
 });
 
 Router.get('/i/:board/:resource.:ext', (req, res) => {
     const p = req.params;
-
-    /*const referrer = (req.headers || {})[ 'referer' ] || '';
-     const parsedReferrer = URL.parse(referrer);
-
-     if (
-     !parsedReferrer
-     || parsedReferrer[ 'host' ] !== siteUrl[ 'host' ]
-     )
-     return res.status(403).end();*/
 
     const options = {
         'host': 'i.4cdn.org',
@@ -425,6 +360,11 @@ Router.get('/thumb/:board/:resource.:ext.png', (req, res) => {
 });
 
 app.use(Router);
+
+app.get('*', (req, res) => {
+    res.status(404);
+    res.render('base', { title: '/404/ - Page Not Found' });
+});
 
 SimpleLogger.info('Server starting...');
 

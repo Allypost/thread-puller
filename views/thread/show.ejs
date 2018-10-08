@@ -1,0 +1,29 @@
+<h1 class="no-select topbar">
+    <a href="/<%= board -%>/">Back</a>
+    <span id="download" data-shown="no" data-board="<%= board -%>" data-thread="<%= thread -%>"></span>
+    <a href="<%= threadUrl -%>" target="_blank" rel="noopener noreferrer">Go to thread</a>
+</h1>
+<h1 class="no-select">Board:
+    <span class="title-text">/<%= board -%>/</span>
+</h1>
+<h1 class="no-select">Thread:
+    <span class="title-text"><%= postTitle -%></span>
+</h1>
+
+<%-
+posts
+        .filter((post) => post.file)
+        .map((post) => renderPost(post, ...renderParams))
+        .join('')
+-%>
+
+<script>
+    (function () {
+        Thread.init();
+    })();
+</script>
+<script>
+    (function () {
+        new Download('#download');
+    })();
+</script>

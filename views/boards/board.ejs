@@ -1,0 +1,6 @@
+<article class="board" <%= board.nsfw ? 'data-nsfw="1"' : '' -%>>
+    <header>
+        <h1 class="title"><a href="<%= board.link -%>">/<%= board.board -%>/ - <%= board.title -%></a></h1>
+    </header>
+    <section class="description"><%- board.description -%></section>
+</article>

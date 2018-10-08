@@ -1,0 +1,3 @@
+<% (locals.styles || []).forEach(({ link: src, tag: v }) => { %>
+    <link rel="stylesheet" href="<%= src -%>?v=<%= v -%>">
+<% }); %>

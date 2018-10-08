@@ -1,0 +1,3 @@
+<% (locals.scripts || []).forEach(({ link: src, tag: v }) => { %>
+    <script src="<%= src -%>?v=<%= v -%>"></script>
+<% }); %>
