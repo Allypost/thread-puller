@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
     const { address } = socket.handshake;
 
     socket.on('location', async (location) => {
-        const data = { id, address, location };
+        const data = { id, address, location, date: new Date().getTime() };
         const payload = JSON.stringify(data);
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
