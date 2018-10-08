@@ -168,6 +168,10 @@ app.locals = {
         key: process.env.THREADPULLER_GA_KEY,
     },
     rmWhitespace: true,
+    presence: {
+        domain: process.env.THREADPULLER_DOMAIN_PRESENCE,
+        port: process.env.THREADPULLER_PRESENCE_PORT,
+    },
     ResourceWatcher,
 };
 

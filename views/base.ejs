@@ -25,5 +25,15 @@ if (!locals.page) {
         </div>
         <%- include _/footer.ejs -%>
         <%- include _/analytics.ejs -%>
+        <script>
+            var __tp = function () {
+                var socket = io('<%= presence.domain -%>:<%= presence.port -%>');
+                socket.on('connect', function () {
+                    socket.emit('location', { link: window.location.href, page: window.location.pathname })
+                });
+                __tp = undefined;
+            }
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js" <%- `onload="__tp()"` -%>></script>
     </body>
 </html>
