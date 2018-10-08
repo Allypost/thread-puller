@@ -9,6 +9,7 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "cheerio": "^0.22.0",
+    "concurrently": "^4.0.1",
     "cookie-parser": "^1.4.3",
     "dotenv-safe": "^5.0.1",
     "express": "^4.16.3",
@@ -52,7 +53,8 @@
   },
   "scripts": {
     "test": "snyk test",
-    "start": "node threadpuller2.js",
+    "start": "node start.js",
+    "start-web": "node threadpuller2.js",
     "start-api": "node threadpuller-api.js",
     "downloader": "node threadpuller-downloader.js",
     "compile": "node node_modules/grunt/bin/grunt"
