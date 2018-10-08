@@ -20,6 +20,16 @@ const redis = new (require('./lib/DB/Redis'))(
 const app = express();
 const Router = (require('./lib/Router/API/v1'))(redis);
 
+app.use((req, res, next) => {
+    try {
+        decodeURIComponent(req.path);
+        next();
+    } catch (e) {
+        res.status(400);
+        return res.json({ error: 'Invalid parameter' });
+    }
+});
+
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
 app.get('/', (req, res) => {

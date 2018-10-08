@@ -34,6 +34,16 @@ const htmlentities = Entities.encode;
 const app = express();
 const Router = express.Router({});
 
+app.use((req, res, next) => {
+    try {
+        decodeURIComponent(req.path);
+        next();
+    } catch (e) {
+        res.status(400);
+        return res.send('Invalid parameter');
+    }
+});
+
 Router.use(cookieParser());
 Router.use(helmet());
 
