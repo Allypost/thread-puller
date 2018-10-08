@@ -343,7 +343,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const firstPost = posts[ 0 ];
     const title = PostResource.sanitizedTitle(firstPost);
 
-    res.write(`<title>/${firstPost.board}/ - ${title}</title>`);
+    res.write(`<title>/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80, '')}</title>`);
     res.write(`<div id="wrap">`);
     res.write(`<h1 class="no-select topbar"><a href="/${p.board}/">Back</a><span id="download" data-shown="no" data-board="${p.board}" data-thread="${p.thread}"></span><a href="${Posts.constructor.threadUrl(p.board, p.thread)}" target="_blank" rel="noopener noreferrer">Go to thread</a></h1>`);
     res.write(`<h1 class="no-select">Board: <div class="title-text">/${p.board}/</div></h1>`);
