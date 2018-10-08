@@ -27,7 +27,13 @@ if (!locals.page) {
         <%- include _/analytics.ejs -%>
         <script>
             var __tp = function () {
-                var socket = io('<%= presence.domain -%>:<%= presence.port -%>');
+                <%
+                if(presence.port)
+                    socketUrl = `${presence.domain}:${presence.port}`;
+                else
+                    socketUrl = presence.domain;
+                %>
+                var socket = io('<%= socketUrl -%>');
                 socket.on('connect', function () {
                     socket.emit('location', { link: window.location.href, page: window.location.pathname })
                 });

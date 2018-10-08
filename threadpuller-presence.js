@@ -44,7 +44,7 @@ SimpleLogger.info('Cleaning up...');
 clean()
     .then(() => {
         SimpleLogger.info('Starting Presence...');
-        server.listen(process.env.THREADPULLER_PRESENCE_PORT, () => {
-            SimpleLogger.info(`Started Presence on port ${process.env.THREADPULLER_PRESENCE_PORT}`);
+        server.listen(process.env.PRESENCE_PORT, () => {
+            SimpleLogger.info(`Started Presence on port ${process.env.PRESENCE_PORT}`);
         });
     });
