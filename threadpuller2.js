@@ -171,13 +171,6 @@ app.locals = {
     ResourceWatcher,
 };
 
-const SETTINGS = `<img src="/images/cog.png" alt="Settings" id="settings" title="Settings" /><div id="settings-modal"><div class="settings-modal-content"></div></div><script>var settings = new Settings();</script>`;
-const DONATE = process.env.THREADPULLER_DONATE_LINK ? ` | <a href="${process.env.THREADPULLER_DONATE_LINK}" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>` : '';
-const FOOTER = `<footer>Copyright &copy; ${new Date().getFullYear()} Allypost | All content is courtesy of <a href="https://www.4chan.org" target="_blank" rel="noopener noreferrer">4chan</a>${DONATE}</footer>`;
-const META = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="theme-color" content="#1E1E1E"><meta name="application-name" content="ThreadPuller - View 4chan thread images and videos"><meta name="msapplication-TileColor" content="#1E1E1E">`;
-// noinspection JSUnresolvedVariable
-const GoogleAnalytics = `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.THREADPULLER_GA_KEY}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.THREADPULLER_GA_KEY}');</script>`;
-
 ResourceWatcher.watch(styles);
 ResourceWatcher.watch(scripts);
 
@@ -270,7 +263,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     res.render('base', opts);
 });
 
-Router.get('/swag/:board/thread/:thread', async (req, res) => {
+Router.get('/:board/thread/:thread', async (req, res) => {
     const p = Object.entries(req.params)
                     .map(([ key, value ]) => [ key, htmlentities(value) ])
                     .reduce((obj, [ k, v ]) => Object.assign(obj, { [ k ]: v }), {});
