@@ -22,7 +22,14 @@ async function log() {
     const query = await redis.mgetAsync(keys.map(key => key.substr(redisConf.prefix.length)));
     const data = query.map(el => JSON.parse(el));
 
-    data.forEach(({ id, location: { page } }) => console.log(`[${id}]> ${page}`));
+    data
+        .sort((a, b) => {
+            if (a.presenceId === b.presenceId)
+                return a.date - b.date;
+
+            return a.presenceId.localeCompare(b.presenceId);
+        })
+        .forEach(({ presenceId, location: { page } }) => console.log(`[${presenceId}]> ${page}`));
 
     return data;
 }
