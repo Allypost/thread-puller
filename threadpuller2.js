@@ -11,6 +11,7 @@ const PostResource = require('./lib/Posts/PostResource');
 const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
 const Fuse = require('fuse.js');
 const ffmpeg = require('fluent-ffmpeg');
+const uuid = require('uuid/v4');
 
 require('dotenv-safe').load(
     {
@@ -50,6 +51,7 @@ Router.use(helmet());
 
 const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
 const cacheUrl = URL.parse(process.env.THREADPULLER_DOMAIN_CACHE);
+const presenceUrl = URL.parse(process.env.THREADPULLER_DOMAIN_PRESENCE);
 Router.use((req, res, next) => {
     const isImage = String(req.url).substr(0, 3) === '/i/';
 
@@ -95,6 +97,24 @@ Router.use((req, res, next) => {
     res.cookie(cookieName, value, {
         domain: `${siteUrl.hostname}`,
         maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
+
+    return next();
+});
+
+Router.use((req, res, next) => {
+    const cookieName = 'threadpuller_presence';
+    const cookies = req.cookies;
+    const cookie = cookies[ cookieName ];
+
+    if (cookie)
+        return next();
+
+    const value = uuid();
+
+    res.cookie(cookieName, value, {
+        domain: `${presenceUrl.hostname}`,
+        maxAge: 365 * 24 * 60 * 60 * 1000,
     });
 
     return next();
