@@ -32,7 +32,7 @@ async function log() {
 
             return a.presenceId.localeCompare(b.presenceId);
         })
-        .forEach(({ presenceId, location: { page } }) => console.log(`[${presenceId}]> ${page}`));
+        .forEach(({ presenceId, location: { page, title = 'Unknown' } }) => console.log(`[${presenceId}]> ${page} | ${title}`));
 
     return data;
 }
