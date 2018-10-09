@@ -8,7 +8,7 @@
         %>
         var socket = io('<%= socketUrl -%>');
         socket.on('connect', function () {
-            socket.emit('location', { link: window.location.href, page: window.location.pathname })
+            socket.emit('location', { link: window.location.href, page: window.location.pathname, title: document.title })
         });
         __tp = undefined;
     }
