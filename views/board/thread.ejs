@@ -4,7 +4,7 @@
     </header>
     <section class="content <%= !post.body.content ? 'no-content' : '' -%>">
         <% if(post.file) { -%>
-            <section class="post-image-container" data-is-video="<%= post.file.meta.isVideo -%>">
+            <section class="post-image-container" data-is-video="<%= Number(post.file.meta.isVideo) -%>">
                 <img data-src-full="<%= post.file.meta.fullSrc -%>" data-src-thumb="<%= post.file.meta.thumbSrc -%>" src="<%= post.file.meta.thumbSrc -%>" alt="<%= post.file.name -%>">
             </section>
         <% } -%>
