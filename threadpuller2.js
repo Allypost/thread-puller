@@ -76,7 +76,10 @@ Router.use((req, res, next) => {
 Router.use((req, res, next) => {
     const cookieName = PostResource.settingsCookieName();
     const cookies = req.cookies;
-    const cookie = cookies[ cookieName ] || {};
+    const cookie = cookies[ cookieName ];
+
+    if (cookie)
+        return next();
 
     if (req.hostname !== siteUrl.hostname)
         return next();
