@@ -24,7 +24,10 @@ async function log() {
 
     data
         .sort((a, b) => {
-            if (a.presenceId === b.presenceId)
+            if (
+                !a.presenceId || !b.presenceId
+                || (a.presenceId === b.presenceId)
+            )
                 return a.date - b.date;
 
             return a.presenceId.localeCompare(b.presenceId);
