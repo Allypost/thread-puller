@@ -68,10 +68,10 @@ const Board = {
                          vid.controls = true;
                          vid.autoplay = true;
                          if (hasSettings) {
-                             const getSetting = hasSettings.bind(settings);
+                             const getSetting = hasSettings.bind(window.settings);
 
-                             vid.volume = getSetting('volume') / 100;
-                             vid.loop = getSetting('loop');
+                             vid.volume = getSetting('volume', true) / 100;
+                             vid.loop = getSetting('loop', true);
                          } else {
                              vid.volume = 0.5;
                          }
