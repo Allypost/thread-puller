@@ -36,10 +36,28 @@ class Settings {
         return this._settings;
     }
 
-    setting(key) {
-        const settings = this.get();
+    getOverrides() {
+        return (
+            location
+                .search
+                .substring(1)
+                .split('&')
+                .reduce((acc, curr) => {
+                    const [ key, value ] = curr.split('=');
+                    acc[ decodeURIComponent(key) ] = { value: Number(decodeURIComponent(value)) };
+                    return acc;
+                }, {})
+        );
+    }
 
-        return (settings[ key ] || {}).value;
+    setting(key, allowOverrides = false) {
+        const { [ key ]: setting = {} } = this.get();
+        const { [ key ]: override = {} } = this.getOverrides();
+
+        if (allowOverrides)
+            Object.assign(setting, override);
+
+        return setting.value;
     }
 
     onChange(setting = '*', handler = (() => 1)) {
