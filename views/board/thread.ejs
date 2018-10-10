@@ -10,5 +10,5 @@
         <% } -%>
         <section class="description"><%- post.body.content -%></section>
     </section>
-    <footer class="meta"><%= post.meta.images -%> images<!-- | <a href="https://boards.4chan.org/<%= post.board -%>/thread/<%= post.thread -%>/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
+    <footer class="meta"><%= post.meta.images -%> images | <%= post.meta.replies -%> replies<!-- | <a href="https://boards.4chan.org/<%= post.board -%>/thread/<%= post.thread -%>/" target="_blank" rel="noopener noreferrer">Direct link</a>--></footer>
 </article>
