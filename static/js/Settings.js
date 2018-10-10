@@ -54,10 +54,10 @@ class Settings {
         const { [ key ]: setting = {} } = this.get();
         const { [ key ]: override = {} } = this.getOverrides();
 
-        if (allowOverrides)
-            Object.assign(setting, override);
+        if (!allowOverrides)
+            return setting.value;
 
-        return setting.value;
+        return Object.assign({}, setting, override).value;
     }
 
     onChange(setting = '*', handler = (() => 1)) {
