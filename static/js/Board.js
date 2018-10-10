@@ -104,13 +104,17 @@ const Board = {
                      el.src = src[ index ];
                  };
 
-                 el.addEventListener('click', () => {
+                 el.addEventListener('click', (evt) => {
                      const isVideo = !!+el.dataset.isVideo;
+                     evt.preventDefault();
+                     evt.stopPropagation();
 
                      if (isVideo)
                          vid(el);
                      else
                          img(el.getElementsByTagName('img')[ 0 ]);
+
+                     return false;
                  });
              });
     },
