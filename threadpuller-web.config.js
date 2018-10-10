@@ -6,7 +6,7 @@ module.exports = {
     apps: [
 
         {
-            name: 'ThreadPuller',
+            name: 'ThreadPuller Web',
             script: './threadpuller-web.js',
             watch: [
                 './threadpuller-web.js',
