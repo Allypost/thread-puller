@@ -10,7 +10,7 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # Name of the master server file
-scriptName="threadpuller2.config.js"
+scriptName="threadpuller-web.config.js"
 # Get absolute path to script
 scriptLoc="$DIR/$scriptName"
 
