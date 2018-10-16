@@ -36,6 +36,21 @@ function getCountry(ip) {
     return { country, region, city };
 }
 
+function isFunction(obj) {
+    return !!(obj && obj.constructor && obj.call && obj.apply);
+}
+
+function connectedSocketData() {
+    const { sockets } = io.sockets;
+
+    return (
+        Object
+            .keys(sockets)
+            .map((key) => ([ key, sockets[ key ].data ]))
+            .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
+    );
+}
+
 io.on('connection', (socket) => {
     const { id } = socket;
     const { headers: { cookie: rawCookie, 'user-agent': ua } } = socket.handshake;
@@ -60,6 +75,20 @@ io.on('connection', (socket) => {
         const payload = JSON.stringify(data);
         await redis.delAsync(`${id}`);
         redis.publish(redisConf.prefix, `l:${payload}`);
+    });
+
+    socket.on('clients', (cb) => {
+        if (!isFunction(cb))
+            return false;
+
+        const rawData = connectedSocketData();
+
+        const data =
+                  Object.entries(rawData)
+                        .map(([ key, value ]) => ([ key, Object.assign({}, value, { ip: '' }) ]))
+                        .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
+
+        cb(data);
     });
 });
 
