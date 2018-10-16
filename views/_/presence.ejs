@@ -8,9 +8,10 @@
         %>
         var socket = io('<%= socketUrl -%>');
         socket.on('connect', function () {
-            socket.emit('location', { link: window.location.href, page: window.location.pathname, title: document.title })
+            socket.emit('location', { link: window.location.href, page: window.location.pathname, title: document.title });
         });
+        window.__presence = socket;
         __tp = undefined;
-    }
+    };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js" <%- `onload="__tp()"` -%>></script>
