@@ -45,6 +45,8 @@ io.on('connection', (socket) => {
     const data = { id, presenceId, geo, ip, ua, date: new Date().getTime() };
 
     async function sendData(location = { page: '/', title: '<i>Loading...</i>' }) {
+        socket.data = data;
+
         const payload = JSON.stringify(Object.assign(data, { location, date: new Date().getTime() }));
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
