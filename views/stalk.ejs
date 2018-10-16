@@ -1,0 +1,29 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<ul id="stalker-container"></ul>
+<script>
+    let id = '';
+    const socket = io();
+    socket.on('stuff', updateStalk);
+    socket.on('init', ({ id: uid, data }) => {
+        id = uid;
+        updateStalk(data);
+    });
+
+    function updateStalk(data) {
+        const root = document.getElementById('stalker-container');
+
+        root.innerHTML = '';
+
+        console.log(data);
+
+        data.forEach((d) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="http://localhost${d.location.page}">${d.location.page}</a>`;
+            root.appendChild(li);
+        });
+    }
+
+    function fetchData() {
+        socket.emit('data', updateStalk);
+    }
+</script>
