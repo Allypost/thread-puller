@@ -4,5 +4,8 @@
 <meta name="theme-color" content="#1E1E1E">
 <meta name="application-name" content="ThreadPuller - View 4chan thread images and videos">
 <meta name="msapplication-TileColor" content="#1E1E1E">
+<% if(ga.verification) { %>
+    <meta name="google-site-verification" content="<%- ga.verification -%>" />
+<% } %>
 <title><%= title; %></title>
 <%- include ./styles.ejs -%>

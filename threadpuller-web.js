@@ -189,6 +189,7 @@ app.locals = {
     $_scripts: scripts,
     ga: {
         key: process.env.THREADPULLER_GA_KEY,
+        verification: process.env.THREADPULLER_GA_VERIFICATION,
     },
     rmWhitespace: true,
     presence: {
