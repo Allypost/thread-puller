@@ -38,20 +38,20 @@ function getCountry(ip) {
 
 io.on('connection', (socket) => {
     const { id } = socket;
-    const { headers: { cookie: rawCookie } } = socket.handshake;
+    const { headers: { cookie: rawCookie, 'user-agent': ua } } = socket.handshake;
     const { threadpuller_presence: presenceId } = cookie.parse(rawCookie);
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
 
     socket.on('location', async (location) => {
-        const data = { id, presenceId, geo, ip, location, date: new Date().getTime() };
+        const data = { id, presenceId, geo, ip, ua, location, date: new Date().getTime() };
         const payload = JSON.stringify(data);
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
     });
 
     socket.on('disconnect', async () => {
-        const data = { id, presenceId, geo, ip };
+        const data = { id, presenceId, geo, ip, ua };
         const payload = JSON.stringify(data);
         await redis.delAsync(`${id}`);
         redis.publish(redisConf.prefix, `l:${payload}`);
