@@ -2,6 +2,7 @@ const app = require('express')();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const cookie = require('cookie');
+const geoip = require('geoip-lite');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
 
 require('dotenv-safe').load(
@@ -22,20 +23,35 @@ async function clean() {
     return await redis.evalAsync(command, 0, `${redisConf.prefix}*`);
 }
 
+function getIp(handshake) {
+    const { address, headers = {} } = handshake;
+    const { 'cf-connecting-ip': cfAddress, 'x-real-ip': realIp } = headers;
+
+    return cfAddress || realIp || address;
+}
+
+function getCountry(ip) {
+    const { country, region, city } = geoip.lookup(ip);
+
+    return { country, region, city };
+}
+
 io.on('connection', (socket) => {
     const { id } = socket;
-    const { address, headers: { cookie: rawCookie } } = socket.handshake;
+    const { headers: { cookie: rawCookie } } = socket.handshake;
     const { threadpuller_presence: presenceId } = cookie.parse(rawCookie);
+    const ip = getIp(socket.handshake);
+    const geo = getCountry(ip);
 
     socket.on('location', async (location) => {
-        const data = { id, presenceId, address, location, date: new Date().getTime() };
+        const data = { id, presenceId, geo, ip, location, date: new Date().getTime() };
         const payload = JSON.stringify(data);
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
     });
 
     socket.on('disconnect', async () => {
-        const data = { id, presenceId, address };
+        const data = { id, presenceId, geo, ip };
         const payload = JSON.stringify(data);
         await redis.delAsync(`${id}`);
         redis.publish(redisConf.prefix, `l:${payload}`);
