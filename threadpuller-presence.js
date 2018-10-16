@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
 
     sendData();
 
-    socket.on('location', (location) => data.location && sendData(location));
+    socket.on('location', (location) => sendData(location));
 
     socket.on('disconnect', async () => {
         const payload = JSON.stringify(data);
