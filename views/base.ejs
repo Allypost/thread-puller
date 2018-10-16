@@ -9,6 +9,7 @@ if (!locals.page) {
 <html lang="en">
     <head>
         <%- include _/head.ejs -%>
+        <%- include _/analytics.ejs -%>
     </head>
     <body>
         <div id="wrap">
@@ -24,7 +25,6 @@ if (!locals.page) {
             <% } %>
         </div>
         <%- include _/footer.ejs -%>
-        <%- include _/analytics.ejs -%>
         <%- include _/presence.ejs -%>
     </body>
 </html>

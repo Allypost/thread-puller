@@ -1,5 +1,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
-<ul id="stalker-container"></ul>
+<style>
+    #stalker-container > li {
+        margin-top: 1em;
+    }
+
+    #stalker-container > li:first-child {
+        margin-top: 0;
+    }
+</style>
+<ol id="stalker-container"></ol>
 <script>
     let id = '';
     const socket = io();
@@ -14,16 +23,33 @@
 
         root.innerHTML = '';
 
-        console.log(data);
+        data
+            .forEach(([ id, entries ]) => {
+                const ol = document.createElement('ol');
+                ol.className = 'stalker-group';
 
-        data.forEach((d) => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="http://localhost${d.location.page}">${d.location.page}</a>`;
-            root.appendChild(li);
-        });
+                entries.forEach((entry) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="https://whatismyipaddress.com/ip/${entry.ip}">IP</a> [<img src="https://www.countryflags.io/${entry.geo.country}/flat/24.png" alt="${entry.geo.country}" title="${entry.geo.country}, ${entry.geo.region}"> | ${entry.geo.city}] <a href="http://localhost${entry.location.page}">${entry.location.title || entry.location.page}</a>`;
+                    ol.appendChild(li);
+                });
+
+                const li = document.createElement('li');
+                li.className = 'stalker-group-container';
+
+                const div = document.createElement('div');
+                div.innerText = id;
+                li.appendChild(div);
+
+                li.appendChild(ol);
+
+                root.appendChild(li);
+            });
     }
 
     function fetchData() {
         socket.emit('data', updateStalk);
     }
+
+    setInterval(fetchData, 15 * 1000);
 </script>
