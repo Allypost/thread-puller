@@ -31,7 +31,7 @@ function getIp(handshake) {
 }
 
 function getCountry(ip) {
-    const { country, region, city } = geoip.lookup(ip);
+    const { country, region, city } = geoip.lookup(ip) || {};
 
     return { country, region, city };
 }
