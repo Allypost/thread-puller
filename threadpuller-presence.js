@@ -40,15 +40,26 @@ function isFunction(obj) {
     return !!(obj && obj.constructor && obj.call && obj.apply);
 }
 
-function connectedSocketData() {
+function getSocketData(socketIds = null) {
     const { sockets } = io.sockets;
+    const ids = socketIds || Object.keys(sockets);
 
     return (
-        Object
-            .keys(sockets)
+        ids
             .map((key) => ([ key, sockets[ key ].data ]))
             .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
     );
+}
+
+function getSocketDataFor(room) {
+    const { sockets: potentialKeys = {} } = io.sockets.adapter.rooms[ room ] || {};
+
+    const keys =
+              Object.entries(potentialKeys)
+                    .filter(([ _, v ]) => v)
+                    .map(([ key ]) => key);
+
+    return getSocketData(keys);
 }
 
 io.on('connection', (socket) => {
@@ -69,7 +80,10 @@ io.on('connection', (socket) => {
 
     sendData();
 
-    socket.on('location', (location) => sendData(location));
+    socket.on('location', (location) => {
+        sendData(location);
+        socket.join(location.page);
+    });
 
     socket.on('disconnect', async () => {
         const payload = JSON.stringify(data);
@@ -77,11 +91,11 @@ io.on('connection', (socket) => {
         redis.publish(redisConf.prefix, `l:${payload}`);
     });
 
-    socket.on('clients', (cb) => {
+    socket.on('peers', (cb) => {
         if (!isFunction(cb))
             return false;
 
-        const rawData = connectedSocketData();
+        const rawData = getSocketDataFor(String(socket.data.location.page));
 
         const data =
                   Object.entries(rawData)
