@@ -164,6 +164,10 @@ const scripts = [
         link: `/js/Download.min.js`,
     },
     {
+        name: 'stalker',
+        link: `/js/Stalker.min.js`,
+    },
+    {
         name: 'cookie',
         href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
     },
@@ -178,6 +182,10 @@ const scripts = [
     {
         name: 'mobile-detect',
         href: `https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.1/mobile-detect.min.js`,
+    },
+    {
+        name: 'socket-io',
+        href: `https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js`,
     },
 ];
 
@@ -215,7 +223,13 @@ Router.get('/', async (req, res) => {
     res.render('base', opts);
 });
 
-Router.get('/stalk', (req, res) => res.render('stalk'));
+Router.get('/stalk', (req, res) => {
+    const opts = {
+        scripts: ResourceWatcher.getAssets(scripts, 'stalker', 'socket-io'),
+    };
+
+    res.render('stalk', opts);
+});
 
 Router.get('/:board/', async (req, res) => {
     const board = htmlentities(req.params.board);
