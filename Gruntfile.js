@@ -27,6 +27,9 @@ module.exports = grunt => {
         'public/js/Download.min.js': [
             'static/js/Download.js',
         ],
+        'public/js/Stalker.min.js': [
+            'static/js/Stalker.js',
+        ],
     };
 
     const CssFileList = {
