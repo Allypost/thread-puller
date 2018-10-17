@@ -63,6 +63,14 @@ function getSocketDataFor(room) {
     return getSocketData(keys);
 }
 
+function censorData(rawData) {
+    return (
+        Object.entries(rawData)
+              .map(([ key, value ]) => ([ key, Object.assign({}, value, { ip: null, ua: null, id: null }) ]))
+              .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
+    );
+}
+
 io.on('connection', (socket) => {
     const { id } = socket;
     const { headers: { cookie: rawCookie, 'user-agent': ua } } = socket.handshake;
@@ -114,29 +122,14 @@ io.on('connection', (socket) => {
 
         const rawData = getSocketDataFor(String(socket.data.location.page));
 
-        const data =
-                  Object.entries(rawData)
-                        .map(([ key, value ]) => ([ key, Object.assign({}, value, { ip: '' }) ]))
-                        .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
-
-        cb(data);
+        cb(censorData(rawData));
     });
 
     socket.on('all', (cb) => {
         if (!isFunction(cb))
             return false;
 
-        const rawData = getSocketData();
-
-        if (socket.monitoring)
-            return cb(rawData);
-
-        const data =
-                  Object.entries(rawData)
-                        .map(([ key, value ]) => ([ key, Object.assign({}, value, { ip: '' }) ]))
-                        .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
-
-        cb(data);
+        cb(censorData(getSocketData()));
     });
 });
 
