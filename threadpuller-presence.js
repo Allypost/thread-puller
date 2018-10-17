@@ -46,6 +46,7 @@ function getSocketData(socketIds = null) {
 
     return (
         ids
+            .filter((key) => !sockets[ key ].monitoring)
             .map((key) => ([ key, sockets[ key ].data ]))
             .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
     );
@@ -69,13 +70,24 @@ io.on('connection', (socket) => {
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
     const data = { id, presenceId, geo, ip, ua, date: new Date().getTime() };
+    socket.monitoring = false;
 
-    async function sendData(location = { page: '/', title: '<i>Loading...</i>' }) {
+    async function sendData(location = { page: '/', title: '<i>Loading...</i>', loading: true }) {
         socket.data = data;
 
         const payload = JSON.stringify(Object.assign(data, { location }));
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
+
+        io.to('monitor').emit('user:update', { type: 'update', loading: Boolean(location.loading), data });
+    }
+
+    async function removeData() {
+        const payload = JSON.stringify(data);
+        await redis.delAsync(`${id}`);
+        redis.publish(redisConf.prefix, `l:${payload}`);
+
+        io.to('monitor').emit('user:update', { type: 'leave', loading: false, data });
     }
 
     sendData();
@@ -85,17 +97,39 @@ io.on('connection', (socket) => {
         socket.join(location.page);
     });
 
-    socket.on('disconnect', async () => {
-        const payload = JSON.stringify(data);
-        await redis.delAsync(`${id}`);
-        redis.publish(redisConf.prefix, `l:${payload}`);
+    socket.on('monitor', async (cb) => {
+        socket.monitoring = true;
+        await removeData();
+        socket.join('monitor');
+
+        if (isFunction(cb))
+            cb(getSocketData());
     });
+
+    socket.on('disconnect', async () => removeData());
 
     socket.on('peers', (cb) => {
         if (!isFunction(cb))
             return false;
 
         const rawData = getSocketDataFor(String(socket.data.location.page));
+
+        const data =
+                  Object.entries(rawData)
+                        .map(([ key, value ]) => ([ key, Object.assign({}, value, { ip: '' }) ]))
+                        .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
+
+        cb(data);
+    });
+
+    socket.on('all', (cb) => {
+        if (!isFunction(cb))
+            return false;
+
+        const rawData = getSocketData();
+
+        if (socket.monitoring)
+            return cb(rawData);
 
         const data =
                   Object.entries(rawData)
