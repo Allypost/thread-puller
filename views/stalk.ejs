@@ -10,7 +10,13 @@
 </style>
 <ol id="stalker-container">Connecting...</ol>
 <script>
-    const socket = io('https://thread-puller.ga');
+    <%
+    if (presence.port)
+        socketUrl = `${presence.domain}:${presence.port}`;
+    else
+        socketUrl = presence.domain;
+    %>
+    const socket = io('<%= socketUrl -%>');
     socket.emit('monitor', parseData);
 
     socket.on('user:update', () => socket.emit('all', parseData));
