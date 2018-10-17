@@ -10,13 +10,27 @@
 </style>
 <ol id="stalker-container"></ol>
 <script>
-    let id = '';
-    const socket = io();
-    socket.on('stuff', updateStalk);
-    socket.on('init', ({ id: uid, data }) => {
-        id = uid;
-        updateStalk(data);
-    });
+    const socket = io('https://thread-puller.ga');
+    socket.emit('monitor', parseData);
+
+    socket.on('user:update', () => socket.emit('all', parseData));
+
+    function parseData(rawData) {
+        const data =
+                  Object
+                      .values(rawData)
+                      .sort((a, b) => a.date - b.date)
+                      .reduce((acc, el) => {
+                          const key = el.presenceId || el.ip || el.id;
+                          const { [ key ]: value = [] } = acc;
+
+                          acc[ key ] = [ ...value, el ];
+
+                          return acc;
+                      }, {});
+
+        updateStalk(Object.entries(data));
+    }
 
     function updateStalk(data) {
         const root = document.getElementById('stalker-container');
