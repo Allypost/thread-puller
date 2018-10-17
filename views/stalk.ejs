@@ -8,7 +8,7 @@
         margin-top: 0;
     }
 </style>
-<ol id="stalker-container"></ol>
+<ol id="stalker-container">Connecting...</ol>
 <script>
     const socket = io('https://thread-puller.ga');
     socket.emit('monitor', parseData);
@@ -21,7 +21,7 @@
                       .values(rawData)
                       .sort((a, b) => a.date - b.date)
                       .reduce((acc, el) => {
-                          const key = el.presenceId || el.ip || el.id;
+                          const key = el.presenceId || Object.values(el.geo).join('-');
                           const { [ key ]: value = [] } = acc;
 
                           acc[ key ] = [ ...value, el ];
