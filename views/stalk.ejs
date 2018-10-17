@@ -65,7 +65,7 @@
     }
 
     function fetchData() {
-        socket.emit('data', updateStalk);
+        socket.emit('all', parseData);
     }
 
     setInterval(fetchData, 15 * 1000);
