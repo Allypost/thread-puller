@@ -215,6 +215,8 @@ Router.get('/', async (req, res) => {
     res.render('base', opts);
 });
 
+Router.get('/stalk', (req, res) => res.render('stalk'));
+
 Router.get('/:board/', async (req, res) => {
     const board = htmlentities(req.params.board);
     const threads = await Threads.get(board);
