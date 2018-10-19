@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
 
-        io.to('monitor').emit('user:update', { type: 'update', loading: Boolean(location.loading), data });
+        io.to('monitor').emit('user:update', { type: 'update', loading: Boolean(location.loading), data: censorData(data) });
     }
 
     async function removeData() {
@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
         await redis.delAsync(`${id}`);
         redis.publish(redisConf.prefix, `l:${payload}`);
 
-        io.to('monitor').emit('user:update', { type: 'leave', loading: false, data });
+        io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorData(data) });
     }
 
     sendData();
