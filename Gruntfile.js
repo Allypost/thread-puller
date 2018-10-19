@@ -75,14 +75,6 @@ module.exports = grunt => {
             },
         },
         watch: {
-            scripts: {
-                files: [ 'static/**/*.js', '!static/js/*.min.js' ],
-                //tasks: [ 'closure-compiler-manual', 'javascript_obfuscator' ],
-                tasks: [ 'closure-compiler-manual' ],
-                options: {
-                    spawn: true,
-                },
-            },
             styles: {
                 files: [ 'static/**/*.scss' ],
                 tasks: [ 'sass', 'postcss' ],
@@ -134,6 +126,15 @@ module.exports = grunt => {
                       language_out: 'ECMASCRIPT3',
                       use_types_for_optimization: false,
                       rewrite_polyfills: true,
+                  },
+              };
+
+              gruntConfig[ 'watch' ][ `script:${compileName}` ] = {
+                  files,
+                  //tasks: [ 'closure-compiler-manual', 'javascript_obfuscator' ],
+                  tasks: [ `closure-compiler-manual:${compileName}` ],
+                  options: {
+                      spawn: true,
                   },
               };
 
