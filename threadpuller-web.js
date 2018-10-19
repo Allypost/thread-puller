@@ -148,6 +148,10 @@ const styles = [
 ];
 const scripts = [
     {
+        name: 'global',
+        link: `/js/App.min.js`,
+    },
+    {
         name: 'board',
         link: `/js/Board.min.js`,
     },
@@ -216,6 +220,7 @@ Router.get('/', async (req, res) => {
     const opts = {
         page: 'boards/show',
         styles: ResourceWatcher.getAssets(styles, 'global', 'index'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global'),
         settings: false,
         boards: await Boards.get(),
     };
@@ -225,7 +230,7 @@ Router.get('/', async (req, res) => {
 
 Router.get('/stalk', (req, res) => {
     const opts = {
-        scripts: ResourceWatcher.getAssets(scripts, 'stalker', 'socket-io'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'stalker', 'socket-io'),
     };
 
     res.render('stalk', opts);
@@ -237,7 +242,7 @@ Router.get('/:board/', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'cookie', 'linkify', 'board', 'settings', 'download'),
         threads,
         board,
     };
@@ -286,7 +291,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'cookie', 'linkify', 'board', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'cookie', 'linkify', 'board', 'settings', 'download'),
         query,
         threads,
         board,
@@ -317,7 +322,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'thread'),
-        scripts: ResourceWatcher.getAssets(scripts, 'cookie', 'mobile-detect', 'thread', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'cookie', 'mobile-detect', 'thread', 'settings', 'download'),
         threadUrl: Posts.constructor.threadUrl(board, thread),
         board,
         thread,
