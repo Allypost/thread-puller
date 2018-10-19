@@ -40,19 +40,23 @@ function isFunction(obj) {
     return !!(obj && obj.constructor && obj.call && obj.apply);
 }
 
-function getSocketData(socketIds = null) {
+function getSocketData(socketIds = null, censored = true) {
     const { sockets } = io.sockets;
     const ids = socketIds || Object.keys(sockets);
 
-    return (
-        ids
-            .filter((key) => !sockets[ key ].monitoring)
-            .map((key) => ([ key, sockets[ key ].data ]))
-            .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
-    );
+    const rawData =
+              ids
+                  .filter((key) => !sockets[ key ].monitoring)
+                  .map((key) => ([ key, sockets[ key ].data ]))
+                  .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {});
+
+    if (censored)
+        return censorData(rawData);
+
+    return rawData;
 }
 
-function getSocketDataFor(room) {
+function getSocketDataFor(room, censored = true) {
     const { sockets: potentialKeys = {} } = io.sockets.adapter.rooms[ room ] || {};
 
     const keys =
@@ -60,13 +64,23 @@ function getSocketDataFor(room) {
                     .filter(([ _, v ]) => v)
                     .map(([ key ]) => key);
 
-    return getSocketData(keys);
+    return getSocketData(keys, censored);
+}
+
+function censorValue(rawValue) {
+    const censoredKeys = [ 'ip', 'ua', 'id' ];
+
+    return (
+        Object.entries(rawValue)
+              .filter(([ key ]) => !censoredKeys.includes(key))
+              .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
+    );
 }
 
 function censorData(rawData) {
     return (
         Object.entries(rawData)
-              .map(([ key, value ]) => ([ key, Object.assign({}, value, { ip: null, ua: null, id: null }) ]))
+              .map(([ key, value ]) => ([ key, censorValue(value) ]))
               .reduce((acc, [ k, v ]) => Object.assign(acc, { [ k ]: v }), {})
     );
 }
@@ -87,7 +101,7 @@ io.on('connection', (socket) => {
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
 
-        io.to('monitor').emit('user:update', { type: 'update', loading: Boolean(location.loading), data: censorData(data) });
+        io.to('monitor').emit('user:update', { type: 'update', loading: Boolean(location.loading), data: censorValue(data) });
     }
 
     async function removeData() {
@@ -95,7 +109,7 @@ io.on('connection', (socket) => {
         await redis.delAsync(`${id}`);
         redis.publish(redisConf.prefix, `l:${payload}`);
 
-        io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorData(data) });
+        io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorValue(data) });
     }
 
     sendData();
@@ -122,14 +136,14 @@ io.on('connection', (socket) => {
 
         const rawData = getSocketDataFor(String(socket.data.location.page));
 
-        cb(censorData(rawData));
+        cb(rawData);
     });
 
     socket.on('all', (cb) => {
         if (!isFunction(cb))
             return false;
 
-        cb(censorData(getSocketData()));
+        cb(getSocketData());
     });
 });
 
