@@ -4,6 +4,12 @@
 <meta name="theme-color" content="#1E1E1E">
 <meta name="application-name" content="ThreadPuller - View 4chan thread images and videos">
 <meta name="msapplication-TileColor" content="#1E1E1E">
+<% if(locals.meta) { %>
+    <meta property="og:title" content="<%- meta.title -%>" />
+    <meta property="og:description" content="<%- meta.description -%>" />
+    <meta name="description" content="<%- meta.description -%>" />
+    <meta property="og:image" content="<%= meta.thumb || '/pepe.png' -%>" />
+<% } %>
 <% if(ga.verification) { %>
     <meta name="google-site-verification" content="<%- ga.verification -%>" />
 <% } %>
