@@ -223,6 +223,10 @@ Router.get('/', async (req, res) => {
         scripts: ResourceWatcher.getAssets(scripts, 'global'),
         settings: false,
         boards: await Boards.get(),
+        meta: {
+            title: 'ThreadPuller - Pull 4chan image threads',
+            description: 'Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.',
+        },
     };
 
     res.render('base', opts);
@@ -251,13 +255,23 @@ Router.get('/:board/', async (req, res) => {
         opts.title = '/404/ - Board Not Found';
         opts.page = 'board/not-found';
         opts.settings = false;
+        opts.meta = {
+            title: `/${board}/ - 404 Board Not Found - ThreadPuller`,
+            thumb: '/images/pepe-sad.png',
+            description: `Can't find the board \`${board.replace(/"/gi, '＂')}\`.`,
+        };
 
         res.status(404);
         return res.render('base', opts);
     }
 
+    const boardInfo = await Boards.info(board);
     opts.title = `/${board}/ - ThreadPuller`;
     opts.page = 'board/show';
+    opts.meta = {
+        title: `${boardInfo.nsfw ? '[NSFW] ' : ''}/${board}/ - ${boardInfo.title} - ThreadPuller`,
+        description: boardInfo.description.replace(/&quot;/gi, '＂'),
+    };
 
     res.render('base', opts);
 });
@@ -297,10 +311,17 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
         board,
     };
 
+    const safeQuery = query.replace(/"/gi, '＂');
+
     if (!threads.length) {
-        opts.title = `/${board}/${htmlentities(query)}/ - No laughs found`;
+        opts.title = `/${board}/${query}/ - No laughs found`;
         opts.page = 'board/no-search-results';
         opts.settings = false;
+        opts.meta = {
+            title: `/${board}/${safeQuery}/ - ThreadPuller Search`,
+            thumb: '/images/pepe-sad.png',
+            description: `Can't find any \`${safeQuery}\` posts in /${board}/`,
+        };
 
         res.status(404);
         return res.render('base', opts);
@@ -308,6 +329,10 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
 
     opts.title = `/${board}/${query}/ - ThreadPuller`;
     opts.page = 'board/search';
+    opts.meta = {
+        title: `/${board}/${safeQuery}/ - ThreadPuller Search`,
+        description: `Search the /${board}/ board for \`${safeQuery}\` threads`,
+    };
 
     res.render('base', opts);
 });
@@ -332,6 +357,11 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     if (!posts) {
         opts.title = '/404/ - Thread Not Found';
         opts.page = 'thread/not-found';
+        opts.meta = {
+            title: `/${board}/404 Thread Not Found/ - ThreadPuller`,
+            thumb: '/images/pepe-sad.png',
+            description: 'There are no posts here...\nPlease try again later.',
+        };
         opts.settings = false;
 
         res.status(404);
@@ -344,6 +374,11 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     opts.page = 'thread/show';
     opts.title = `/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80, '')}`;
     opts.postTitle = title;
+    opts.meta = {
+        title: `/${board}/${title}/ - ThreadPuller`,
+        thumb: firstPost.file.meta.thumbSrc,
+        description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true),
+    };
     opts.renderPost = PostResource.get;
     opts.renderParams = [ req.query, req.cookies ];
 
