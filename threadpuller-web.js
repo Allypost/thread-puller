@@ -195,6 +195,7 @@ const scripts = [
 
 app.locals = {
     donateLink: process.env.THREADPULLER_DONATE_LINK,
+    showAds: Boolean(+process.env.THREADPULLER_SHOW_ADS),
     title: 'ThreadPuller',
     settings: true,
     $_styles: styles,
