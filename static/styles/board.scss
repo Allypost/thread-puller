@@ -163,6 +163,10 @@ a {
 
     }
 
+    &.ad .content {
+        border-radius: 6px;
+    }
+
     &[data-shown="no"] {
         .download {
             display: none;
