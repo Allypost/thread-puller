@@ -1,5 +1,6 @@
 <h1 class="no-select"><a href="/">Back</a> | <a href="https://boards.4chan.org/<%= board -%>/" target="_blank" rel="noopener noreferrer">Go to board</a></h1>
 <h1 class="no-select">Board: /<%= board -%>/</h1>
+<h2 class="no-select"><%- description -%></h2>
 <% threads.forEach((thread) => { %>
     <%- include('./thread.ejs', { post: thread }) -%>
 <% }) -%>

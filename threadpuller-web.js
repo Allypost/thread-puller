@@ -268,6 +268,7 @@ Router.get('/:board/', async (req, res) => {
     const boardInfo = await Boards.info(board);
     opts.title = `/${board}/ - ThreadPuller`;
     opts.page = 'board/show';
+    opts.description = boardInfo.description;
     opts.meta = {
         title: `${boardInfo.nsfw ? '[NSFW] ' : ''}/${board}/ - ${boardInfo.title} - ThreadPuller`,
         description: boardInfo.description.replace(/&quot;/gi, '＂'),
