@@ -87,7 +87,7 @@ function censorData(rawData) {
 
 io.on('connection', (socket) => {
     const { id } = socket;
-    const { headers: { cookie: rawCookie, 'user-agent': ua } } = socket.handshake;
+    const { headers: { cookie: rawCookie = '', 'user-agent': ua = '' } } = socket.handshake;
     const { threadpuller_presence: presenceId } = cookie.parse(rawCookie);
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
