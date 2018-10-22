@@ -53,7 +53,7 @@ const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
 const cacheUrl = URL.parse(process.env.THREADPULLER_DOMAIN_CACHE);
 const presenceUrl = URL.parse(process.env.THREADPULLER_DOMAIN_PRESENCE);
 Router.use((req, res, next) => {
-    const isImage = String(req.url).substr(0, 3) === '/i/';
+    const isImage = String(req.url).substr(0, 3) === '/i/' || String(req.url).substr(0, 7) === '/thumb/';
 
     if (siteUrl[ 'hostname' ] === cacheUrl[ 'hostname' ])
         return next();
