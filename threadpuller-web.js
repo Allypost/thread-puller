@@ -209,6 +209,7 @@ app.locals = {
         domain: process.env.THREADPULLER_DOMAIN_PRESENCE,
         port: process.env.THREADPULLER_PRESENCE_PORT,
     },
+    sentryDSN: process.env.SENTRY_DSN_URL,
     ResourceWatcher,
 };
 

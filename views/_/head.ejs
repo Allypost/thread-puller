@@ -16,6 +16,9 @@
 <title><%= title; %></title>
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 <%- include ./styles.ejs -%>
+<% if(locals.sentryDSN) { -%>
+    <%- include ./sentry.ejs -%>
+<% } -%>
 <% if(locals.showAds) { -%>
     <%- include ./adsense.ejs -%>
 <% } -%>
