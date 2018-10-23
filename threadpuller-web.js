@@ -240,7 +240,7 @@ Router.get('/:board/', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings'),
         threads,
         board,
     };
@@ -300,7 +300,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings'),
         query,
         threads,
         board,
@@ -342,7 +342,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'thread'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'thread', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'thread', 'settings'),
         threadUrl: Posts.constructor.threadUrl(board, thread),
         board,
         thread,
