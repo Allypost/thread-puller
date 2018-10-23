@@ -30,6 +30,36 @@ class Settings {
         this._settings = this.getProxied(this._settings, this._settingsProxyHandler());
 
         this.addEventListeners();
+        this._handleListenerRequests();
+    }
+
+    listenToHandlerRequests(obj) {
+        return new Proxy(obj, {
+            set: (obj, key, value) => {
+                obj[ key ] = value;
+
+                if (key !== 'length')
+                    setTimeout(() => this._handleListenerRequests(obj), 5);
+
+                return true;
+            },
+        });
+    }
+
+    _handleListenerRequests(obj) {
+        const listeners = obj || window.__settingsListeners;
+
+        if (!listeners)
+            return;
+
+        let listener;
+        while (listener = listeners.pop()) {
+            try {
+                listener(this);
+            } catch (e) {
+                console.warn('Couldn\'t execute listener', listener, e);
+            }
+        }
     }
 
     get() {

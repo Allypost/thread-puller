@@ -2,4 +2,9 @@
 <div id="settings-modal">
     <div class="settings-modal-content"></div>
 </div>
-<script>if(window.Settings) var settings = new Settings();</script>
+<script>
+    if (window.Settings) {
+        var settings = new Settings();
+        window.__settingsListeners = settings.listenToHandlerRequests(window.__settingsListeners);
+    }
+</script>
