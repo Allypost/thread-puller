@@ -57,7 +57,7 @@ class Settings {
             try {
                 listener(this);
             } catch (e) {
-                console.warn('Couldn\'t execute listener', listener, e);
+                console.warn('[SETTINGS]', 'Couldn\'t execute listener', listener, e);
             }
         }
     }
