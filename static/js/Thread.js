@@ -70,9 +70,11 @@ const Thread = {
 
     addListeners() {
         window.addEventListener('scroll', () => this.updateElementVisibility());
+        window.__settingsListeners.push((settings) => this._addSettingsListeners(settings));
+    },
 
-        if (window.settings)
-            window.settings.onChange('*', this._handleSettingChange.bind(this));
+    _addSettingsListeners(settings) {
+        settings.onChange('*', this._handleSettingChange.bind(this));
     },
 
     _handleSettingChange(key, value) {

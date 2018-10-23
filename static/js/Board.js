@@ -159,13 +159,15 @@ const Board = {
 
         return handler(value);
     },
+    _addSettingsListeners(settings) {
+        settings.onChange('*', this._handleSettingChange.bind(this));
+    },
     init() {
         // this.markLongPosts();
         this.fixQuoteLinks();
         this.addExpandListeners();
         this.addImageLoadListener();
-        if (window.settings)
-            window.settings.onChange('*', this._handleSettingChange.bind(this));
+        window.__settingsListeners.push((settings) => this._addSettingsListeners(settings));
         document.addEventListener('DOMContentLoaded', () => {
             this.removeWbrTags();
             this.linkifyDescriptions();
