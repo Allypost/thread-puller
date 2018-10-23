@@ -91,9 +91,15 @@ module.exports = grunt => {
                 files: [
                     {
                         expand: true,
-                        cwd: 'static/images/',
-                        src: [ '**/*.{png,jpg,jpeg,svg,gif}' ],
+                        cwd: 'static/images/images/',
+                        src: [ '*.{png,jpg,jpeg,svg,gif,ico}' ],
                         dest: 'public/images/',
+                    },
+                    {
+                        expand: true,
+                        cwd: 'static/images/',
+                        src: [ '*.{png,jpg,jpeg,svg,gif,ico}' ],
+                        dest: 'public/',
                     },
                 ],
                 options: {
