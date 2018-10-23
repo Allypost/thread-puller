@@ -35,6 +35,7 @@ const Thread = {
         this.addListeners();
         this.updateElementVisibility();
         this.preloadVideos();
+        this.addImageListeners();
     },
 
     preloadVideos() {
@@ -43,6 +44,13 @@ const Thread = {
         videos
             .filter((video) => video.parentNode.dataset.visible === 'yes')
             .map(this.preloadVideo);
+    },
+
+    addImageListeners() {
+        const images = Array.from(this.getImages());
+
+        images
+            .map(this.addImageLoadListener.bind(this));
     },
 
     preloadVideo(video) {
@@ -64,12 +72,28 @@ const Thread = {
         return video;
     },
 
+    preloadImage(el) {
+        if (el.parentElement.dataset.visible === 'no')
+            return;
+
+        if (el.dataset.masterSrc) {
+            el.src = el.dataset.masterSrc;
+            el.removeAttribute('data-master-src');
+        } else {
+            el.parentElement.classList.remove('loading');
+        }
+    },
+
     getVideos() {
         return document.querySelectorAll('.resource video');
     },
 
+    getImages() {
+        return document.querySelectorAll('.resource img');
+    },
+
     addListeners() {
-        window.addEventListener('scroll', () => this.updateElementVisibility());
+        window.addEventListener('scroll', debounce(() => this.updateElementVisibility(), 10));
         window.__settingsListeners.push((settings) => this._addSettingsListeners(settings));
     },
 
@@ -97,11 +121,15 @@ const Thread = {
              .forEach((el) => {
                  const isVisible = isAnyPartOfElementInViewport(el);
                  const video = el.querySelector('video');
+                 const image = el.querySelector('img');
 
                  el.dataset.visible = isVisible ? 'yes' : 'no';
 
                  if (video)
                      this.updateVideoElement(video, isVisible);
+
+                 if (image)
+                     this.updateImageElement(image, isVisible);
              });
     },
 
@@ -117,5 +145,33 @@ const Thread = {
 
         if (autoplay && el.paused && !el.ended)
             return el.play();
+    },
+
+    addImageLoadListener(el) {
+        el.dataset.processed = '1';
+
+        el.addEventListener('loadstart', function () {
+            const ratio = Number(this.dataset.ratio);
+            const height = this.offsetWidth * ratio;
+
+            if (!height)
+                return;
+
+            this.setAttribute('height', `${height}px`);
+        });
+
+        el.addEventListener('load', () => this.preloadImage(el));
+    },
+
+    updateImageElement(el) {
+        const isVisible = el.parentNode.dataset.visible === 'yes';
+
+        if (!isVisible)
+            return;
+
+        if (Number(el.dataset.processed))
+            return this.preloadImage(el);
+
+        return this.addImageLoadListener(el);
     },
 };
