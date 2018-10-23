@@ -17,7 +17,12 @@ const Board = {
         this.addLongPostListener(el);
     },
     postListener(evt) {
-        const el = evt.path.find(el => el.classList.contains('description'));
+        const { path } = evt || {};
+
+        if (!path || !path.find)
+            return;
+
+        const el = path.find(el => el.classList.contains('description'));
 
         if (!el || el === document)
             return;
@@ -120,7 +125,14 @@ const Board = {
     },
     addImageLoadListener() {
         document.querySelectorAll('img')
-                .forEach(el => el.addEventListener('load', (evt) => this.markLongPost(evt.path.find(el => el.classList.contains('board')).querySelector('.description'))));
+                .forEach(el => el.addEventListener('load', (evt) => {
+                    const { path } = evt || {};
+
+                    if (!path || !path.find)
+                        return;
+
+                    this.markLongPost(path.find(el => el.classList.contains('board')).querySelector('.description'));
+                }));
     },
     removeWbrTags() {
         const wbrs = document.getElementsByTagName('wbr');
