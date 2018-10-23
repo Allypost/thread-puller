@@ -19,10 +19,12 @@ module.exports = grunt => {
             'static/js/Board.js',
         ],
         'public/js/Thread.min.js': [
+            'node_modules/mobile-detect/mobile-detect.min.js',
             'static/js/Thread.js',
         ],
         'public/js/Settings.min.js': [
             'node_modules/proxy-polyfill/proxy.min.js',
+            'node_modules/js-cookie/src/js.cookie.js',
             'static/js/Settings.js',
         ],
         'public/js/Download.min.js': [
