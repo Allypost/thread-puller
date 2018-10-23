@@ -25,7 +25,11 @@ function isAnyPartOfElementInViewport(el) {
 
 const Thread = {
     init() {
-        this.md = new MobileDetect(window.navigator.userAgent);
+        if (window.MobileDetect)
+            this.md = new MobileDetect(window.navigator.userAgent);
+        else
+            this.md = { mobile: () => false };
+
         this.isMobile = this.md.mobile();
 
         this.addListeners();

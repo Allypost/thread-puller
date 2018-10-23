@@ -174,6 +174,11 @@ class Settings {
     }
 
     getSetting(name) {
+        if (!window.Cookies) {
+            console.warn('Can\'t fetch cookies');
+            return null;
+        }
+
         const cookieKey = this._settingsCookie;
 
         const rawCookie = (Cookies.get(cookieKey) || '').substr(2);
@@ -191,6 +196,11 @@ class Settings {
     }
 
     saveSettings() {
+        if (!window.Cookies) {
+            console.warn('Can\'t fetch cookies');
+            return;
+        }
+
         const settingsCookie = this._settingsCookie;
         const newSettings = this.getCookieSettingsString();
 
