@@ -23,6 +23,7 @@
     "helmet": "^3.12.1",
     "html-entities": "^1.2.1",
     "mkdirp": "^0.5.1",
+    "proxy-polyfill": "^0.3.0",
     "raven": "^2.6.2",
     "redis": "^2.8.0",
     "request": "^2.87.0",

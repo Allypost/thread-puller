@@ -22,9 +22,11 @@ module.exports = grunt => {
             'static/js/Thread.js',
         ],
         'public/js/Settings.min.js': [
+            'node_modules/proxy-polyfill/proxy.min.js',
             'static/js/Settings.js',
         ],
         'public/js/Download.min.js': [
+            'node_modules/proxy-polyfill/proxy.min.js',
             'static/js/Download.js',
         ],
         'public/js/Stalker.min.js': [
