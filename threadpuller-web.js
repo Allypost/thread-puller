@@ -172,20 +172,12 @@ const scripts = [
         link: `/js/Stalker.min.js`,
     },
     {
-        name: 'cookie',
-        href: `https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js`,
-    },
-    {
         name: 'linkify',
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify.min.js`,
     },
     {
         name: 'linkify',
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify-html.min.js`,
-    },
-    {
-        name: 'mobile-detect',
-        href: `https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.1/mobile-detect.min.js`,
     },
     {
         name: 'socket-io',
@@ -248,7 +240,7 @@ Router.get('/:board/', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'cookie', 'linkify', 'board', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings', 'download'),
         threads,
         board,
     };
@@ -308,7 +300,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'cookie', 'linkify', 'board', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings', 'download'),
         query,
         threads,
         board,
@@ -350,7 +342,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
 
     const opts = {
         styles: ResourceWatcher.getAssets(styles, 'global', 'thread'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'cookie', 'mobile-detect', 'thread', 'settings', 'download'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'thread', 'settings', 'download'),
         threadUrl: Posts.constructor.threadUrl(board, thread),
         board,
         thread,
