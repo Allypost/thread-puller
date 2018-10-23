@@ -37,6 +37,10 @@ module.exports = grunt => {
         'public/js/App.min.js': [
             'static/js/App.js',
         ],
+        'public/js/Presence.min.js': [
+            'node_modules/socket.io-client/dist/socket.io.js',
+            'static/js/Presence.js',
+        ],
     };
 
     const CssFileList = {

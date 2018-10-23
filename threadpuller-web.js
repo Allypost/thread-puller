@@ -172,6 +172,10 @@ const scripts = [
         link: `/js/Stalker.min.js`,
     },
     {
+        name: 'presence',
+        link: `/js/Presence.min.js`,
+    },
+    {
         name: 'linkify',
         href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify.min.js`,
     },
