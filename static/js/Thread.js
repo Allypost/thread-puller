@@ -87,16 +87,16 @@ const Thread = {
     },
 
     updateElementVisibility() {
-        document.querySelectorAll('.resource')
-                .forEach((el) => {
-                    const isVisible = isAnyPartOfElementInViewport(el);
-                    const video = el.querySelector('video');
+        Array.from(document.querySelectorAll('.resource'))
+             .forEach((el) => {
+                 const isVisible = isAnyPartOfElementInViewport(el);
+                 const video = el.querySelector('video');
 
-                    el.dataset.visible = isVisible ? 'yes' : 'no';
+                 el.dataset.visible = isVisible ? 'yes' : 'no';
 
-                    if (video)
-                        this.updateVideoElement(video, isVisible);
-                });
+                 if (video)
+                     this.updateVideoElement(video, isVisible);
+             });
     },
 
     updateVideoElement(el) {
