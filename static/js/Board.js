@@ -124,15 +124,15 @@ const Board = {
              });
     },
     addImageLoadListener() {
-        document.querySelectorAll('img')
-                .forEach(el => el.addEventListener('load', (evt) => {
-                    const { path } = evt || {};
+        Array.from(document.querySelectorAll('img'))
+             .forEach(el => el.addEventListener('load', (evt) => {
+                 const { path } = evt || {};
 
-                    if (!path || !path.find)
-                        return;
+                 if (!path || !path.find)
+                     return;
 
-                    this.markLongPost(path.find(el => el.classList.contains('board')).querySelector('.description'));
-                }));
+                 this.markLongPost(path.find(el => el.classList.contains('board')).querySelector('.description'));
+             }));
     },
     removeWbrTags() {
         const wbrs = document.getElementsByTagName('wbr');
@@ -142,16 +142,18 @@ const Board = {
         }
     },
     linkifyDescriptions() {
-        document.querySelectorAll('.description')
-                .forEach(el => el.innerHTML = linkifyHtml(el.innerHTML));
+        Array.from(document.querySelectorAll('.description'))
+             .forEach(el => el.innerHTML = linkifyHtml(el.innerHTML));
     },
     _handleSettingChange(key, value) {
         const handlers = {
             volume: (value) => {
-                document.querySelectorAll('.board .content video').forEach((el) => el.volume = value / 100);
+                Array.from(document.querySelectorAll('.board .content video'))
+                     .forEach((el) => el.volume = value / 100);
             },
             loop: (value) => {
-                document.querySelectorAll('.board .content video').forEach((el) => el.loop = value);
+                Array.from(document.querySelectorAll('.board .content video'))
+                     .forEach((el) => el.loop = value);
             },
         };
 

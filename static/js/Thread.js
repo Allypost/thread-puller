@@ -85,11 +85,11 @@ const Thread = {
     },
 
     getVideos() {
-        return document.querySelectorAll('.resource video');
+        return Array.from(document.querySelectorAll('.resource video'));
     },
 
     getImages() {
-        return document.querySelectorAll('.resource img');
+        return Array.from(document.querySelectorAll('.resource img'));
     },
 
     addListeners() {
