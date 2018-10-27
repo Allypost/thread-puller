@@ -94,12 +94,12 @@ io.on('connection', (socket) => {
     const data = { id, presenceId, geo, ip, ua, date: new Date().getTime() };
     socket.monitoring = false;
 
-    async function sendData(location = { page: '/', title: '<i>Loading...</i>', loading: true }) {
-        socket.data = data;
-
-        const payload = JSON.stringify(Object.assign(data, { location }));
+    async function sendData(location = { page: '/', title: '<i>Loading...</i>', loading: true }, presenceId = data.presenceId) {
+        const payload = JSON.stringify(Object.assign(data, { location, presenceId }));
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
+
+        socket.data = data;
 
         io.to('monitor').emit('user:update', { type: 'update', loading: Boolean(location.loading), data: censorValue(data) });
     }
@@ -114,8 +114,8 @@ io.on('connection', (socket) => {
 
     sendData();
 
-    socket.on('location', (location) => {
-        sendData(location);
+    socket.on('location', (location, presenceId) => {
+        sendData(location, presenceId);
         socket.join(location.page);
     });
 
