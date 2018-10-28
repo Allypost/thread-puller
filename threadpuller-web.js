@@ -371,12 +371,12 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const title = PostResource.sanitizedTitle(firstPost);
 
     opts.page = 'thread/show';
-    opts.title = `/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80, '')}`;
+    opts.title = `/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80).replace(/<br>/gi, ' ')}`;
     opts.postTitle = title;
     opts.meta = {
-        title: `/${board}/${title}/ - ThreadPuller`,
+        title: `/${board}/${title.replace(/<br>/gi, ' ')}/ - ThreadPuller`,
         thumb: firstPost.file.meta.thumbSrc,
-        description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true),
+        description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true).replace(/\n/gi, '\n'),
     };
     opts.renderPost = PostResource.get;
     opts.renderParams = [ req.query, req.cookies ];
