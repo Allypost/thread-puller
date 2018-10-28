@@ -87,12 +87,12 @@ function censorData(rawData) {
 
 io.on('connection', (socket) => {
     const { id } = socket;
-    const { headers: { cookie: rawCookie = '', 'user-agent': ua = '' } } = socket.handshake;
+    const { query: { monitor }, headers: { cookie: rawCookie = '', 'user-agent': ua = '' } } = socket.handshake;
     const { threadpuller_presence: presenceId } = cookie.parse(rawCookie);
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
     const data = { id, presenceId, geo, ip, ua, date: new Date().getTime() };
-    socket.monitoring = false;
+    socket.monitoring = Boolean(monitor);
 
     async function sendData(location = { page: '/', title: '<i>Loading...</i>', loading: true }, presenceId = data.presenceId) {
         const payload = JSON.stringify(Object.assign(data, { location, presenceId }));
@@ -112,23 +112,17 @@ io.on('connection', (socket) => {
         io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorValue(data) });
     }
 
-    sendData();
+    if (socket.monitoring)
+        socket.join('monitor');
+    else
+        sendData();
 
     socket.on('location', (location, presenceId) => {
         sendData(location, presenceId);
         socket.join(location.page);
     });
 
-    socket.on('monitor', async (cb) => {
-        socket.monitoring = true;
-        await removeData();
-        socket.join('monitor');
-
-        if (isFunction(cb))
-            cb(getSocketData());
-    });
-
-    socket.on('disconnect', async () => removeData());
+    socket.on('disconnect', () => removeData());
 
     socket.on('peers', (cb) => {
         if (!isFunction(cb))

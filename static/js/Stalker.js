@@ -8,10 +8,10 @@ class Stalker {
     }
 
     connect(url) {
-        const socket = window.io(url);
+        const socket = window.io(url, { query: 'monitor=1' });
         const parser = this.parseData.bind(this);
 
-        socket.emit('monitor', parser);
+        socket.emit('all', parser);
 
         socket.on('user:update', () => socket.emit('all', parser));
 
