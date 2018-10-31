@@ -1,0 +1,9 @@
+<%
+const url = post.file.meta.fullSrc;
+const autoplay = opts.autoplay ? ' autoplay' : '';
+const loop = opts.loop ? ' loop' : '';
+const volume = opts.volume / 100;
+-%>
+<video controls <%- autoplay + loop -%> onloadstart="this.volume=<%- volume -%>" preload="none" poster="<%- post.file.meta.thumbSrc -%>" data-poster="<%- post.file.meta.thumbFullSrc -%>">
+    <source src="<%- url -%>">
+</video>

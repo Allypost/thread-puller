@@ -10,12 +10,20 @@
     <span class="title-text"><%- postTitle -%></span>
 </h1>
 
-<%-
-posts
-        .filter((post) => post.file)
-        .map((post) => renderPost(post, ...renderParams))
-        .join('')
--%>
+<% posts.filter((post) => post.file).forEach((post) => { -%>
+    <%
+        const postUrl = `https://boards.4chan.org/${post.board}/thread/${post.thread}#p${post.id}`;
+        const isVideo = post.file.meta.isVideo;
+        const loading = isVideo ? '' : 'loading';
+    -%>
+    <a href="<%- postUrl -%>" class="resource <%- loading -%>" target="_blank" rel="noopener noreferrer">
+        <% if (isVideo) { -%>
+            <%- include ./assets/video.ejs -%>
+        <% } else { -%>
+            <%- include ./assets/image.ejs -%>
+        <% } -%>
+    </a>
+<% }) -%>
 
 <script>
     (function () {

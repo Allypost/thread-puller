@@ -378,8 +378,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
         thumb: firstPost.file.meta.thumbSrc,
         description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true).replace(/\n/gi, '\n'),
     };
-    opts.renderPost = PostResource.get;
-    opts.renderParams = [ req.query, req.cookies ];
+    opts.renderOpts = PostResource.getOpts(req.query, req.cookies);
 
     res.render('base', opts);
 });

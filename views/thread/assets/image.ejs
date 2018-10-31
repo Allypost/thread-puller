@@ -1,0 +1,10 @@
+<%
+const mainURL = post.file.meta.fullSrc;
+const altUrl = post.file.meta.thumbSrc;
+
+const height = post.file.dimensions.main.height;
+const width = post.file.dimensions.main.width;
+
+const ratio = height && width ? height / width : 0;
+-%>
+<img src="<%- altUrl -%>" data-master-src="<%- mainURL -%>" data-ratio="<%- ratio -%>">
