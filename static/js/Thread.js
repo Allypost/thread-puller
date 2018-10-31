@@ -155,7 +155,9 @@ const Thread = {
 
     updateVideoElement(el) {
         const isVisible = el.parentNode.dataset.visible === 'yes';
-        const autoplay = window.settings && window.settings.setting('autoplay', true);
+        const setting = window.settings && window.settings.setting && window.settings.setting.bind(window.settings) || (() => undefined);
+
+        const autoplay = setting('autoplay', true);
 
         if (!isVisible)
             return el.pause();
