@@ -435,6 +435,28 @@ Router.get('/thumb/:board/:resource.:ext.png', (req, res) => {
         .run();
 });
 
+Router.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
+    const { board, resource, ext } = req.params;
+
+    res.type('jpg');
+
+    ffmpeg()
+        .input(`https://i.4cdn.org/${board}/${resource}.${ext}`)
+        .output(res, { end: false })
+        .outputOptions('-f image2pipe')
+        .outputOptions('-vframes 1')
+        .outputOptions('-vcodec mjpeg')
+        .on('error', (err) => {
+            Raven.captureException(err);
+
+            res.status(404).end();
+        })
+        .on('end', () => {
+            res.end();
+        })
+        .run();
+});
+
 app.use(Router);
 
 app.get('*', (req, res) => {
