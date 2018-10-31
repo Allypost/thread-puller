@@ -50,7 +50,7 @@ class Stalker {
 
                     const $IP = entry.ip ? `<a href="https://whatismyipaddress.com/ip/${entry.ip}">IP</a> ` : '';
 
-                    li.innerHTML = `${$IP}[<img src="https://www.countryflags.io/${entry.geo.country}/flat/24.png" alt="${entry.geo.country}" title="${entry.geo.country}, ${entry.geo.region}"> | ${entry.geo.city}] <a href="${entry.location.page}">${entry.location.title || entry.location.page}</a>`;
+                    li.innerHTML = `${$IP}[<img src="https://www.countryflags.io/${entry.geo.country || 'XK'}/flat/24.png" alt="${entry.geo.country}" title="${entry.geo.country}, ${entry.geo.region}"> | ${entry.geo.city || 'Unknown'}] <a href="${entry.location.page}">${entry.location.title || entry.location.page}</a>`;
                     ol.appendChild(li);
                 });
 
