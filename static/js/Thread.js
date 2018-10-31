@@ -1,3 +1,13 @@
+if (!('fullscreenElement' in document)) {
+    Object.defineProperty(document, 'fullscreenElement', {
+        get() {
+            return document.mozFullScreenElement ||
+                   document.msFullscreenElement ||
+                   document.webkitFullscreenElement;
+        },
+    });
+}
+
 function debounce(fn, time = 100) {
     let timeout;
 
@@ -9,8 +19,18 @@ function debounce(fn, time = 100) {
     };
 }
 
-function isAnyPartOfElementInViewport(el) {
+function isNodeOrChildFullscreen(el) {
+    const { fullscreenElement } = document;
 
+    if (!fullscreenElement)
+        return false;
+
+    const candidateNodes = [ el, ...Array.from(el.childNodes) ];
+
+    return candidateNodes.includes(fullscreenElement);
+}
+
+function isAnyPartOfElementInViewport(el) {
     const rect = el.getBoundingClientRect();
     // DOMRect { x: 8, y: 8, width: 100, height: 100, top: 8, right: 108, bottom: 108, left: 8 }
     const windowHeight = (window.innerHeight || document.documentElement.clientHeight) + 100;
@@ -20,7 +40,7 @@ function isAnyPartOfElementInViewport(el) {
     const vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
     const horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0);
 
-    return (vertInView && horInView);
+    return (vertInView && horInView) || isNodeOrChildFullscreen(el);
 }
 
 const Thread = {
