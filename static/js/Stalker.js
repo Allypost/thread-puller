@@ -47,6 +47,7 @@ class Stalker {
 
                 entries.forEach((entry) => {
                     const li = document.createElement('li');
+                    li.dataset.focused = String(Number(entry.focus));
 
                     const $IP = entry.ip ? `<a href="https://whatismyipaddress.com/ip/${entry.ip}">IP</a> ` : '';
 

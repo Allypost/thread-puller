@@ -91,10 +91,10 @@ io.on('connection', (socket) => {
     const { threadpuller_presence: presenceId } = cookie.parse(rawCookie);
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
-    const data = { id, presenceId, geo, ip, ua, date: new Date().getTime() };
+    const data = { id, presenceId, geo, ip, ua, location: { page: '/', title: '<i>Loading...</i>', loading: true }, focus: false, date: new Date().getTime() };
     socket.monitoring = Boolean(monitor);
 
-    async function sendData(location = { page: '/', title: '<i>Loading...</i>', loading: true }, presenceId = data.presenceId) {
+    async function sendData(location = data.location, presenceId = data.presenceId) {
         const payload = JSON.stringify(Object.assign(data, { location, presenceId }));
         await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
         redis.publish(redisConf.prefix, `j:${payload}`);
@@ -120,6 +120,11 @@ io.on('connection', (socket) => {
     socket.on('location', (location, presenceId) => {
         sendData(location, presenceId);
         socket.join(location.page);
+    });
+
+    socket.on('focus', (focus) => {
+        Object.assign(data, { focus });
+        sendData();
     });
 
     socket.on('disconnect', () => removeData());

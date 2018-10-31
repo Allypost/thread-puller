@@ -31,9 +31,22 @@ class Presence {
         );
     }
 
+    getFocusListener(focused) {
+        return () => {
+            const { socket } = this;
+
+            socket.emit('focus', focused);
+        };
+    }
+
     addListeners() {
         const { socket } = this;
 
         socket.emit('location', this.pageData(), this.cookieData());
+
+        window.addEventListener('focus', this.getFocusListener(true));
+        window.addEventListener('blur', this.getFocusListener(false));
+
+        this.getFocusListener(document.hasFocus())();
     }
 }

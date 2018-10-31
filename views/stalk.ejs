@@ -7,6 +7,11 @@
     #stalker-container > li:first-child {
         margin-top: 0;
     }
+
+    .stalker-group li[data-focused="1"]::before {
+        content: '(F) ';
+        color: #03A9F4;
+    }
 </style>
 <ol id="stalker-container">Connecting...</ol>
 <% (locals.scripts || []).forEach(({ link: src, tag: v }) => { %>
