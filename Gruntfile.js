@@ -65,7 +65,7 @@ module.exports = grunt => {
                 processors: [
                     // require('postcss-font-magician')({}),
                     require('pixrem')(),
-                    require('autoprefixer')({ browsers: '> 0.01%' }),
+                    require('autoprefixer')({ browsers: 'defaults' }),
                     require('cssnano')(),
                 ],
             },
