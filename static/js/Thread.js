@@ -172,15 +172,15 @@ const Thread = {
     addImageLoadListener(el) {
         el.dataset.processed = '1';
 
-        el.addEventListener('loadstart', function () {
+        (function () {
             const ratio = Number(this.dataset.ratio);
             const height = this.offsetWidth * ratio;
 
             if (!height)
                 return;
 
-            this.setAttribute('height', `${height}px`);
-        });
+            this.style.height = `${height}px`;
+        }).call(el);
 
         el.addEventListener('load', () => this.preloadImage(el));
     },
