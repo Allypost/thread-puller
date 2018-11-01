@@ -15,14 +15,26 @@
         const postUrl = `https://boards.4chan.org/${post.board}/thread/${post.thread}#p${post.id}`;
         const isVideo = post.file.meta.isVideo;
         const loading = isVideo ? '' : 'loading';
+
+        const postId = `p${post.id}`;
     -%>
-    <a href="<%- postUrl -%>" class="resource <%- loading -%>" target="_blank" rel="noopener noreferrer">
+    <div id="<%- postId -%>" class="resource <%- loading -%>">
         <% if (isVideo) { -%>
             <%- include ./assets/video.ejs -%>
         <% } else { -%>
             <%- include ./assets/image.ejs -%>
         <% } -%>
-    </a>
+        <div class="resource-footer">
+            <% if(post.meta.replies) { -%>
+                <span class="resource-footer-button left" data-replies="<%- post.meta.replies_list.join(',') -%>">Replies: <%- post.meta.replies -%></span>
+            <% } -%>
+            <a class="resource-footer-button center" href="<%- postUrl -%>" target="_blank" rel="noopener noreferrer">Go to post</a>
+            <% if(post.meta.mentions) { -%>
+                <span class="resource-footer-button right" data-mentions="<%- post.meta.mentions_list.join(',') -%>">Mentions: <%- post.meta.mentions -%></span>
+            <% } -%>
+            <a class="resource-footer-button link" href="#<%- postId -%>"></a>
+        </div>
+    </div>
 <% }) -%>
 
 <script>
