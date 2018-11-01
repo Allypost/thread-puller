@@ -66,7 +66,7 @@ module.exports = grunt => {
                     // require('postcss-font-magician')({}),
                     require('pixrem')(),
                     require('autoprefixer')({ browsers: 'defaults' }),
-                    require('cssnano')(),
+                    require('cssnano')({ preset: 'advanced' }),
                 ],
             },
             dist: {

@@ -43,6 +43,7 @@
     "babel-preset-env": "^1.7.0",
     "chalk": "latest",
     "cssnano": "^4.1.4",
+    "cssnano-preset-advanced": "^4.0.5",
     "google-closure-compiler": ">=20180506.0.0",
     "grunt": "^1.0.3",
     "grunt-contrib-cssmin": "^3.0.0",
