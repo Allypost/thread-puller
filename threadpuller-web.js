@@ -404,9 +404,7 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
             res.set(resp.headers);
             res.status(resp.statusCode);
 
-            resp
-                .on('data', chunk => res.write(chunk))
-                .on('end', () => res.end());
+            resp.pipe(res, { end: true });
         })
         .on('error', e => Raven.captureException(e))
         .end();
