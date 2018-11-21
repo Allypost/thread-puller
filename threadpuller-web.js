@@ -375,10 +375,12 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     opts.postTitle = title;
     opts.meta = {
         title: `/${board}/${title.replace(/<br>/gi, ' ')}/ - ThreadPuller`,
-        thumb: firstPost.file.meta.thumbSrc,
         description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true).replace(/\n/gi, '\n'),
     };
     opts.renderOpts = PostResource.getOpts(req.query, req.cookies);
+
+    if (firstPost.file)
+        opts.meta.thumb = firstPost.file.meta.thumbSrc;
 
     res.render('base', opts);
 });
