@@ -67,10 +67,16 @@ const Thread = {
     },
 
     addImageListeners() {
-        const images = Array.from(this.getImages());
+        const roots = document.getElementsByClassName('resource');
 
-        images
-            .map(this.addImageLoadListener.bind(this));
+        Array.from(roots)
+             .forEach((el) => {
+                 const img = el.getElementsByTagName('img').item(0);
+
+                 if (img)
+                     return this.addImageLoadListener(img, el);
+
+             });
     },
 
     preloadVideo(video) {
@@ -93,14 +99,22 @@ const Thread = {
     },
 
     preloadImage(el) {
-        if (el.parentElement.dataset.visible === 'no')
+        const parent = this.getResourceParentElement(el);
+
+        if (!parent)
+            return;
+
+        if (!parent.dataset.requiresProxy)
+            return;
+
+        if (parent.dataset.visible === 'no')
             return;
 
         if (el.dataset.masterSrc) {
             el.src = el.dataset.masterSrc;
             el.removeAttribute('data-master-src');
         } else {
-            el.parentElement.classList.remove('loading');
+            parent.classList.remove('loading');
         }
     },
 
@@ -146,10 +160,10 @@ const Thread = {
                  el.dataset.visible = isVisible ? 'yes' : 'no';
 
                  if (video)
-                     this.updateVideoElement(video, isVisible);
+                     this.updateVideoElement(video, el, isVisible);
 
                  if (image)
-                     this.updateImageElement(image, isVisible);
+                     this.updateImageElement(image, el, isVisible);
              });
     },
 
@@ -169,6 +183,37 @@ const Thread = {
             return el.play();
     },
 
+    /**
+     * @param {HTMLElement} el
+     * @return {HTMLElement|null}
+     */
+    getResourceParentElement(el) {
+        while (!el.classList.contains('resource') && el !== window.document.documentElement)
+            el = el.parentElement;
+
+        if (el === window.document.documentElement)
+            return null;
+
+        return el;
+    },
+
+    /**
+     * @param {HTMLElement} el
+     */
+    handleError(el) {
+        const parent = this.getResourceParentElement(el);
+
+        if (!parent)
+            return;
+
+        if (parent.dataset.requiresProxy)
+            return;
+
+        parent.dataset.requiresProxy = 'yes';
+        parent.getElementsByTagName('source').item(0).remove();
+        this.preloadImage(el);
+    },
+
     addImageLoadListener(el) {
         el.dataset.processed = '1';
 
@@ -179,14 +224,20 @@ const Thread = {
             if (!height)
                 return;
 
-            this.style.height = `${height}px`;
+            this.style.height = `${ height }px`;
         }).call(el);
 
         el.addEventListener('load', () => this.preloadImage(el));
+        el.addEventListener('error', () => this.handleError(el));
     },
 
     updateImageElement(el) {
-        const isVisible = el.parentNode.dataset.visible === 'yes';
+        const parent = this.getResourceParentElement(el);
+
+        if (!parent)
+            return;
+
+        const isVisible = parent.dataset.visible === 'yes';
 
         if (!isVisible)
             return;

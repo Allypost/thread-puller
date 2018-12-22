@@ -1,10 +1,15 @@
 <%
-const mainURL = post.file.meta.fullSrc;
-const altUrl = post.file.meta.thumbSrc;
+const { file } = post;
+const { meta } = file;
 
-const height = post.file.dimensions.main.height;
-const width = post.file.dimensions.main.width;
+const { fullSrc, thumbSrc } = meta;
+
+const { dimensions } = file;
+const { height, width } = dimensions.main;
 
 const ratio = height && width ? height / width : 0;
 -%>
-<img src="<%- altUrl -%>" data-master-src="<%- mainURL -%>" data-ratio="<%- ratio -%>">
+<picture title="<%- file.name -%>.<%- file.extension -%>">
+    <source srcset="<%- meta.originalSrc -%>">
+    <img src="<%- thumbSrc -%>" data-master-src="<%- fullSrc -%>" data-ratio="<%- ratio -%>" alt="<%- file.name -%>.<%- file.extension -%>">
+</picture>
