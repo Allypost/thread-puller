@@ -98,22 +98,32 @@ const Thread = {
         return video;
     },
 
+    handleOffSiteImage(el, parent) {
+        const currentSource = Array.from(parent.getElementsByTagName('source')).find(source => source.srcset === el.currentSrc);
+
+        if (currentSource.dataset.isThumb)
+            return currentSource.remove();
+
+        if (el.complete && el.naturalWidth !== 0)
+            return parent.classList.remove('loading');
+    },
+
     preloadImage(el) {
         const parent = this.getResourceParentElement(el);
 
         if (!parent)
             return;
 
-        if (!parent.dataset.requiresProxy)
-            return;
-
         if (parent.dataset.visible === 'no')
             return;
+
+        if (!parent.dataset.requiresProxy)
+            return this.handleOffSiteImage(el, parent);
 
         if (el.dataset.masterSrc) {
             el.src = el.dataset.masterSrc;
             el.removeAttribute('data-master-src');
-        } else {
+        } else if (el.complete && el.naturalWidth !== 0) {
             parent.classList.remove('loading');
         }
     },
@@ -151,11 +161,11 @@ const Thread = {
     },
 
     updateElementVisibility() {
-        Array.from(document.querySelectorAll('.resource'))
+        Array.from(document.getElementsByClassName('resource'))
              .forEach((el) => {
                  const isVisible = isAnyPartOfElementInViewport(el);
-                 const video = el.querySelector('video');
-                 const image = el.querySelector('img');
+                 const video = el.getElementsByTagName('video').item(0);
+                 const image = el.getElementsByTagName('img').item(0);
 
                  el.dataset.visible = isVisible ? 'yes' : 'no';
 
@@ -215,7 +225,7 @@ const Thread = {
     },
 
     addImageLoadListener(el) {
-        el.dataset.processed = '1';
+        el.dataset.processed = 'yes';
 
         (function () {
             const ratio = Number(this.dataset.ratio);
@@ -242,7 +252,7 @@ const Thread = {
         if (!isVisible)
             return;
 
-        if (Number(el.dataset.processed))
+        if (el.dataset.processed === 'yes')
             return this.preloadImage(el);
 
         return this.addImageLoadListener(el);

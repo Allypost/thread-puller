@@ -10,6 +10,7 @@ const { height, width } = dimensions.main;
 const ratio = height && width ? height / width : 0;
 -%>
 <picture title="<%- file.name -%>.<%- file.extension -%>">
+    <source srcset="<%- meta.thumbOriginalSrc -%>" data-is-thumb="yes">
     <source srcset="<%- meta.originalSrc -%>">
     <img src="<%- thumbSrc -%>" data-master-src="<%- fullSrc -%>" data-ratio="<%- ratio -%>" alt="<%- file.name -%>.<%- file.extension -%>">
 </picture>
