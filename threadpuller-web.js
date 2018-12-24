@@ -12,6 +12,12 @@ const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.jo
 const Fuse = require('fuse.js');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid/v4');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const csrf = require('csurf')({ cookie: true });
+const passport = require('passport');
+const expressMessages = require('express-messages');
+const requireLoggedIn = require('./lib/Helpers/middleware/logged-in');
 
 require('dotenv-safe').load(
     {
@@ -36,6 +42,12 @@ const app = express();
 const Router = express.Router({});
 
 app.set('view engine', 'ejs');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+Router.use('/', express.static(path.join(__dirname, 'public')));
+
 app.use((req, res, next) => {
     try {
         decodeURIComponent(req.path);
@@ -49,6 +61,13 @@ app.use((req, res, next) => {
 Router.use(cookieParser());
 Router.use(helmet());
 
+app.use(session(require('./config/session')(redis)));
+app.use(require('connect-flash')());
+app.use((req, res, next) => {
+    res.locals.messages = expressMessages(req, res);
+    next();
+});
+
 const siteUrl = URL.parse(process.env.THREADPULLER_DOMAIN_MAIN);
 const cacheUrl = URL.parse(process.env.THREADPULLER_DOMAIN_CACHE);
 const presenceUrl = URL.parse(process.env.THREADPULLER_DOMAIN_PRESENCE);
@@ -60,14 +79,14 @@ Router.use((req, res, next) => {
 
     if (siteUrl[ 'hostname' ] === req.hostname) {
         if (isImage)
-            return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_CACHE}${req.url}`);
+            return res.redirect(301, `${ process.env.THREADPULLER_DOMAIN_CACHE }${ req.url }`);
 
         return next();
     }
 
     if (cacheUrl[ 'hostname' ] === req.hostname) {
         if (!isImage)
-            return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_MAIN}${req.url}`);
+            return res.redirect(301, `${ process.env.THREADPULLER_DOMAIN_MAIN }${ req.url }`);
 
         return next();
     }
@@ -95,7 +114,7 @@ Router.use((req, res, next) => {
     const value = Object.assign({}, defaultSettings, cookie);
 
     res.cookie(cookieName, value, {
-        domain: `${siteUrl.hostname}`,
+        domain: `${ siteUrl.hostname }`,
         maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
@@ -113,7 +132,7 @@ Router.use((req, res, next) => {
     const value = uuid();
 
     res.cookie(cookieName, value, {
-        domain: `${presenceUrl.hostname}`,
+        domain: `${ presenceUrl.hostname }`,
         maxAge: 365 * 24 * 60 * 60 * 1000,
     });
 
@@ -125,6 +144,11 @@ Router.use((req, res, next) => {
 
     next();
 });
+
+
+require('./config/passport')(passport);
+Router.use(passport.initialize({ userProperty: 'user' }));
+Router.use(passport.session({}));
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
@@ -144,6 +168,10 @@ const styles = [
     {
         name: 'thread',
         link: `/css/thread.min.css`,
+    },
+    {
+        name: 'login',
+        link: `/css/login.min.css`,
     },
 ];
 const scripts = [
@@ -174,6 +202,10 @@ const scripts = [
     {
         name: 'presence',
         link: `/js/Presence.min.js`,
+    },
+    {
+        name: 'login',
+        link: `/js/Login.min.js`,
     },
     {
         name: 'linkify',
@@ -212,8 +244,6 @@ app.locals = {
 ResourceWatcher.watch(styles);
 ResourceWatcher.watch(scripts);
 
-Router.use('/', express.static(path.join(__dirname, 'public')));
-
 Router.get('/', async (req, res) => {
     const opts = {
         page: 'boards/show',
@@ -230,12 +260,55 @@ Router.get('/', async (req, res) => {
     res.render('base', opts);
 });
 
-Router.get('/stalk', (req, res) => {
+Router.get('/stalk', requireLoggedIn, (req, res) => {
     const opts = {
         scripts: ResourceWatcher.getAssets(scripts, 'global', 'stalker', 'socket-io'),
     };
 
     res.render('stalk', opts);
+});
+
+Router.get('/login', csrf, (req, res) => {
+    if (req.user)
+        return res.redirect('/');
+
+    const opts = {
+        styles: ResourceWatcher.getAssets(styles, 'global', 'login'),
+        scripts: ResourceWatcher.getAssets(scripts, 'global', 'login'),
+        title: 'Login - ThreadPuller',
+        page: 'auth/login',
+        settings: false,
+        csrf: {
+            name: '_csrf',
+            value: req.csrfToken(),
+        },
+    };
+
+    res.render('base', opts);
+});
+
+Router.post('/login', csrf, (req, res, next) => {
+    passport.authenticate('local', (_, user, { message = '' } = {}) => {
+        const success = Boolean(user);
+        const isXhr = req.xhr;
+
+        if (isXhr)
+            return res.json({ success, message });
+
+        if (success)
+            return req.logIn(user, () => {
+                res.redirect(req.session.returnTo || '/');
+                delete req.session.returnTo;
+            });
+
+        req.flash('error', message);
+        res.redirect('/login');
+    })(req, res, next);
+});
+
+Router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
 });
 
 Router.get('/:board/', async (req, res) => {
@@ -254,9 +327,9 @@ Router.get('/:board/', async (req, res) => {
         opts.page = 'board/not-found';
         opts.settings = false;
         opts.meta = {
-            title: `/${board}/ - 404 Board Not Found - ThreadPuller`,
+            title: `/${ board }/ - 404 Board Not Found - ThreadPuller`,
             thumb: '/images/pepe-sad.png',
-            description: `Can't find the board \`${board.replace(/"/gi, '＂')}\`.`,
+            description: `Can't find the board \`${ board.replace(/"/gi, '＂') }\`.`,
         };
 
         res.status(404);
@@ -264,11 +337,11 @@ Router.get('/:board/', async (req, res) => {
     }
 
     const boardInfo = await Boards.info(board);
-    opts.title = `/${board}/ - ThreadPuller`;
+    opts.title = `/${ board }/ - ThreadPuller`;
     opts.page = 'board/show';
     opts.description = boardInfo.description;
     opts.meta = {
-        title: `${boardInfo.nsfw ? '[NSFW] ' : ''}/${board}/ - ${boardInfo.title} - ThreadPuller`,
+        title: `${ boardInfo.nsfw ? '[NSFW] ' : '' }/${ board }/ - ${ boardInfo.title } - ThreadPuller`,
         description: boardInfo.description.replace(/&quot;/gi, '＂'),
     };
 
@@ -313,24 +386,24 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     const safeQuery = query.replace(/"/gi, '＂');
 
     if (!threads.length) {
-        opts.title = `/${board}/${query}/ - No laughs found`;
+        opts.title = `/${ board }/${ query }/ - No laughs found`;
         opts.page = 'board/no-search-results';
         opts.settings = false;
         opts.meta = {
-            title: `/${board}/${safeQuery}/ - ThreadPuller Search`,
+            title: `/${ board }/${ safeQuery }/ - ThreadPuller Search`,
             thumb: '/images/pepe-sad.png',
-            description: `Can't find any \`${safeQuery}\` posts in /${board}/`,
+            description: `Can't find any \`${ safeQuery }\` posts in /${ board }/`,
         };
 
         res.status(404);
         return res.render('base', opts);
     }
 
-    opts.title = `/${board}/${query}/ - ThreadPuller`;
+    opts.title = `/${ board }/${ query }/ - ThreadPuller`;
     opts.page = 'board/search';
     opts.meta = {
-        title: `/${board}/${safeQuery}/ - ThreadPuller Search`,
-        description: `Search the /${board}/ board for \`${safeQuery}\` threads`,
+        title: `/${ board }/${ safeQuery }/ - ThreadPuller Search`,
+        description: `Search the /${ board }/ board for \`${ safeQuery }\` threads`,
     };
 
     res.render('base', opts);
@@ -357,7 +430,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
         opts.title = '/404/ - Thread Not Found';
         opts.page = 'thread/not-found';
         opts.meta = {
-            title: `/${board}/404 Thread Not Found/ - ThreadPuller`,
+            title: `/${ board }/404 Thread Not Found/ - ThreadPuller`,
             thumb: '/images/pepe-sad.png',
             description: 'There are no posts here...\nPlease try again later.',
         };
@@ -371,10 +444,10 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const title = PostResource.sanitizedTitle(firstPost);
 
     opts.page = 'thread/show';
-    opts.title = `/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80).replace(/<br>/gi, ' ')}`;
+    opts.title = `/${ firstPost.board }/ - ${ PostResource.sanitizedTitle(firstPost, 80).replace(/<br>/gi, ' ') }`;
     opts.postTitle = title;
     opts.meta = {
-        title: `/${board}/${title.replace(/<br>/gi, ' ')}/ - ThreadPuller`,
+        title: `/${ board }/${ title.replace(/<br>/gi, ' ') }/ - ThreadPuller`,
         description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true).replace(/\n/gi, '\n'),
     };
     opts.renderOpts = PostResource.getOpts(req.query, req.cookies);
@@ -390,7 +463,7 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
 
     const options = {
         'host': 'i.4cdn.org',
-        'path': `/${p.board}/${p.resource}.${p.ext}`,
+        'path': `/${ p.board }/${ p.resource }.${ p.ext }`,
         'method': 'GET',
         'headers': {
             'Referer': 'https://boards.4chan.org/',
@@ -418,7 +491,7 @@ Router.get('/thumb/:board/:resource.:ext.png', (req, res) => {
     res.type('png');
 
     ffmpeg()
-        .input(`https://i.4cdn.org/${board}/${resource}.${ext}`)
+        .input(`https://i.4cdn.org/${ board }/${ resource }.${ ext }`)
         .frames(1)
         .output(res, { end: false })
         .outputOptions('-f image2pipe')
@@ -440,7 +513,7 @@ Router.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
     res.type('jpg');
 
     ffmpeg()
-        .input(`https://i.4cdn.org/${board}/${resource}.${ext}`)
+        .input(`https://i.4cdn.org/${ board }/${ resource }.${ ext }`)
         .output(res, { end: false })
         .outputOptions('-f image2pipe')
         .outputOptions('-vframes 1')

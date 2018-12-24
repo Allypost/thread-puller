@@ -7,15 +7,22 @@
     "node": "9.3.0"
   },
   "dependencies": {
+    "bcrypt": "^3.0.2",
     "bluebird": "^3.5.3",
+    "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.2",
     "concurrently": "^4.1.0",
+    "connect-flash": "^0.1.1",
+    "connect-redis": "^3.4.0",
     "cookie": "^0.3.1",
     "cookie-parser": "^1.4.3",
+    "csurf": "^1.9.0",
     "dotenv-safe": "^6.1.0",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0",
+    "express-messages": "^1.0.1",
+    "express-session": "^1.15.6",
     "finalhandler": "^1.1.1",
     "fluent-ffmpeg": "^2.1.2",
     "fuse.js": "^3.3.0",
@@ -25,6 +32,9 @@
     "js-cookie": "^2.2.0",
     "mkdirp": "^0.5.1",
     "mobile-detect": "^1.4.3",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "pg": "^7.7.1",
     "proxy-polyfill": "^0.3.0",
     "raven": "^2.6.4",
     "redis": "^2.8.0",
@@ -35,7 +45,8 @@
     "string-kit": "^0.8.15",
     "striptags": "^3.1.1",
     "uuid": "^3.2.1",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "cookie-signature": "latest"
   },
   "devDependencies": {
     "autoprefixer": "^9.4.2",
@@ -67,6 +78,12 @@
     "start-presence": "node threadpuller-presence.js",
     "downloader": "node threadpuller-downloader.js",
     "compile": "node node_modules/grunt/bin/grunt"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "public/js/*.js",
+      "static/js/*.js"
+    ]
   },
   "license": "ISC"
 }

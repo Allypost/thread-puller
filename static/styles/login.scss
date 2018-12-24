@@ -1,0 +1,109 @@
+@import "modules/include";
+@import "normalize";
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&subset=latin-ext');
+
+html {
+    font-family: "Open Sans", sans-serif;
+}
+
+html, body {
+    height: 100%;
+    min-height: 100%;
+}
+
+#wrap {
+    display: grid;
+    width: 100%;
+    min-height: 100%;
+    background-color: #263238;
+    color: #eceff1;
+}
+
+#login-container {
+    align-self: center;
+    justify-self: center;
+    font-size: 1.5em;
+    padding: 1em;
+}
+
+fieldset {
+    border: none;
+}
+
+legend {
+    text-align: center;
+    border-radius: 5px;
+    padding: .3em 1em .6em;
+    background: #37474f;
+    color: #ffffff;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+
+    .form-title {
+        display: inline-block;
+        margin: 0;
+        font-size: 2.2em;
+        font-weight: 100;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, .5);
+    }
+}
+
+.form-inputs {
+    display: grid;
+
+    .form-input {
+        display: grid;
+        position: relative;
+        margin-top: 1.85em;
+        transition-property: margin, color, box-shadow, transform;
+        transition-timing-function: ease-out;
+        transition-duration: 150ms;
+
+        &:focus-within {
+            transform: scale(1.1);
+
+            & input {
+                box-shadow: 0 8px 17px 2px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12), 0 5px 5px -3px rgba(0, 0, 0, .2);
+            }
+        }
+
+        input {
+            outline: none;
+            border: none;
+            line-height: 1em;
+            border-radius: 5px;
+            background: #fafafa;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+
+            & + label {
+                z-index: 1;
+                cursor: text;
+                position: absolute;
+                top: 0;
+                font-weight: 300;
+                color: #546e7a;
+                transition: inherit;
+            }
+
+            &,
+            & + label {
+                padding: .4em .8em;
+            }
+
+            &:focus + label,
+            &:valid + label {
+                transform: translateY(-1.65em);
+                margin-left: -.2em;
+                color: #fafafa;
+                cursor: default;
+                text-shadow: 0 0 1px rgba(0, 0, 0, .7), 1px 1px 2px rgba(0, 0, 0, .5);
+            }
+        }
+
+        input[type="submit"],
+        button {
+            background: #1b5e20;
+            color: #fafafa;
+        }
+    }
+
+}

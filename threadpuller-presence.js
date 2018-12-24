@@ -4,6 +4,7 @@ const io = require('socket.io')(server);
 const cookie = require('cookie');
 const geoip = require('geoip-lite');
 const SimpleLogger = require('./lib/Logging/SimpleLogger');
+const Redis = require('./lib/DB/Redis');
 
 require('dotenv-safe').load(
     {
@@ -15,12 +16,14 @@ const redisConf = {
     prefix: 'ThreadPuller:presence:',
     db: process.env.REDIS_DB,
 };
+const settingsRedisConf = Object.assign({}, redisConf, { prefix: `ThreadPuller:` });
 
-const redis = new (require('./lib/DB/Redis'))(redisConf).redis;
+const redis = new Redis(redisConf).redis;
+const sessionSettings = require('./config/session')(new Redis(settingsRedisConf).redis);
 
 async function clean() {
     const command = `local keys = redis.call('keys', ARGV[1]) \n for i=1,#keys,5000 do \n redis.call('del', unpack(keys, i, math.min(i+4999, #keys))) \n end \n return keys`;
-    return await redis.evalAsync(command, 0, `${redisConf.prefix}*`);
+    return await redis.evalAsync(command, 0, `${ redisConf.prefix }*`);
 }
 
 function getIp(handshake) {
@@ -85,10 +88,15 @@ function censorData(rawData) {
     );
 }
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     const { id } = socket;
     const { query: { monitor }, headers: { cookie: rawCookie = '', 'user-agent': ua = '' } } = socket.handshake;
-    const { threadpuller_presence: presenceId } = cookie.parse(rawCookie);
+    const { threadpuller_presence: presenceId, 'connect.sid': rawSessionId = '' } = cookie.parse(rawCookie);
+    const user = await sessionSettings.getSessionUser(rawSessionId);
+
+    if (!user)
+        return socket.disconnect();
+
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
     const data = { id, presenceId, geo, ip, ua, location: { page: '/', title: '<i>Loading...</i>', loading: true }, focus: false, date: new Date().getTime() };
@@ -96,8 +104,8 @@ io.on('connection', (socket) => {
 
     async function sendData(location = data.location, presenceId = data.presenceId) {
         const payload = JSON.stringify(Object.assign(data, { location, presenceId }));
-        await redis.setAsync(`${id}`, payload, 'EX', 3 * 60);
-        redis.publish(redisConf.prefix, `j:${payload}`);
+        await redis.setAsync(`${ id }`, payload, 'EX', 3 * 60);
+        redis.publish(redisConf.prefix, `j:${ payload }`);
 
         socket.data = data;
 
@@ -106,8 +114,8 @@ io.on('connection', (socket) => {
 
     async function removeData() {
         const payload = JSON.stringify(data);
-        await redis.delAsync(`${id}`);
-        redis.publish(redisConf.prefix, `l:${payload}`);
+        await redis.delAsync(`${ id }`);
+        redis.publish(redisConf.prefix, `l:${ payload }`);
 
         io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorValue(data) });
     }
@@ -151,6 +159,6 @@ clean()
     .then(() => {
         SimpleLogger.info('Starting Presence...');
         server.listen(process.env.PRESENCE_PORT, () => {
-            SimpleLogger.info(`Started Presence on port ${process.env.PRESENCE_PORT}`);
+            SimpleLogger.info(`Started Presence on port ${ process.env.PRESENCE_PORT }`);
         });
     });
