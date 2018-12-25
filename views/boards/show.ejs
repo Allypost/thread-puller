@@ -6,7 +6,7 @@
 <script>
     [].forEach.call(document.querySelectorAll('[data-nsfw]'), function (el) {
         el.addEventListener('click', function(evt) {
-            if (window.confirm("You must be 18 or older to enter this section of the website.\nDo you agree to enter?")) {
+            if (window.confirm("This section of the website may contain sexually explicit content or content that is otherwise inappropriate for children and young adults.\nIf you are a minor or it is illegal for you to access mature images and language, do not proceed.\n\nYou must be 18 or older to enter.\n\nDo you agree to continue?")) {
                 return true
             }
 
