@@ -93,10 +93,6 @@ io.on('connection', async (socket) => {
     const { query: { monitor }, headers: { cookie: rawCookie = '', 'user-agent': ua = '' } } = socket.handshake;
     const { threadpuller_presence: presenceId, 'connect.sid': rawSessionId = '' } = cookie.parse(rawCookie);
     const user = await sessionSettings.getSessionUser(rawSessionId);
-
-    if (!user)
-        return socket.disconnect();
-
     const ip = getIp(socket.handshake);
     const geo = getCountry(ip);
     const data = { id, presenceId, geo, ip, ua, location: { page: '/', title: '<i>Loading...</i>', loading: true }, focus: false, date: new Date().getTime() };
@@ -120,7 +116,7 @@ io.on('connection', async (socket) => {
         io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorValue(data) });
     }
 
-    if (socket.monitoring)
+    if (socket.monitoring && user)
         socket.join('monitor');
     else
         sendData();
@@ -137,21 +133,23 @@ io.on('connection', async (socket) => {
 
     socket.on('disconnect', () => removeData());
 
-    socket.on('peers', (cb) => {
-        if (!isFunction(cb))
-            return false;
+    if (user) {
+        socket.on('peers', (cb) => {
+            if (!isFunction(cb))
+                return false;
 
-        const rawData = getSocketDataFor(String(socket.data.location.page));
+            const rawData = getSocketDataFor(String(socket.data.location.page));
 
-        cb(rawData);
-    });
+            cb(rawData);
+        });
 
-    socket.on('all', (cb) => {
-        if (!isFunction(cb))
-            return false;
+        socket.on('all', (cb) => {
+            if (!isFunction(cb))
+                return false;
 
-        cb(getSocketData());
-    });
+            cb(getSocketData());
+        });
+    }
 });
 
 SimpleLogger.info('Cleaning up...');
