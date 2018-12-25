@@ -3,3 +3,15 @@
 <% boards.forEach((board) => { -%>
     <%- include('./board.ejs', { board: board }) -%>
 <% }) -%>
+<script>
+    [].forEach.call(document.querySelectorAll('[data-nsfw]'), function (el) {
+        el.addEventListener('click', function(evt) {
+            if (window.confirm("You must be 18 or older to enter this section of the website.\nDo you agree to enter?")) {
+                return true
+            }
+
+            evt.preventDefault();
+            return false;
+        });
+    });
+</script>
