@@ -43,6 +43,16 @@ function isAnyPartOfElementInViewport(el) {
     return (vertInView && horInView) || isNodeOrChildFullscreen(el);
 }
 
+function videoHasAudio(videoEl) {
+    if (typeof videoEl.webkitAudioDecodedByteCount !== 'undefined')
+        return videoEl.webkitAudioDecodedByteCount > 0;
+
+    if (typeof videoEl.mozHasAudio !== 'undefined')
+        return !!videoEl.mozHasAudio;
+
+    return true;
+}
+
 const Thread = {
     init() {
         if (window.MobileDetect)
@@ -86,13 +96,19 @@ const Thread = {
         if (!video.dataset.poster)
             return video;
 
-        video.preload = 'metadata';
+        video.preload = 'auto';
+
         video.addEventListener('loadedmetadata', () => {
             if (!video.dataset.poster)
                 return;
 
             video.setAttribute('poster', video.dataset.poster);
             video.removeAttribute('data-poster');
+
+            video.addEventListener('loadeddata', () => {
+                if (!videoHasAudio(video))
+                    video.parentElement.dataset.isMuted = 'yes';
+            });
         });
 
         return video;
