@@ -17,7 +17,7 @@ const bodyParser = require('body-parser');
 const csrf = require('csurf')({ cookie: true });
 const passport = require('passport');
 const expressMessages = require('express-messages');
-const requireLoggedIn = require('./lib/Helpers/middleware/logged-in');
+const requireLoggedIn = require('./lib/Helpers/middleware/logged-in')();
 
 require('dotenv-safe').load(
     {
