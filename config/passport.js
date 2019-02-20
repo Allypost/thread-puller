@@ -15,6 +15,10 @@ async function unserialize(id) {
     };
 }
 
+/**
+ * @param {Authenticator} passport
+ * @return {Authenticator}
+ */
 function configure(passport) {
     // Local Strategy
     passport.use(new LocalStrategy({}, async (identifier, password, done) => {
@@ -34,6 +38,8 @@ function configure(passport) {
     passport.serializeUser((user, done) => done(null, serialize(user)));
 
     passport.deserializeUser((id, done) => unserialize(id).then(({ err, res }) => done(err, res)));
+
+    return passport;
 }
 
 module.exports = configure;
