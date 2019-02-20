@@ -41,6 +41,7 @@ const htmlentities = Entities.encode;
 const app = express();
 const Router = express.Router({});
 
+app.enable("trust proxy");
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: false }));
