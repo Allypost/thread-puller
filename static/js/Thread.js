@@ -117,7 +117,7 @@ const Thread = {
     handleOffSiteImage(el, parent) {
         const currentSource = Array.from(parent.getElementsByTagName('source')).find(source => source.srcset === el.currentSrc);
 
-        if (currentSource.dataset.isThumb)
+        if (currentSource && currentSource.dataset.isThumb)
             return currentSource.remove();
 
         if (el.complete && el.naturalWidth !== 0)
