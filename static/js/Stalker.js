@@ -99,7 +99,7 @@ Vue.component('stalker-container', {
     props: [ 'entries' ],
     // language=Vue
     template: `
-        <ol v-if="parsedEntries.length">
+        <ol class="container" v-if="parsedEntries.length">
             <stalker-group v-for="entry in parsedEntries" :entry="entry" />
         </ol>
         <h3 v-else>
