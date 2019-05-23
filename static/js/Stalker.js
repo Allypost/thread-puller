@@ -5,7 +5,7 @@ Vue.component('stalker-entry', {
         <li :data-focused="isFocused">
             [<img class="country-flag" :src="flagUrl" :alt="geo.country" :title="flagTitle"> | {{ geo.city || 'Unknown' }}]
             <span v-if="isLoading"><i>Loading...</i></span>
-            <a :href="location.link" v-else>{{ location.title }}</a>
+            <a :href="location.link" v-else>{{ title }}</a>
         </li>
     `,
     computed: {
@@ -19,6 +19,13 @@ Vue.component('stalker-entry', {
 
         location() {
             return this.entry.location;
+        },
+
+        title() {
+            const div = document.createElement('textarea');
+            div.innerHTML = this.location.title;
+
+            return div.innerText;
         },
 
         geo() {
