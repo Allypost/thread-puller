@@ -8,9 +8,30 @@
         margin-top: 0;
     }
 
-    .stalker-group li[data-focused="1"]::before {
+    .stalker-group li[data-focused]::before {
         content: '(F) ';
         color: #03A9F4;
+    }
+
+    details.stalker-group-container summary {
+        outline: none;
+        cursor: pointer;
+    }
+
+    details.stalker-group-container summary .metadata {
+        display: initial;
+    }
+
+    details.stalker-group-container summary .session-id:after {
+        content: ' | ';
+    }
+
+    details.stalker-group-container[open] summary .session-id:after {
+        content: none;
+    }
+
+    details.stalker-group-container[open] summary .metadata {
+        display: none;
     }
 </style>
 <ol id="stalker-container">Connecting...</ol>

@@ -32,6 +32,7 @@ module.exports = grunt => {
             'static/js/Download.js',
         ],
         'public/js/Stalker.min.js': [
+            'node_modules/vue/dist/vue.min.js',
             'static/js/Stalker.js',
         ],
         'public/js/App.min.js': [
@@ -144,6 +145,7 @@ module.exports = grunt => {
                       language_out: 'ECMASCRIPT3',
                       use_types_for_optimization: false,
                       rewrite_polyfills: true,
+                      module_resolution: 'NODE',
                   },
               };
 
@@ -197,7 +199,7 @@ module.exports = grunt => {
                               .join(' ');
 
         try {
-            const { stdout, stderr } = await exec(`java -jar "${compilerPath}" ${options} "${inNames}"`);
+            const { stdout, stderr } = await exec(`java -jar "${compilerPath}" ${options} "${inNames}"`, { maxBuffer: 1024 * 2048 });
 
             if (stdout)
                 grunt.log.writeln(stdout.trim().replace(/^(.*)$/gm, (_, line) => `${chalk.green('>>')} ${line}`));
