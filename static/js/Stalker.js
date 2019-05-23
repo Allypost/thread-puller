@@ -3,11 +3,9 @@ Vue.component('stalker-entry', {
     // language=Vue
     template: `
         <li :data-focused="isFocused">
-            <span v-if="isLoading"><i>Loading...</i></span>
-            <span v-else>
             [<img class="country-flag" :src="flagUrl" :alt="geo.country" :title="flagTitle"> | {{ geo.city || 'Unknown' }}]
-            <a :href="location.link">{{ location.title }}</a>
-        </span>
+            <span v-if="isLoading"><i>Loading...</i></span>
+            <a :href="location.link" v-else>{{ location.title }}</a>
         </li>
     `,
     computed: {
