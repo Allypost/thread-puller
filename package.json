@@ -50,7 +50,8 @@
     "striptags": "^3.1.1",
     "uuid": "^3.2.1",
     "vue": "^2.6.10",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "autoprefixer": "^9.4.2",
@@ -71,8 +72,7 @@
     "imagemin": "^6.0.0",
     "javascript-obfuscator": "^0.18.1",
     "pixrem": "^4.0.1",
-    "postcss-font-magician": "^2.2.1",
-    "snyk": "^1.117.1"
+    "postcss-font-magician": "^2.2.1"
   },
   "scripts": {
     "test": "snyk test",
@@ -81,7 +81,9 @@
     "start-api": "node threadpuller-api.js",
     "start-presence": "node threadpuller-presence.js",
     "downloader": "node threadpuller-downloader.js",
-    "compile": "node node_modules/grunt/bin/grunt"
+    "compile": "node node_modules/grunt/bin/grunt",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "nodemonConfig": {
     "ignore": [
@@ -89,5 +91,6 @@
       "static/js/*.js"
     ]
   },
-  "license": "ISC"
+  "license": "ISC",
+  "snyk": true
 }
