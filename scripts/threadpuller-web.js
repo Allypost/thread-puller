@@ -6,9 +6,9 @@ const Raven = require('raven');
 const Entities = new (require('html-entities').AllHtmlEntities);
 const cookieParser = require('cookie-parser');
 const URL = require('url');
-const SimpleLogger = require('./lib/Logging/SimpleLogger');
-const PostResource = require('./lib/Posts/PostResource');
-const ResourceWatcher = new (require('./lib/Resources/ResourceWatcher'))(path.join(__dirname, 'public'));
+const SimpleLogger = require('../lib/Logging/SimpleLogger');
+const PostResource = require('../lib/Posts/PostResource');
+const ResourceWatcher = new (require('../lib/Resources/ResourceWatcher'))(path.join(__dirname, '../public'));
 const Fuse = require('fuse.js');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid/v4');
@@ -17,7 +17,7 @@ const bodyParser = require('body-parser');
 const csrf = require('csurf')({ cookie: true });
 const passport = require('passport');
 const expressMessages = require('express-messages');
-const requireLoggedIn = require('./lib/Helpers/middleware/logged-in')();
+const requireLoggedIn = require('../lib/Helpers/middleware/logged-in')();
 
 require('dotenv-safe').load(
     {
@@ -30,11 +30,11 @@ const redisConf = {
     db: process.env.REDIS_DB,
 };
 
-const redis = new (require('./lib/DB/Redis'))(redisConf).redis;
+const redis = new (require('../lib/DB/Redis'))(redisConf).redis;
 
-const Boards = new (require('./lib/API/Boards'))(redis);
-const Threads = new (require('./lib/API/Threads'))(redis);
-const Posts = new (require('./lib/API/Posts'))(redis);
+const Boards = new (require('../lib/API/Boards'))(redis);
+const Threads = new (require('../lib/API/Threads'))(redis);
+const Posts = new (require('../lib/API/Posts'))(redis);
 
 const htmlentities = Entities.encode;
 
@@ -47,7 +47,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-Router.use('/', express.static(path.join(__dirname, 'public')));
+Router.use('/', express.static(path.join(__dirname, '../public')));
 
 app.use((req, res, next) => {
     try {
@@ -62,7 +62,7 @@ app.use((req, res, next) => {
 Router.use(cookieParser());
 Router.use(helmet());
 
-app.use(session(require('./config/session')(redis)));
+app.use(session(require('../config/session')(redis)));
 app.use(require('connect-flash')());
 app.use((req, res, next) => {
     res.locals.messages = expressMessages(req, res);
@@ -147,7 +147,7 @@ Router.use((req, res, next) => {
 });
 
 
-require('./config/passport')(passport);
+require('../config/passport')(passport);
 Router.use(passport.initialize({ userProperty: 'user' }));
 Router.use(passport.session({}));
 

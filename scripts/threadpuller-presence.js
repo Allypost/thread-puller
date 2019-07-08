@@ -3,8 +3,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const cookie = require('cookie');
 const geoip = require('geoip-lite');
-const SimpleLogger = require('./lib/Logging/SimpleLogger');
-const Redis = require('./lib/DB/Redis');
+const SimpleLogger = require('../lib/Logging/SimpleLogger');
+const Redis = require('../lib/DB/Redis');
 
 require('dotenv-safe').load(
     {
@@ -19,7 +19,7 @@ const redisConf = {
 const settingsRedisConf = Object.assign({}, redisConf, { prefix: `ThreadPuller:` });
 
 const redis = new Redis(redisConf).redis;
-const sessionSettings = require('./config/session')(new Redis(settingsRedisConf).redis);
+const sessionSettings = require('../config/session')(new Redis(settingsRedisConf).redis);
 
 async function clean() {
     const command = `local keys = redis.call('keys', ARGV[1]) \n for i=1,#keys,5000 do \n redis.call('del', unpack(keys, i, math.min(i+4999, #keys))) \n end \n return keys`;

@@ -2,7 +2,7 @@
   "name": "thread-puller",
   "version": "0.1.6",
   "description": "Pulls videos and gifs from a 4chan thread",
-  "main": "threadpuller-web.js",
+  "main": "./scripts/threadpuller-web.js",
   "engines": {
     "node": "9.3.0"
   },
@@ -77,9 +77,9 @@
   "scripts": {
     "test": "snyk test",
     "start": "node start.js",
-    "start-web": "node threadpuller-web.js",
-    "start-api": "node threadpuller-api.js",
-    "start-presence": "node threadpuller-presence.js",
+    "start-web": "node ./scripts/threadpuller-web.js",
+    "start-api": "node ./scripts/threadpuller-api.js",
+    "start-presence": "node ./scripts/threadpuller-presence.js",
     "downloader": "node threadpuller-downloader.js",
     "compile": "node node_modules/grunt/bin/grunt"
   },

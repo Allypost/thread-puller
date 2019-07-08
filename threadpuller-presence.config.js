@@ -7,7 +7,7 @@ module.exports = {
 
         {
             name: 'ThreadPuller Presence',
-            script: './threadpuller-presence.js',
+            script: './scripts/threadpuller-presence.js',
             watch: [
                 './threadpuller-presence.js',
                 './lib/',

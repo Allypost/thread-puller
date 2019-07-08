@@ -9,8 +9,8 @@ const redisConf = {
     db: process.env.REDIS_DB,
 };
 
-const listener = new (require('./lib/DB/Redis'))(redisConf).redis;
-const redis = new (require('./lib/DB/Redis'))(redisConf).redis;
+const listener = new (require('../lib/DB/Redis'))(redisConf).redis;
+const redis = new (require('../lib/DB/Redis'))(redisConf).redis;
 
 async function log() {
     console.clear();

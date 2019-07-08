@@ -7,7 +7,7 @@ module.exports = {
 
         {
             name: 'ThreadPuller API',
-            script: './threadpuller-api.js',
+            script: './scripts/threadpuller-api.js',
             watch: [
                 './threadpuller-api.js',
                 './lib/',
