@@ -9,13 +9,13 @@
     <meta property="og:title" content="<%- meta.title -%>" />
     <meta property="og:description" content="<%- meta.description -%>" />
     <meta name="description" content="<%- meta.description -%>" />
-    <meta property="og:image" content="<%= meta.thumb || ResourceWatcher.getFile('static/pepe.png').uri -%>" />
+    <meta property="og:image" content="<%= meta.thumb || ResourceWatcher.getFileUri('static/pepe.png') -%>" />
 <% } %>
 <% if(ga.verification) { %>
     <meta name="google-site-verification" content="<%- ga.verification -%>" />
 <% } %>
 <title><%= title; %></title>
-<link rel="shortcut icon" href="<%= ResourceWatcher.getFile('static/../favicon.ico').uri %>" type="image/x-icon" />
+<link rel="shortcut icon" href="<%= ResourceWatcher.getFileUri('static/../favicon.ico') -%>" type="image/x-icon" />
 <%- include ./styles.ejs -%>
 <% if(locals.sentryDSN) { -%>
     <%- include ./sentry.ejs -%>
