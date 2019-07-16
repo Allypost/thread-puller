@@ -1,4 +1,7 @@
-const Board = {
+import '../styles/board.scss';
+import linkifyHtml from 'linkifyjs/html';
+
+window.Board = {
     isLongPost(el) {
         return el.scrollHeight > 163;
     },

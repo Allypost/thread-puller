@@ -1,126 +1,9 @@
-Vue.component('stalker-entry', {
-    props: [ 'entry' ],
-    // language=Vue
-    template: `
-        <li :data-focused="isFocused">
-            [<img class="country-flag" :src="flagUrl" :alt="geo.country" :title="flagTitle"> | {{ geo.city || 'Unknown' }}]
-            <span v-if="isLoading"><i>Loading...</i></span>
-            <a :href="location.link" v-else>{{ title }}</a>
-        </li>
-    `,
-    computed: {
-        isFocused() {
-            return Boolean(this.entry.focus);
-        },
+import Vue from 'vue';
+import io from 'socket.io-client';
 
-        isLoading() {
-            return this.location.loading === true;
-        },
+import StalkerContainer from './src/Stalker/components/container';
 
-        location() {
-            return this.entry.location;
-        },
-
-        title() {
-            const div = document.createElement('textarea');
-            div.innerHTML = this.location.title;
-
-            return div.innerText;
-        },
-
-        geo() {
-            return this.entry.geo || {};
-        },
-
-        flagTitle() {
-            const {
-                      country = 'Unknown',
-                      region  = 'Unknown',
-                  } = this.geo;
-            return `${country}, ${region}`;
-        },
-
-        flagUrl() {
-            const {
-                      country = 'XK',
-                  } = this.geo;
-            return `https://www.countryflags.io/${country}/flat/24.png`;
-        },
-    },
-});
-
-Vue.component('stalker-group', {
-    props: [ 'entry' ],
-    // language=Vue
-    template: `
-        <li class="stalker-group">
-            <details open class="stalker-group-container">
-                <summary>
-                    <span class="session-id">{{ id }}</span>
-                    <span class="metadata">
-                        <span class="country-flags">
-                            <img v-for="country in countries" :src="country.src" :alt="country.alt">
-                        </span>
-                    </span>
-                </summary>
-                <ol>
-                    <stalker-entry v-for="session in sessions" :entry="session" />
-                </ol>
-            </details>
-        </li>
-    `,
-    computed: {
-        id() {
-            return this.entry[ 0 ];
-        },
-
-        sessions() {
-            return Object.values(this.entry[ 1 ]);
-        },
-
-        countries() {
-            const countries = {};
-
-            for (const session of this.sessions) {
-                const {
-                          country,
-                          region = 'Unknown region',
-                          city   = 'Unknown city',
-                      } = session.geo;
-
-                const countryCode = country || 'XK';
-                const countryName = country || 'Unknown country';
-
-                countries[ countryCode ] = {
-                    src: `https://www.countryflags.io/${countryCode}/flat/24.png`,
-                    alt: `${countryName}, ${region}, ${city}`,
-                };
-            }
-
-            return Object.values(countries);
-        },
-    },
-});
-
-Vue.component('stalker-container', {
-    props: [ 'entries' ],
-    // language=Vue
-    template: `
-        <ol class="container" v-if="parsedEntries.length">
-            <stalker-group v-for="entry in parsedEntries" :entry="entry" />
-        </ol>
-        <h3 v-else>
-            Nobody online :(
-        </h3>
-    `,
-    computed: {
-        parsedEntries() {
-            return Object.entries(this.entries);
-        },
-    },
-});
-
-class Stalker {
+window.Stalker = class Stalker {
 
     constructor(rootElement, presenceUrl = '') {
         this.root = rootElement;
@@ -134,13 +17,14 @@ class Stalker {
                 el: `#${this.root.id}`,
                 data: this.data,
                 template: `<stalker-container :entries="entries" />`,
+                components: { StalkerContainer },
             });
 
         this.initUpdater();
     }
 
     connect(url) {
-        const socket = window.io(url, { query: 'monitor=1' });
+        const socket = io(url, { query: 'monitor=1' });
         const updater = this.updateData.bind(this);
 
         socket.emit('get:all', updater);
@@ -217,4 +101,4 @@ class Stalker {
         this.socket.emit('all', this.updateData.bind(this));
     }
 
-}
+};

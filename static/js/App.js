@@ -1,3 +1,8 @@
+import '../styles/global.scss';
+
+import favicon from '../images/favicon.ico';
+import faviconBlur from '../images/favicon-blur.ico';
+
 class App {
     static faviconSet(href) {
         const existingIcon = document.querySelector('link[rel*=\'icon\']');
@@ -12,8 +17,8 @@ class App {
     }
 
     static faviconListener() {
-        window.addEventListener('focus', () => this.faviconSet('/favicon.ico'));
-        window.addEventListener('blur', () => this.faviconSet('/favicon-blur.ico'));
+        window.addEventListener('focus', () => this.faviconSet(favicon));
+        window.addEventListener('blur', () => this.faviconSet(faviconBlur));
     }
 }
 

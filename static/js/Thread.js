@@ -1,3 +1,6 @@
+import MobileDetect from 'mobile-detect';
+import '../styles/thread.scss';
+
 if (!('fullscreenElement' in document)) {
     Object.defineProperty(document, 'fullscreenElement', {
         get() {
@@ -53,13 +56,9 @@ function videoHasAudio(videoEl) {
     return true;
 }
 
-const Thread = {
+window.Thread = {
     init() {
-        if (window.MobileDetect)
-            this.md = new MobileDetect(window.navigator.userAgent);
-        else
-            this.md = { mobile: () => false };
-
+        this.md = new MobileDetect(window.navigator.userAgent);
         this.isMobile = this.md.mobile();
 
         this.addListeners();
@@ -73,7 +72,7 @@ const Thread = {
 
         videos
             .filter((video) => video.parentNode.dataset.visible === 'yes')
-            .map(this.preloadVideo);
+            .map(this.preloadVideo.bind(this));
     },
 
     addImageListeners() {

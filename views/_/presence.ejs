@@ -1,9 +1,7 @@
 <%
-const asset = ResourceWatcher.getAssets($_scripts, 'presence').pop();
-
 if (presence.port)
     socketUrl = `${presence.domain}:${presence.port}`;
 else
     socketUrl = presence.domain;
 -%>
-<script src="<%= asset.link -%>?v=<%= asset.tag -%>" <%- `onload="new Presence('${socketUrl}')"` -%>></script>
+<script>(function() { new Presence("<%= socketUrl -%>") })()</script>

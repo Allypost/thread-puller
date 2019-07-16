@@ -22,7 +22,7 @@
     }
 
     .settings-modal-content {
-        @extend .no-select;
+        @include no-select();
         @extend %card-shadow;
 
         margin: 0 auto;

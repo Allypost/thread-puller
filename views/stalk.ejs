@@ -1,47 +1,6 @@
 <title>ThreadPuller - Stalker</title>
-<style>
-    .container {
-        display: inline-block;
-    }
-
-    #stalker-container > li {
-        margin-top: 1em;
-    }
-
-    #stalker-container > li:first-child {
-        margin-top: 0;
-    }
-
-    .stalker-group li[data-focused]::before {
-        content: '(F) ';
-        color: #03A9F4;
-    }
-
-    details.stalker-group-container summary {
-        outline: none;
-        cursor: pointer;
-    }
-
-    details.stalker-group-container summary .metadata {
-        display: initial;
-    }
-
-    details.stalker-group-container summary .session-id:after {
-        content: ' | ';
-    }
-
-    details.stalker-group-container[open] summary .session-id:after {
-        content: none;
-    }
-
-    details.stalker-group-container[open] summary .metadata {
-        display: none;
-    }
-</style>
+<%- ResourceWatcher.stringify(locals.assets) -%>
 <ol id="stalker-container">Connecting...</ol>
-<% (locals.scripts || []).forEach(({ link: src, tag: v }) => { %>
-    <script src="<%= src -%>?v=<%= v -%>"></script>
-<% }); %>
 <script>
     <%
     if (presence.port)

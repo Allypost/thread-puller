@@ -8,7 +8,6 @@ const cookieParser = require('cookie-parser');
 const URL = require('url');
 const SimpleLogger = require('../lib/Logging/SimpleLogger');
 const PostResource = require('../lib/Posts/PostResource');
-const ResourceWatcher = new (require('../lib/Resources/ResourceWatcher'))(path.join(__dirname, '../public'));
 const Fuse = require('fuse.js');
 const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid/v4');
@@ -41,7 +40,7 @@ const htmlentities = Entities.encode;
 const app = express();
 const Router = express.Router({});
 
-app.enable("trust proxy");
+app.enable('trust proxy');
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -146,89 +145,23 @@ Router.use((req, res, next) => {
     next();
 });
 
-
 require('../config/passport')(passport);
 Router.use(passport.initialize({ userProperty: 'user' }));
 Router.use(passport.session({}));
 
 Raven.config(process.env.SENTRY_DSN_URL).install();
 
-const styles = [
-    {
-        name: 'board',
-        link: `/css/board.min.css`,
-    },
-    {
-        name: 'global',
-        link: `/css/global.min.css`,
-    },
-    {
-        name: 'index',
-        link: `/css/index.min.css`,
-    },
-    {
-        name: 'thread',
-        link: `/css/thread.min.css`,
-    },
-    {
-        name: 'login',
-        link: `/css/login.min.css`,
-    },
-];
-const scripts = [
-    {
-        name: 'global',
-        link: `/js/App.min.js`,
-    },
-    {
-        name: 'board',
-        link: `/js/Board.min.js`,
-    },
-    {
-        name: 'thread',
-        link: `/js/Thread.min.js`,
-    },
-    {
-        name: 'settings',
-        link: `/js/Settings.min.js`,
-    },
-    {
-        name: 'download',
-        link: `/js/Download.min.js`,
-    },
-    {
-        name: 'stalker',
-        link: `/js/Stalker.min.js`,
-    },
-    {
-        name: 'presence',
-        link: `/js/Presence.min.js`,
-    },
-    {
-        name: 'login',
-        link: `/js/Login.min.js`,
-    },
-    {
-        name: 'linkify',
-        href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify.min.js`,
-    },
-    {
-        name: 'linkify',
-        href: `https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.6/linkify-html.min.js`,
-    },
-    {
-        name: 'socket-io',
-        href: `https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js`,
-    },
-];
+const publicFolderPath = path.resolve(__dirname, '../public');
+const entrypointsFilePath = path.resolve(publicFolderPath, 'static/entrypoints.json');
+const manifestFilePath = path.resolve(publicFolderPath, 'static/manifest.json');
+
+const ResourceWatcher = new (require('../lib/Resources/ResourceWatcher'))(publicFolderPath, entrypointsFilePath, manifestFilePath);
 
 app.locals = {
     donateLink: process.env.THREADPULLER_DONATE_LINK,
     showAds: Boolean(+process.env.THREADPULLER_SHOW_ADS),
     title: 'ThreadPuller',
     settings: true,
-    $_styles: styles,
-    $_scripts: scripts,
     ga: {
         key: process.env.THREADPULLER_GA_KEY,
         verification: process.env.THREADPULLER_GA_VERIFICATION,
@@ -242,14 +175,14 @@ app.locals = {
     ResourceWatcher,
 };
 
-ResourceWatcher.watch(styles);
-ResourceWatcher.watch(scripts);
+ResourceWatcher.watch((type) => {
+    SimpleLogger.info(`|> ${ type } updated...`);
+});
 
 Router.get('/', async (req, res) => {
     const opts = {
         page: 'boards/show',
-        styles: ResourceWatcher.getAssets(styles, 'global', 'index'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global'),
+        assets: ResourceWatcher.getEntries('App', 'Index'),
         settings: false,
         boards: await Boards.get(),
         meta: {
@@ -263,7 +196,7 @@ Router.get('/', async (req, res) => {
 
 Router.get('/stalk', requireLoggedIn, (req, res) => {
     const opts = {
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'stalker', 'socket-io'),
+        assets: ResourceWatcher.getEntries('App', 'Stalker'),
     };
 
     res.render('stalk', opts);
@@ -274,8 +207,7 @@ Router.get('/login', csrf, (req, res) => {
         return res.redirect('/');
 
     const opts = {
-        styles: ResourceWatcher.getAssets(styles, 'global', 'login'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'login'),
+        assets: ResourceWatcher.getEntries('App', 'Login'),
         title: 'Login - ThreadPuller',
         page: 'auth/login',
         settings: false,
@@ -317,8 +249,7 @@ Router.get('/:board/', async (req, res) => {
     const threads = await Threads.get(board);
 
     const opts = {
-        styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings'),
+        assets: ResourceWatcher.getEntries('App', 'Board', 'Settings'),
         threads,
         board,
     };
@@ -377,8 +308,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     const threads = fuse.search(query);
 
     const opts = {
-        styles: ResourceWatcher.getAssets(styles, 'global', 'board'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'linkify', 'board', 'settings'),
+        assets: ResourceWatcher.getEntries('App', 'Board', 'Settings'),
         query,
         threads,
         board,
@@ -419,8 +349,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const posts = await Posts.get(p.board, p.thread);
 
     const opts = {
-        styles: ResourceWatcher.getAssets(styles, 'global', 'thread'),
-        scripts: ResourceWatcher.getAssets(scripts, 'global', 'thread', 'settings'),
+        assets: ResourceWatcher.getEntries('App', 'Thread', 'Settings'),
         threadUrl: Posts.constructor.threadUrl(board, thread),
         board,
         thread,

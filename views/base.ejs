@@ -3,8 +3,9 @@
 if (!locals.page) {
     locals.settings = false;
     locals.title = 'ThreadPuller - 404';
-    locals.styles = ResourceWatcher.getAssets($_styles, 'global');
+    locals.assets = ResourceWatcher.getEntry('App');
 }
+locals.assets = ResourceWatcher.appendEntry(locals.assets, 'Presence');
 -%>
 <html lang="en">
     <head>

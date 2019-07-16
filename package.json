@@ -53,26 +53,28 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
+    "@symfony/webpack-encore": "^0.27.0",
     "autoprefixer": "^9.4.2",
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.7.0",
     "chalk": "latest",
+    "copy-webpack-plugin": "^5.0.3",
     "cssnano": "^4.1.7",
     "cssnano-preset-advanced": "^4.0.5",
-    "google-closure-compiler": "^20181028.0.1",
-    "grunt": "^1.0.3",
-    "grunt-contrib-cssmin": "^3.0.0",
-    "grunt-contrib-imagemin": "^2.0.1",
-    "grunt-contrib-jshint": "^2.0.0",
-    "grunt-contrib-sass": "^1.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-javascript-obfuscator": "^1.1.0",
-    "grunt-postcss": "^0.9.0",
     "imagemin": "^6.0.0",
+    "imagemin-mozjpeg": "^8.0.0",
+    "imagemin-webpack-plugin": "^2.4.2",
     "javascript-obfuscator": "^0.18.1",
+    "linkifyjs": "^2.1.8",
+    "node-sass": "^4.12.0",
     "pixrem": "^4.0.1",
     "postcss-font-magician": "^2.2.1",
-    "snyk": "^1.117.1"
+    "postcss-loader": "^3.0.0",
+    "sass-loader": "^7.0.1",
+    "snyk": "^1.117.1",
+    "socket.io-client": "^2.2.0",
+    "vue-loader": "^15.0.11",
+    "vue-template-compiler": "^2.6.10"
   },
   "scripts": {
     "test": "snyk test",
@@ -81,7 +83,8 @@
     "start-api": "node ./scripts/threadpuller-api.js",
     "start-presence": "node ./scripts/threadpuller-presence.js",
     "downloader": "node threadpuller-downloader.js",
-    "compile": "node node_modules/grunt/bin/grunt"
+    "compile": "encore production",
+    "encore": "encore"
   },
   "nodemonConfig": {
     "ignore": [

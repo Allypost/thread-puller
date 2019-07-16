@@ -1,4 +1,6 @@
-class Presence {
+import io from 'socket.io-client';
+
+window.Presence = class Presence {
     constructor(url) {
         this.socket = io(url);
 
@@ -49,4 +51,4 @@ class Presence {
 
         this.getFocusListener(document.hasFocus())();
     }
-}
+};

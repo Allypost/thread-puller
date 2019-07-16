@@ -1,7 +1,9 @@
-class Download {
+import ProxyPolyfill from 'proxy-polyfill/src/proxy';
+
+window.Download = class Download {
 
     constructor(selector) {
-        this.options = new Proxy({}, this._proxyHandler());
+        this.options = new ProxyPolyfill({}, this._proxyHandler());
         this.options.localUrl = 'http://localhost:8135';
         this.options.downloaderActive = false;
         this.options.selector = selector;
@@ -130,4 +132,4 @@ class Download {
         };
     }
 
-}
+};

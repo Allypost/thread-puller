@@ -1,4 +1,9 @@
-class Settings {
+import ProxyPolyfill from 'proxy-polyfill/src/proxy';
+import Cookies from 'js-cookie';
+
+import '../styles/modules/settings/_include.scss'
+
+window.Settings = class Settings {
 
     constructor() {
         this._settingsCookie = 'threadpuller_settings';
@@ -34,7 +39,7 @@ class Settings {
     }
 
     listenToHandlerRequests(obj) {
-        return new Proxy(obj, {
+        return new ProxyPolyfill(obj, {
             set: (obj, key, value) => {
                 obj[ key ] = value;
 
@@ -204,11 +209,6 @@ class Settings {
     }
 
     getSetting(name) {
-        if (!window.Cookies) {
-            console.warn('Can\'t fetch cookies');
-            return null;
-        }
-
         const cookieKey = this._settingsCookie;
 
         const rawCookie = (Cookies.get(cookieKey) || '').substr(2);
@@ -226,11 +226,6 @@ class Settings {
     }
 
     saveSettings() {
-        if (!window.Cookies) {
-            console.warn('Can\'t fetch cookies');
-            return;
-        }
-
         const settingsCookie = this._settingsCookie;
         const newSettings = this.getCookieSettingsString();
 
@@ -380,4 +375,4 @@ class Settings {
         this.$modalContent.appendChild(container);
     }
 
-}
+};
