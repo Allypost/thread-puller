@@ -1,7 +1,6 @@
-import ProxyPolyfill from 'proxy-polyfill/src/proxy';
 import Cookies from 'js-cookie';
 
-import '../styles/modules/settings/_include.scss'
+import '../styles/modules/settings/_include.scss';
 
 window.Settings = class Settings {
 
@@ -39,7 +38,7 @@ window.Settings = class Settings {
     }
 
     listenToHandlerRequests(obj) {
-        return new ProxyPolyfill(obj, {
+        return new Proxy(obj, {
             set: (obj, key, value) => {
                 obj[ key ] = value;
 
