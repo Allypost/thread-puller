@@ -12,6 +12,7 @@ locals.assets = ResourceWatcher.appendEntry(locals.assets, 'Presence');
         <%- include _/head.ejs -%>
         <%- include _/analytics.ejs -%>
         <script>window.__settingsListeners = []</script>
+        <script>window.bootData = <%- JSON.stringify(locals.bootData) -%></script>
     </head>
     <body>
         <div id="wrap">

@@ -79,14 +79,14 @@ Router.use((req, res, next) => {
 
     if (siteUrl[ 'hostname' ] === req.hostname) {
         if (isImage)
-            return res.redirect(301, `${ process.env.THREADPULLER_DOMAIN_CACHE }${ req.url }`);
+            return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_CACHE}${req.url}`);
 
         return next();
     }
 
     if (cacheUrl[ 'hostname' ] === req.hostname) {
         if (!isImage)
-            return res.redirect(301, `${ process.env.THREADPULLER_DOMAIN_MAIN }${ req.url }`);
+            return res.redirect(301, `${process.env.THREADPULLER_DOMAIN_MAIN}${req.url}`);
 
         return next();
     }
@@ -114,7 +114,7 @@ Router.use((req, res, next) => {
     const value = Object.assign({}, defaultSettings, cookie);
 
     res.cookie(cookieName, value, {
-        domain: `${ siteUrl.hostname }`,
+        domain: `${siteUrl.hostname}`,
         maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
@@ -132,7 +132,7 @@ Router.use((req, res, next) => {
     const value = uuid();
 
     res.cookie(cookieName, value, {
-        domain: `${ presenceUrl.hostname }`,
+        domain: `${presenceUrl.hostname}`,
         maxAge: 365 * 24 * 60 * 60 * 1000,
     });
 
@@ -173,10 +173,11 @@ app.locals = {
     },
     sentryDSN: process.env.SENTRY_DSN_URL,
     ResourceWatcher,
+    bootData: {},
 };
 
 ResourceWatcher.watch((type) => {
-    SimpleLogger.info(`|> ${ type } updated...`);
+    SimpleLogger.info(`|> ${type} updated...`);
 });
 
 Router.get('/', async (req, res) => {
@@ -259,9 +260,9 @@ Router.get('/:board/', async (req, res) => {
         opts.page = 'board/not-found';
         opts.settings = false;
         opts.meta = {
-            title: `/${ board }/ - 404 Board Not Found - ThreadPuller`,
+            title: `/${board}/ - 404 Board Not Found - ThreadPuller`,
             thumb: '/images/pepe-sad.png',
-            description: `Can't find the board \`${ board.replace(/"/gi, '＂') }\`.`,
+            description: `Can't find the board \`${board.replace(/"/gi, '＂')}\`.`,
         };
 
         res.status(404);
@@ -269,11 +270,11 @@ Router.get('/:board/', async (req, res) => {
     }
 
     const boardInfo = await Boards.info(board);
-    opts.title = `/${ board }/ - ThreadPuller`;
+    opts.title = `/${board}/ - ThreadPuller`;
     opts.page = 'board/show';
     opts.description = boardInfo.description;
     opts.meta = {
-        title: `${ boardInfo.nsfw ? '[NSFW] ' : '' }/${ board }/ - ${ boardInfo.title } - ThreadPuller`,
+        title: `${boardInfo.nsfw ? '[NSFW] ' : ''}/${board}/ - ${boardInfo.title} - ThreadPuller`,
         description: boardInfo.description.replace(/&quot;/gi, '＂'),
     };
 
@@ -317,24 +318,24 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     const safeQuery = query.replace(/"/gi, '＂');
 
     if (!threads.length) {
-        opts.title = `/${ board }/${ query }/ - No laughs found`;
+        opts.title = `/${board}/${query}/ - No laughs found`;
         opts.page = 'board/no-search-results';
         opts.settings = false;
         opts.meta = {
-            title: `/${ board }/${ safeQuery }/ - ThreadPuller Search`,
+            title: `/${board}/${safeQuery}/ - ThreadPuller Search`,
             thumb: '/images/pepe-sad.png',
-            description: `Can't find any \`${ safeQuery }\` posts in /${ board }/`,
+            description: `Can't find any \`${safeQuery}\` posts in /${board}/`,
         };
 
         res.status(404);
         return res.render('base', opts);
     }
 
-    opts.title = `/${ board }/${ query }/ - ThreadPuller`;
+    opts.title = `/${board}/${query}/ - ThreadPuller`;
     opts.page = 'board/search';
     opts.meta = {
-        title: `/${ board }/${ safeQuery }/ - ThreadPuller Search`,
-        description: `Search the /${ board }/ board for \`${ safeQuery }\` threads`,
+        title: `/${board}/${safeQuery}/ - ThreadPuller Search`,
+        description: `Search the /${board}/ board for \`${safeQuery}\` threads`,
     };
 
     res.render('base', opts);
@@ -360,7 +361,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
         opts.title = '/404/ - Thread Not Found';
         opts.page = 'thread/not-found';
         opts.meta = {
-            title: `/${ board }/404 Thread Not Found/ - ThreadPuller`,
+            title: `/${board}/404 Thread Not Found/ - ThreadPuller`,
             thumb: '/images/pepe-sad.png',
             description: 'There are no posts here...\nPlease try again later.',
         };
@@ -374,10 +375,10 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const title = PostResource.sanitizedTitle(firstPost);
 
     opts.page = 'thread/show';
-    opts.title = `/${ firstPost.board }/ - ${ PostResource.sanitizedTitle(firstPost, 80).replace(/<br>/gi, ' ') }`;
+    opts.title = `/${firstPost.board}/ - ${PostResource.sanitizedTitle(firstPost, 80).replace(/<br>/gi, ' ')}`;
     opts.postTitle = title;
     opts.meta = {
-        title: `/${ board }/${ title.replace(/<br>/gi, ' ') }/ - ThreadPuller`,
+        title: `/${board}/${title.replace(/<br>/gi, ' ')}/ - ThreadPuller`,
         description: PostResource.sanitize(firstPost.body.content || firstPost.body.title, 200, true).replace(/\n/gi, '\n'),
     };
     opts.renderOpts = PostResource.getOpts(req.query, req.cookies);
@@ -393,7 +394,7 @@ Router.get('/i/:board/:resource.:ext', (req, res) => {
 
     const options = {
         'host': 'i.4cdn.org',
-        'path': `/${ p.board }/${ p.resource }.${ p.ext }`,
+        'path': `/${p.board}/${p.resource}.${p.ext}`,
         'method': 'GET',
         'headers': {
             'Referer': 'https://boards.4chan.org/',
@@ -421,7 +422,7 @@ Router.get('/thumb/:board/:resource.:ext.png', (req, res) => {
     res.type('png');
 
     ffmpeg()
-        .input(`https://i.4cdn.org/${ board }/${ resource }.${ ext }`)
+        .input(`https://i.4cdn.org/${board}/${resource}.${ext}`)
         .frames(1)
         .output(res, { end: false })
         .outputOptions('-f image2pipe')
@@ -443,7 +444,7 @@ Router.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
     res.type('jpg');
 
     ffmpeg()
-        .input(`https://i.4cdn.org/${ board }/${ resource }.${ ext }`)
+        .input(`https://i.4cdn.org/${board}/${resource}.${ext}`)
         .output(res, { end: false })
         .outputOptions('-f image2pipe')
         .outputOptions('-vframes 1')
