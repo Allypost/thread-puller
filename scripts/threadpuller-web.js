@@ -250,7 +250,7 @@ Router.get('/:board/', async (req, res) => {
     const threads = await Threads.get(board);
 
     const opts = {
-        assets: ResourceWatcher.getEntries('App', 'Board', 'Settings'),
+        assets: ResourceWatcher.getEntries('App', 'Settings', 'Board'),
         threads,
         board,
     };
@@ -309,7 +309,7 @@ Router.get('/:board/:query([a-zA-Z0-9_ %]{2,})', async (req, res) => {
     const threads = fuse.search(query);
 
     const opts = {
-        assets: ResourceWatcher.getEntries('App', 'Board', 'Settings'),
+        assets: ResourceWatcher.getEntries('App', 'Settings', 'Board'),
         query,
         threads,
         board,
@@ -350,7 +350,7 @@ Router.get('/:board/thread/:thread', async (req, res) => {
     const posts = await Posts.get(p.board, p.thread);
 
     const opts = {
-        assets: ResourceWatcher.getEntries('App', 'Thread', 'Settings'),
+        assets: ResourceWatcher.getEntries('App', 'Settings', 'Thread'),
         threadUrl: Posts.constructor.threadUrl(board, thread),
         board,
         thread,
