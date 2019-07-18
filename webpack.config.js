@@ -35,8 +35,8 @@ Encore
 
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app
-    .enableSingleRuntimeChunk()
-    // .disableSingleRuntimeChunk()
+    // .enableSingleRuntimeChunk()
+    .disableSingleRuntimeChunk()
 
     .splitEntryChunks()
 
@@ -92,5 +92,12 @@ const config = Encore.getWebpackConfig();
 
 config.resolve.alias[ 'vue$' ] = 'vue/dist/vue.esm.js';
 config.optimization.concatenateModules = true;
+config.optimization.moduleIds = 'hashed';
+config.optimization.splitChunks = {
+    chunks: 'all',
+    maxAsyncRequests: 50,
+    maxInitialRequests: 20,
+    name: false,
+};
 
 module.exports = config;
