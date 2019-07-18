@@ -1,14 +1,4 @@
 <title>ThreadPuller - Stalker</title>
 <%- ResourceWatcher.stringify(locals.assets) -%>
+<script>window.bootData = <%- JSON.stringify(locals.bootData) -%></script>
 <ol id="stalker-container">Connecting...</ol>
-<script>
-    <%
-    if (presence.port)
-        socketUrl = `${presence.domain}:${presence.port}`;
-    else
-        socketUrl = presence.domain;
-    %>
-    (function () {
-        new Stalker(document.getElementById('stalker-container'), '<%= socketUrl -%>');
-    })();
-</script>

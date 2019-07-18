@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
+import { onReady } from './src/util/onReady';
 
-window.Presence = class Presence {
+class Presence {
     constructor(url) {
         this.socket = io(url);
 
@@ -51,4 +52,6 @@ window.Presence = class Presence {
 
         this.getFocusListener(document.hasFocus())();
     }
-};
+}
+
+onReady(() => new Presence(window.bootData.presenceUrl));

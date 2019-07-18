@@ -1,7 +1,0 @@
-<%
-if (presence.port)
-    socketUrl = `${presence.domain}:${presence.port}`;
-else
-    socketUrl = presence.domain;
--%>
-<script>(function() { new Presence("<%= socketUrl -%>") })()</script>

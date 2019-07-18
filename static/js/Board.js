@@ -1,24 +1,30 @@
 import '../styles/board.scss';
 import linkifyHtml from 'linkifyjs/html';
+import { onReady } from './src/util/onReady';
 
-window.Board = {
+class Board {
+
     isLongPost(el) {
         return el.scrollHeight > 163;
-    },
+    }
+
     getLongPosts() {
         return Array.from(document.querySelectorAll('.description'))
                     .filter(this.isLongPost);
-    },
+    }
+
     markLongPosts() {
         this.getLongPosts()
             .forEach(this.markLongPost.bind(this));
-    },
+    }
+
     markLongPost(el) {
         if (this.isLongPost(el))
             el.parentNode.parentNode.classList.add('long');
 
         this.addLongPostListener(el);
-    },
+    }
+
     postListener(evt) {
         const { path } = evt || {};
 
@@ -37,21 +43,24 @@ window.Board = {
                   : el.classList.add.bind(el.classList);
 
         func('extended');
-    },
+    }
+
     addLongPostListener(el) {
         el.removeEventListener('click', this.postListener);
         el.removeEventListener('tap', this.postListener);
 
         el.addEventListener('click', this.postListener);
         el.addEventListener('tap', this.postListener);
-    },
+    }
+
     fixQuoteLinks() {
         Array.from(document.querySelectorAll('.description .quotelink'))
              .forEach(el => {
                  // el.setAttribute('href', `https://boards.4chan.org${el.getAttribute('href')}`);
                  el.setAttribute('target', '_blank');
              });
-    },
+    }
+
     addExpandListeners() {
         Array.from(document.querySelectorAll('.post-image-container'))
              .forEach(el => {
@@ -125,9 +134,10 @@ window.Board = {
                      return false;
                  });
              });
-    },
+    }
+
     addImageLoadListener() {
-        Array.from(document.querySelectorAll('img'))
+        Array.from(document.querySelectorAll('.board img'))
              .forEach(el => el.addEventListener('load', (evt) => {
                  const { path } = evt || {};
 
@@ -136,18 +146,21 @@ window.Board = {
 
                  this.markLongPost(path.find(el => el.classList.contains('board')).querySelector('.description'));
              }));
-    },
+    }
+
     removeWbrTags() {
         const wbrs = document.getElementsByTagName('wbr');
 
         while (wbrs.length) {
             wbrs[ 0 ].parentNode.removeChild(wbrs[ 0 ]);
         }
-    },
+    }
+
     linkifyDescriptions() {
         Array.from(document.querySelectorAll('.description'))
              .forEach(el => el.innerHTML = linkifyHtml(el.innerHTML));
-    },
+    }
+
     _handleSettingChange(key, value) {
         const handlers = {
             volume: (value) => {
@@ -163,19 +176,24 @@ window.Board = {
         const handler = handlers[ key ] || (() => !0);
 
         return handler(value);
-    },
+    }
+
     _addSettingsListeners(settings) {
         settings.onChange('*', this._handleSettingChange.bind(this));
-    },
-    init() {
+    }
+
+    constructor() {
         // this.markLongPosts();
         this.fixQuoteLinks();
         this.addExpandListeners();
         this.addImageLoadListener();
-        window.__settingsListeners.push((settings) => this._addSettingsListeners(settings));
+        window.bootData.settingsListeners.push((settings) => this._addSettingsListeners(settings));
         document.addEventListener('DOMContentLoaded', () => {
             this.removeWbrTags();
             this.linkifyDescriptions();
         });
-    },
-};
+    }
+
+}
+
+onReady(() => new Board());

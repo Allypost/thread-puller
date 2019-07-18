@@ -170,11 +170,26 @@ app.locals = {
     presence: {
         domain: process.env.THREADPULLER_DOMAIN_PRESENCE,
         port: process.env.THREADPULLER_PRESENCE_PORT,
+        url: '',
     },
     sentryDSN: process.env.SENTRY_DSN_URL,
     ResourceWatcher,
-    bootData: {},
+    bootData: {
+        settingsListeners: [],
+    },
 };
+
+{
+    const { locals } = app;
+    const { bootData, presence } = locals;
+
+    if (presence.port)
+        presence.url = `${presence.domain}:${presence.port}`;
+    else
+        presence.url = presence.domain;
+
+    bootData.presenceUrl = presence.url;
+}
 
 ResourceWatcher.watch((type) => {
     SimpleLogger.info(`|> ${type} updated...`);

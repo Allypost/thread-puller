@@ -1,5 +1,6 @@
 import MobileDetect from 'mobile-detect';
 import '../styles/thread.scss';
+import { onReady } from './src/util/onReady';
 
 if (!('fullscreenElement' in document)) {
     Object.defineProperty(document, 'fullscreenElement', {
@@ -56,16 +57,16 @@ function videoHasAudio(videoEl) {
     return true;
 }
 
-window.Thread = {
-    init() {
-        this.md = new MobileDetect(window.navigator.userAgent);
-        this.isMobile = this.md.mobile();
+class Thread {
+    constructor() {
+        const md = new MobileDetect(window.navigator.userAgent);
+        this.isMobile = md.mobile();
 
         this.addListeners();
         this.updateElementVisibility();
         this.preloadVideos();
         this.addImageListeners();
-    },
+    }
 
     preloadVideos() {
         const videos = Array.from(this.getVideos());
@@ -73,7 +74,7 @@ window.Thread = {
         videos
             .filter((video) => video.parentNode.dataset.visible === 'yes')
             .map(this.preloadVideo.bind(this));
-    },
+    }
 
     addImageListeners() {
         const roots = document.getElementsByClassName('resource');
@@ -86,7 +87,7 @@ window.Thread = {
                      return this.addImageLoadListener(img, el);
 
              });
-    },
+    }
 
     preloadVideo(video) {
         if (this.isMobile)
@@ -111,7 +112,7 @@ window.Thread = {
         });
 
         return video;
-    },
+    }
 
     handleOffSiteImage(el, parent) {
         const currentSource = Array.from(parent.getElementsByTagName('source')).find(source => source.srcset === el.currentSrc);
@@ -121,7 +122,7 @@ window.Thread = {
 
         if (el.complete && el.naturalWidth !== 0)
             return parent.classList.remove('loading');
-    },
+    }
 
     preloadImage(el) {
         const parent = this.getResourceParentElement(el);
@@ -141,24 +142,24 @@ window.Thread = {
         } else if (el.complete && el.naturalWidth !== 0) {
             parent.classList.remove('loading');
         }
-    },
+    }
 
     getVideos() {
         return Array.from(document.querySelectorAll('.resource video'));
-    },
+    }
 
     getImages() {
         return Array.from(document.querySelectorAll('.resource img'));
-    },
+    }
 
     addListeners() {
         window.addEventListener('scroll', debounce(() => this.updateElementVisibility(), 10));
-        window.__settingsListeners.push((settings) => this._addSettingsListeners(settings));
-    },
+        window.bootData.settingsListeners.push((settings) => this._addSettingsListeners(settings));
+    }
 
     _addSettingsListeners(settings) {
         settings.onChange('*', this._handleSettingChange.bind(this));
-    },
+    }
 
     _handleSettingChange(key, value) {
         const handlers = {
@@ -173,7 +174,7 @@ window.Thread = {
         const handler = handlers[ key ] || (() => !0);
 
         return handler(value);
-    },
+    }
 
     updateElementVisibility() {
         Array.from(document.getElementsByClassName('resource'))
@@ -190,7 +191,7 @@ window.Thread = {
                  if (image)
                      this.updateImageElement(image, el, isVisible);
              });
-    },
+    }
 
     updateVideoElement(el) {
         const isVisible = el.parentNode.dataset.visible === 'yes';
@@ -206,7 +207,7 @@ window.Thread = {
 
         if (autoplay && el.paused && !el.ended)
             return el.play();
-    },
+    }
 
     /**
      * @param {HTMLElement} el
@@ -220,7 +221,7 @@ window.Thread = {
             return null;
 
         return el;
-    },
+    }
 
     /**
      * @param {HTMLElement} el
@@ -237,7 +238,7 @@ window.Thread = {
         parent.dataset.requiresProxy = 'yes';
         parent.getElementsByTagName('source').item(0).remove();
         this.preloadImage(el);
-    },
+    }
 
     addImageLoadListener(el) {
         el.dataset.processed = 'yes';
@@ -249,12 +250,12 @@ window.Thread = {
             if (!height)
                 return;
 
-            this.style.height = `${ height }px`;
+            this.style.height = `${height}px`;
         }).call(el);
 
         el.addEventListener('load', () => this.preloadImage(el));
         el.addEventListener('error', () => this.handleError(el));
-    },
+    }
 
     updateImageElement(el) {
         const parent = this.getResourceParentElement(el);
@@ -271,5 +272,7 @@ window.Thread = {
             return this.preloadImage(el);
 
         return this.addImageLoadListener(el);
-    },
-};
+    }
+}
+
+onReady(() => new Thread());

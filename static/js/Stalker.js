@@ -2,8 +2,9 @@ import Vue from 'vue';
 import io from 'socket.io-client';
 
 import StalkerContainer from './src/Stalker/components/container';
+import { onReady } from './src/util/onReady';
 
-window.Stalker = class Stalker {
+class Stalker {
 
     constructor(rootElement, presenceUrl = '') {
         this.root = rootElement;
@@ -101,4 +102,6 @@ window.Stalker = class Stalker {
         this.socket.emit('all', this.updateData.bind(this));
     }
 
-};
+}
+
+onReady(() => new Stalker(document.getElementById('stalker-container'), window.bootData.presenceUrl));

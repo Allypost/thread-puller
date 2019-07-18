@@ -1,8 +1,9 @@
 import Cookies from 'js-cookie';
 
 import '../styles/modules/settings/_include.scss';
+import { onReady } from './src/util/onReady';
 
-window.Settings = class Settings {
+class Settings {
 
     constructor() {
         this._settingsCookie = 'threadpuller_settings';
@@ -51,7 +52,8 @@ window.Settings = class Settings {
     }
 
     _handleListenerRequests(obj) {
-        const listeners = obj || window.__settingsListeners;
+        const { bootData = {} } = window;
+        const listeners = obj || bootData.settingsListeners;
 
         if (!listeners)
             return;
@@ -374,4 +376,17 @@ window.Settings = class Settings {
         this.$modalContent.appendChild(container);
     }
 
-};
+}
+
+onReady(() => {
+    if (window.settings instanceof Settings)
+        return;
+
+    const { bootData = {} } = window;
+
+    window.settings = new Settings();
+
+    Object.assign(bootData, {
+        settingsListeners: window.settings.listenToHandlerRequests(bootData.settingsListeners),
+    });
+});
