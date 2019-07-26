@@ -96,12 +96,12 @@ class Settings {
         return Object.assign({}, setting, override).value;
     }
 
-    onChange(setting = '*', handler = (() => 1)) {
+    onChange(setting = '*', handler = (() => 1), id = null) {
         const listeners = this._listeners;
 
         if (setting === '*') {
             Object.keys(this.get())
-                  .forEach((key) => this.onChange(key, handler));
+                  .forEach((key) => this.onChange(key, handler, id));
 
             return;
         }
@@ -109,13 +109,44 @@ class Settings {
         if (!listeners[ setting ])
             listeners[ setting ] = [];
 
-        listeners[ setting ].push(handler);
+        if (Array.isArray(handler) && handler.length === 2) {
+            const [ id, fn ] = handler;
+
+            listeners[ setting ].push({ id, fn });
+        } else {
+            if (id === null)
+                id = Symbol();
+
+            listeners[ setting ].push({ id, fn: handler, setting });
+        }
+    }
+
+    exists(handlerId) {
+        for (const handlers of Object.values(this._listeners)) {
+            for (const { id } of handlers) {
+                if (handlerId === id)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    remove(handlerId) {
+        for (const [ key, handlers ] of Object.entries(this._listeners)) {
+            for (const { id } of handlers) {
+                if (handlerId !== id)
+                    continue;
+
+                this._listeners[ key ] = this._listeners[ key ].filter(({ id }) => id !== handlerId);
+            }
+        }
     }
 
     _trigger(setting, value) {
         const listeners = this._listeners[ setting ] || [];
 
-        listeners.forEach((listener) => listener(setting, value));
+        listeners.forEach(({ fn }) => fn(setting, value));
     }
 
     getProxied(settings, proxy) {
