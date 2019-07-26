@@ -100,4 +100,7 @@ config.optimization.splitChunks = {
     name: false,
 };
 
+config.output.filename = '[contenthash].[chunkhash].js';
+config.output.chunkFilename = '[id].[chunkhash].js';
+
 module.exports = config;
