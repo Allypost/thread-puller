@@ -22,6 +22,9 @@ const redis = new Redis(redisConf).redis;
 const sessionSettings = require('../config/session')(new Redis(settingsRedisConf).redis);
 
 async function clean() {
+    if (!redis)
+        return null;
+
     const command = `local keys = redis.call('keys', ARGV[1]) \n for i=1,#keys,5000 do \n redis.call('del', unpack(keys, i, math.min(i+4999, #keys))) \n end \n return keys`;
     return await redis.evalAsync(command, 0, `${redisConf.prefix}*`);
 }
@@ -100,8 +103,11 @@ io.on('connection', async (socket) => {
 
     async function sendData(location = data.location, presenceId = data.presenceId) {
         const payload = JSON.stringify(Object.assign(data, { location, presenceId }));
-        await redis.setAsync(`${sessionId}`, payload, 'EX', 3 * 60);
-        redis.publish(redisConf.prefix, `j:${payload}`, undefined);
+
+        if (redis) {
+            await redis.setAsync(`${sessionId}`, payload, 'EX', 3 * 60);
+            redis.publish(redisConf.prefix, `j:${payload}`, undefined);
+        }
 
         socket.data = data;
 
@@ -110,8 +116,11 @@ io.on('connection', async (socket) => {
 
     async function removeData() {
         const payload = JSON.stringify(data);
-        await redis.delAsync(`${sessionId}`);
-        redis.publish(redisConf.prefix, `l:${payload}`, undefined);
+
+        if (redis) {
+            await redis.delAsync(`${sessionId}`);
+            redis.publish(redisConf.prefix, `l:${payload}`, undefined);
+        }
 
         io.to('monitor').emit('user:update', { type: 'leave', loading: false, data: censorValue(data) });
     }
