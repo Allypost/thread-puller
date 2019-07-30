@@ -25,17 +25,27 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^2.6.0",
     "nuxt": "^2.0.0",
-      "consola": "latest"
+    "consola": "latest"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.0.1",
     "@nuxtjs/eslint-module": "^0.2.1",
+    "autoprefixer": "latest",
     "babel-eslint": "^10.0.1",
+    "cssnano": "latest",
     "eslint": "^5.16.0",
     "eslint-plugin-nuxt": ">=0.4.2",
     "eslint-plugin-vue": "^5.2.3",
     "husky": "^2.6.0",
     "lint-staged": "^8.2.1",
-    "nodemon": "^1.18.9"
-  }
+    "node-sass": "^4.12.0",
+    "nodemon": "^1.18.9",
+    "pixrem": "^5.0.0",
+    "postcss-font-magician": "^2.2.2",
+    "postcss-normalize": "^8.0.1",
+    "sass-loader": "^7.1.0"
+  },
+  "browserslist": [
+      "defaults"
+  ]
 }

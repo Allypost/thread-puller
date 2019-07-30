@@ -50,10 +50,44 @@ module.exports = {
      ** Build configuration
      */
     build: {
-        /*
-         ** You can extend webpack config here
-         */
-        extend(/*config, ctx*/) {
+        loaders: {
+            vue: {
+                video: [ 'src', 'poster' ],
+                source: 'src',
+                img: 'src',
+                image: [ 'xlink:href', 'href' ],
+                use: [ 'xlink:href', 'href' ],
+            },
+        },
+
+        postcss: {
+            plugins: {
+                'postcss-normalize': {},
+                'postcss-font-magician': {},
+                'pixrem': {},
+                'autoprefixer': {},
+                'cssnano': { preset: 'default' },
+            },
+        },
+
+        filenames: {
+            app: ({ isDev }) => isDev ? '[name].js' : '[chunkhash].js',
+            chunk: ({ isDev }) => isDev ? '[name].js' : '[id].[chunkhash].js',
+            css: ({ isDev }) => isDev ? '[name].css' : '[contenthash].css',
+            img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[hash].[ext]',
+            font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[hash].[ext]',
+            video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[hash].[ext]',
+        },
+
+        optimization: {
+            concatenateModules: true,
+            moduleIds: 'hashed',
+            splitChunks: {
+                chunks: 'all',
+                maxAsyncRequests: 50,
+                maxInitialRequests: 20,
+                name: false,
+            },
         },
     },
 };
