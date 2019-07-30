@@ -44,7 +44,8 @@
     "socket.io": "^2.2.0",
     "string-kit": "^0.8.15",
     "striptags": "^3.1.1",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "vue-server-renderer": "^2.6.10"
   },
   "devDependencies": {
     "@symfony/webpack-encore": "^0.27.0",
@@ -67,6 +68,7 @@
     "snyk": "^1.200.1",
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
+    "vue-linkify": "^1.0.1",
     "vue-loader": "^15.0.11",
     "vue-template-compiler": "^2.6.10"
   },

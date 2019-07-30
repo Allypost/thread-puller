@@ -284,6 +284,11 @@ Router.get('/:board/', async (req, res) => {
         return res.render('base', opts);
     }
 
+    opts.bootData = Object.assign({
+        board,
+        threads,
+    }, app.locals.bootData);
+
     const boardInfo = await Boards.info(board);
     opts.title = `/${board}/ - ThreadPuller`;
     opts.page = 'board/show';

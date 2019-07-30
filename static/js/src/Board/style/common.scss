@@ -1,0 +1,13 @@
+@import "../../../../styles/modules/include";
+
+$content-background-color: darken($board-background-color, 40%);
+$meta-background-color: lighten($content-background-color, 15%);
+$maxTextHeight: 140px;
+
+%expanded-description {
+    max-height: none !important;
+
+    &::after {
+        display: none !important;
+    }
+}
