@@ -58,6 +58,11 @@ typings/
 
 # dotenv environment variables file
 .env
+docker-compose-override.yml
+
+# Storage
+.storage/
+!.storage/**/.gitkeep
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
