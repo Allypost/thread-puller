@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR="$(pwd)"
+
+source "$DIR/.env"
+ENV_OVERRIDE_FILE="$DIR/.env.override"
+
+node_container() {
+    ARGS=()
+
+    if [ ! -t 0 ]; then
+        ARGS+=(-T)
+    fi
+
+    ARGS+=(--user "$(id -u)")
+
+    if ! docker/compose ps | grep "_web_" | grep "Up" &> /dev/null; then
+        docker/compose run --rm --no-deps -p "$PORT:$PORT" "${ARGS[@]}" web "$@"
+
+        return
+    fi
+
+    docker/compose exec "${ARGS[@]}" node "$@";
+}
+
+node_container "$@"

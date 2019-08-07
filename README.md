@@ -1,20 +1,22 @@
-# ThreadPuller - 4chan image browser
+# thread-puller
 
-Simple image browser proxy for 4chan.
+> 4chan - The media bits
 
-Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.
+## Build Setup
 
-## Installation
+``` bash
+# install dependencies
+$ npm run install
 
-1) Download or clone this repo.
-2) Run `npm install` to fetch and install dependencies.
-3) Run `npm run compile` to compile static assets.
-4) Run `npm start` to start the server. By default it'll run on `http://localhost:80`.
-5) Enjoy browsing 4chan images at your leisure :)
+# serve with hot reload at localhost:3000
+$ npm run dev
 
+# build for production and launch server
+$ npm run build
+$ npm run start
 
-## Notes
-- This started as a private project.
-- It was also the first time I used exclusively nodeJS (instead of using it as a background service).
+# generate static project
+$ npm run generate
+```
 
-All that means that the early history is _quite_ hacky and gross. :)
+For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).

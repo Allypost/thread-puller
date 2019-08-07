@@ -1,5 +1,0 @@
-<h1 class="no-select"><a href="/<%= board -%>/">Back</a> | <a href="https://boards.4chan.org/<%= board -%>/catalog#s=<%= query -%>" target="_blank" rel="noopener noreferrer">Go to board</a></h1>
-<h1 class="no-select">Board Search: /<%= board -%>/<%= query -%>/</h1>
-<% threads.forEach((thread) => { %>
-    <%- include('./thread.ejs', { post: thread }) -%>
-<% }) -%>
