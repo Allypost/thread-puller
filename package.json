@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "dev": "cross-env NODE_ENV=development nodemon --exec \"clear && node\" server/index.js --watch server",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "generate": "nuxt generate"
@@ -20,13 +20,23 @@
     }
   },
   "dependencies": {
-    "cross-env": "^5.2.0",
-    "express": "^4.16.4",
+    "@bazzite/nuxt-optimized-images": "^0.2.1",
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^2.6.0",
-    "nuxt": "^2.0.0",
+    "axios": "latest",
     "consola": "latest",
-      "vuex": "latest"
+    "cross-env": "^5.2.0",
+    "express": "^4.16.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "html-entities": "latest",
+    "imagemin-mozjpeg": "^8.0.0",
+    "imagemin-pngquant": "^8.0.0",
+    "imagemin-svgo": "^7.0.0",
+    "ioredis": "^4.14.0",
+    "nuxt": "^2.0.0",
+    "nuxt-svg-loader": "^1.0.1",
+    "striptags": "^3.1.1",
+    "vuex": "latest"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.0.1",
@@ -47,6 +57,6 @@
     "sass-loader": "^7.1.0"
   },
   "browserslist": [
-      "defaults"
+    "defaults"
   ]
 }

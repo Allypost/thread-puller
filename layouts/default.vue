@@ -54,15 +54,40 @@
 </template>
 
 <script>
+    function e(name, content) {
+        return { hid: name, name, content };
+    }
+
     export default {
-        data: () => ({
-            donateLink: '',
-        }),
+        data: () => (
+            {
+                donateLink: '',
+            }
+        ),
 
         computed: {
             hasDonateLink() {
                 return Boolean(this.donateLink);
             },
+        },
+
+        head() {
+            return {
+                meta: [
+                    e('referrer', 'never'),
+                    e('theme-color', '#1e1e1e'),
+                    e('msapplication-TileColor', '#1e1e1e'),
+                    e('application-name', 'ThreadPuller - View 4Chan thread images and videos'),
+                ],
+
+                titleTemplate(titleChunk) {
+                    if (titleChunk) {
+                        return `${ titleChunk } | ThreadPuller`;
+                    }
+
+                    return 'ThreadPuller - Pull 4Chan media';
+                },
+            };
         },
     };
 </script>

@@ -1,6 +1,8 @@
-FROM node:12
+FROM node:12-alpine
 
 ENV APP_ROOT /web
+
+RUN apk update && apk add ffmpeg
 
 RUN mkdir ${APP_ROOT}
 WORKDIR ${APP_ROOT}

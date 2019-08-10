@@ -1,8 +1,8 @@
 @import "modules/include";
 
 ::selection {
-    color: #ffffff;
-    background: #000000;
+    color: #fafafa;
+    background: #212121;
 }
 
 *,
@@ -26,12 +26,6 @@ html {
     background-color: $background-color;
 }
 
-h1 {
-    font-size: 3em;
-    margin: .67em 0;
-    text-align: center;
-}
-
 a {
     display: inline-block;
     color: #cfd8dc;
@@ -41,6 +35,18 @@ a {
         color: #ffffff;
     }
 
+}
+
+s {
+    cursor: help;
+    text-decoration: none;
+    color: #000000;
+    background: #000000;
+    box-shadow: 0 0 1em -8px #ffffff;
+
+    &:hover {
+        color: #ffffff;
+    }
 }
 
 @import "modules/flash/include";

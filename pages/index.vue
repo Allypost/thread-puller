@@ -28,21 +28,37 @@
         <h2>
             Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.
         </h2>
-
-
+        <boards-container />
     </div>
 </template>
 
 <script>
+    import BoardsContainer from '../components/boards/Container';
+    import PepeImage from '../assets/images/pepe.png';
+
+    function e(name, content) {
+        return { hid: name, name, content };
+    }
+
     export default {
-        computed: {
-            boards() {
-                return this.$store.state.boards;
-            },
+        components: { BoardsContainer },
+
+        head() {
+            return {
+                title: '',
+                meta: [
+                    e('og:title', 'ThreadPuller - Pull 4Chan Image Threads'),
+                    e('og:description', 'Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.'),
+                    e('description', 'Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.'),
+                    e('og:image', PepeImage),
+                ],
+            };
         },
 
-        mounted() {
-            console.log(this.boards);
+        async fetch({ store }) {
+            const isServer = process.server;
+
+            await store.dispatch('boards/fetch', { isServer });
         },
     };
 </script>

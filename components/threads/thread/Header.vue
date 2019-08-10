@@ -1,0 +1,68 @@
+<style lang="scss" scoped>
+    header {
+        margin-bottom: .3em;
+    }
+
+    .title {
+        margin: 0;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.3em;
+        color: #212121;
+    }
+
+    .no-title {
+        font-weight: normal;
+    }
+</style>
+
+<template>
+    <header>
+        <n-link
+            :to="threadLink"
+            class="title"
+        >
+            <span
+                v-if="hasTitle"
+                v-html="title"
+            />
+            <i
+                v-else
+                class="no-title"
+            >No title</i>
+        </n-link>
+    </header>
+</template>
+
+<script>
+    export default {
+        name: 'ThreadHeader',
+
+        props: {
+            thread: {
+                type: Object,
+                required: true,
+            },
+        },
+
+        computed: {
+            threadLink() {
+                const { board, id } = this.thread;
+
+                return `/${ board }/thread/${ id }`;
+            },
+
+            hasTitle() {
+                return Boolean(this.title);
+            },
+
+            title() {
+                const { body } = this.thread;
+                const { title } = body;
+
+                return title;
+            },
+        },
+
+    };
+</script>

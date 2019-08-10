@@ -14,10 +14,16 @@ module.exports = {
             { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         ],
     },
+
+    serverMiddleware: [
+        '~/api/4chan',
+        '~/api/4chan-images',
+    ],
+
     /*
      ** Customize the progress-bar color
      */
-    loading: { color: '#ffffff' },
+    isLoading: { color: '#ffffff' },
     /*
      ** Global CSS
      */
@@ -40,6 +46,8 @@ module.exports = {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
+        '@bazzite/nuxt-optimized-images',
+        'nuxt-svg-loader',
     ],
     /*
      ** Axios module configuration
@@ -89,5 +97,9 @@ module.exports = {
                 name: false,
             },
         },
+    },
+    optimizedImages: {
+        optimizeImages: true,
+        optimizeImagesInDev: true,
     },
 };

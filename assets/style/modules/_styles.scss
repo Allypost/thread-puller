@@ -25,3 +25,11 @@
     }
 
 }
+
+%container-base {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 1em;
+    margin: 1em;
+    align-items: center;
+}
