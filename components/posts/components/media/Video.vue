@@ -9,6 +9,7 @@
 
 <script>
     import ThreadVid from '../../../../components/threads/thread/media/components/Video.vue';
+    import MobileDetect from 'mobile-detect';
 
     function isElementInViewport(el) {
         const scroll = window.scrollY || window.pageYOffset;
@@ -47,14 +48,42 @@
         },
 
         data() {
-            const { src } = this.file;
-            const { local } = src;
-            const { thumb } = local;
-
             return {
+                isMobile: false,
                 isVisible: false,
-                poster: thumb,
+                thumbSrc: '',
             };
+        },
+
+        computed: {
+
+            posterSrcSet() {
+                const { src } = this.file;
+                const { local, remote } = src;
+                const { thumb: localThumb, thumbHD: localThumbHD } = local;
+                const { thumb: remoteThumb } = remote;
+
+                return {
+                    local: localThumb,
+                    remote: remoteThumb,
+                    hd: localThumbHD,
+                };
+            },
+
+            poster() {
+                if (!this.isVisible) {
+                    return this.thumbSrc;
+                }
+
+                if (!this.isMobile) {
+                    return false;
+                }
+
+                const { hd } = this.posterSrcSet;
+
+                return hd;
+            },
+
         },
 
         mounted() {
@@ -69,10 +98,37 @@
 
             window.addEventListener('scroll', this.listener);
             this.listener();
+
+            this.isMobile = (
+                new MobileDetect()
+            ).mobile();
+
+            this.computePoster();
         },
 
         beforeDestroy() {
             window.removeEventListener('scroll', this.listener);
+        },
+
+        methods: {
+            computePoster() {
+                const img = new Image();
+                const { remote, local } = this.posterSrcSet;
+
+                img.src = remote;
+
+                img.onerror = () => {
+                    if (!this.isVisible) {
+                        this.thumbSrc = local;
+                    }
+                };
+
+                img.onload = () => {
+                    if (!this.isVisible) {
+                        this.thumbSrc = remote;
+                    }
+                };
+            },
         },
 
     };
