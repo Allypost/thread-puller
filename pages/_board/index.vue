@@ -121,13 +121,6 @@
             }),
         },
 
-        methods: {
-            decodeEntities(text) {
-                const htmlEntities = new HTMLEntities();
-                return htmlEntities.decode(text);
-            },
-        },
-
         async fetch({ store, params }) {
             const { board: boardName } = params;
             const isServer = process.server;
@@ -135,6 +128,13 @@
             await fetchBoard(store, { boardName, isServer });
 
             await store.dispatch('threads/fetch', { isServer, boardName });
+        },
+
+        methods: {
+            decodeEntities(text) {
+                const htmlEntities = new HTMLEntities();
+                return htmlEntities.decode(text);
+            },
         },
 
     };
