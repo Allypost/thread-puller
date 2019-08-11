@@ -44,7 +44,7 @@
             },
             loop: {
                 type: Boolean,
-                default: false,
+                default: true,
             },
         },
 
