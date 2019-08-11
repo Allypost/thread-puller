@@ -75,10 +75,6 @@
                     return this.thumbSrc;
                 }
 
-                if (!this.isMobile) {
-                    return false;
-                }
-
                 const { hd } = this.posterSrcSet;
 
                 return hd;
