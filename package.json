@@ -29,7 +29,6 @@
     "express": "^4.16.4",
     "fluent-ffmpeg": "^2.1.2",
     "html-entities": "latest",
-    "imagemin-mozjpeg": "^8.0.0",
     "imagemin-pngquant": "^8.0.0",
     "imagemin-svgo": "^7.0.0",
     "ioredis": "^4.14.0",
@@ -39,7 +38,7 @@
     "vuex": "latest"
   },
   "devDependencies": {
-    "@nuxtjs/eslint-config": "^1.0.1",
+    "@nuxtjs/eslint-config": "^1.1.2",
     "@nuxtjs/eslint-module": "^0.2.1",
     "autoprefixer": "latest",
     "babel-eslint": "^10.0.1",
@@ -54,7 +53,7 @@
     "pixrem": "^5.0.0",
     "postcss-font-magician": "^2.2.2",
     "postcss-normalize": "^8.0.1",
-    "sass-loader": "^7.1.0"
+    "sass-loader": "^7.2.0"
   },
   "browserslist": [
     "defaults"
