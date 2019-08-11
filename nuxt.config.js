@@ -100,6 +100,5 @@ module.exports = {
     },
     optimizedImages: {
         optimizeImages: true,
-        optimizeImagesInDev: true,
     },
 };
