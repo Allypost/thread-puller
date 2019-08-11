@@ -78,8 +78,11 @@
     >
         <header>
             <n-link
+                ref="link"
                 :to="board.link"
                 class="title"
+                :event="approved ? 'click' : ''"
+                @click.native="handleClick"
             >
                 {{ board.link }} - {{ board.title }}
             </n-link>
@@ -99,6 +102,28 @@
             board: {
                 type: Object,
                 required: true,
+            },
+        },
+
+        data() {
+            return {
+                approved: !this.board.nsfw,
+            };
+        },
+
+        methods: {
+            handleClick() {
+                if (this.approved) {
+                    return true;
+                }
+
+                this.approved = window.confirm(
+                    'This section of the website may contain sexually explicit content or content that is otherwise inappropriate for children and young adults.\nIf you are a minor or it is illegal for you to access mature images and language, do not proceed.\n\nYou must be 18 or older to enter.\n\nDo you agree to continue?',
+                );
+
+                if (this.approved) {
+                    this.$nextTick(() => this.$refs.link.$el.click());
+                }
             },
         },
     };
