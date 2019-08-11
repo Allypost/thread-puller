@@ -3,6 +3,7 @@
 set -e
 
 DIR="$(pwd)"
+DOCKER_NAME="web"
 
 source "$DIR/.env"
 
@@ -15,13 +16,13 @@ node_container() {
 
     ARGS+=(--user "$(id -u)")
 
-    if ! docker/compose ps | grep "_web_" | grep "Up" &> /dev/null; then
-        docker/compose run --rm --no-deps -p "$PORT:$PORT" "${ARGS[@]}" web "$@"
+    if ! docker/compose ps | grep "_${DOCKER_NAME}_" | grep "Up" &> /dev/null; then
+        docker/compose run --rm --no-deps -p "$PORT:$PORT" "${ARGS[@]}" "$DOCKER_NAME" "$@"
 
         return
     fi
 
-    docker/compose exec "${ARGS[@]}" node "$@";
+    docker/compose exec "${ARGS[@]}" "$DOCKER_NAME" "$@";
 }
 
 node_container "$@"
