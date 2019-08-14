@@ -4,8 +4,6 @@ services:
         build:
             context: .
             dockerfile: .docker/node/Dockerfile
-        ports:
-            - '80:80'
         restart: always
         volumes:
             - .:/web
