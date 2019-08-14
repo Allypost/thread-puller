@@ -32,4 +32,16 @@
     grid-gap: 1em;
     margin: 1em;
     align-items: center;
+
+    @media only screen and (max-width: 1750px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media #{$large-and-down} {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media #{$small-and-down} {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }
