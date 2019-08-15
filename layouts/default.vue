@@ -54,10 +54,6 @@
 </template>
 
 <script>
-    function e(name, content) {
-        return { hid: name, name, content };
-    }
-
     export default {
         data: () => (
             {
@@ -73,13 +69,6 @@
 
         head() {
             return {
-                meta: [
-                    e('referrer', 'never'),
-                    e('theme-color', '#1e1e1e'),
-                    e('msapplication-TileColor', '#1e1e1e'),
-                    e('application-name', 'ThreadPuller - View 4Chan thread images and videos'),
-                ],
-
                 titleTemplate(titleChunk) {
                     if (titleChunk) {
                         return `${ titleChunk } | ThreadPuller`;

@@ -1,3 +1,7 @@
+function meta(name, content) {
+    return { hid: name, name, content };
+}
+
 module.exports = {
     mode: 'universal',
     /*
@@ -7,8 +11,11 @@ module.exports = {
         title: process.env.npm_package_name || '',
         meta: [
             { charset: 'utf-8' },
-            { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-            { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
+            meta('viewport', 'width=device-width, initial-scale=1'),
+            meta('referrer', 'never'),
+            meta('theme-color', '#1e1e1e'),
+            meta('msapplication-TileColor', '#1e1e1e'),
+            meta('application-name', process.env.npm_package_description || ''),
         ],
         link: [
             { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
