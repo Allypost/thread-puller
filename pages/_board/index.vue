@@ -28,6 +28,7 @@
 
 <template>
     <div>
+        <threadpuller-settings />
         <thread-backlinks
             :back-link="{ name: 'Boards' }"
             :external-href="externalHref"
@@ -44,6 +45,7 @@
     import { AllHtmlEntities as HTMLEntities } from 'html-entities';
     import ThreadBacklinks from '../../components/ThreadBacklinks';
     import ThreadsContainer from '../../components/threads/Container';
+    import ThreadpullerSettings from '../../components/settings/Container.vue';
     import PepeImage from '../../assets/images/pepe.png';
 
     function getBoard(store, boardName) {
@@ -98,7 +100,7 @@
             };
         },
 
-        components: { ThreadsContainer, ThreadBacklinks },
+        components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
 
         computed: {
             boardName() {

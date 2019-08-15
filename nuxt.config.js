@@ -38,7 +38,10 @@ module.exports = {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [],
+    plugins: [
+        '~/plugins/load-settings-from-cookie',
+        { src: '~plugins/share-vuex-settings-mutations.js', ssr: false },
+    ],
     /*
      ** Nuxt.js dev-modules
      */

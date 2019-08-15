@@ -6,10 +6,10 @@
 
 <template>
     <video
-        :autoplay="autoplay"
+        :autoplay="vAutoplay"
         :controls="controls"
         :preload="preload"
-        :loop="loop"
+        :loop="vLoop"
     >
         <source :src="srcset.remote">
         <source :src="srcset.local">
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
+
     export default {
         name: 'ThreadVideo',
 
@@ -28,7 +30,7 @@
             },
             autoplay: {
                 type: Boolean,
-                default: true,
+                default: null,
             },
             controls: {
                 type: Boolean,
@@ -36,7 +38,7 @@
             },
             volume: {
                 type: Number,
-                default: 25,
+                default: null,
             },
             preload: {
                 type: String,
@@ -44,8 +46,14 @@
             },
             loop: {
                 type: Boolean,
-                default: true,
+                default: null,
             },
+        },
+
+        data() {
+            return {
+                isDestroyed: false,
+            };
         },
 
         computed: {
@@ -58,25 +66,64 @@
                     remote: remote.full,
                 };
             },
+
+            ...mapState('settings', {
+                vVolume({ volume }) {
+                    if (this.isDestroyed) {
+                        return 0;
+                    }
+
+                    return this.getValue(volume, 'volume');
+                },
+
+                vAutoplay({ autoplay }) {
+                    return this.getValue(autoplay, 'autoplay');
+                },
+
+                vLoop({ loop }) {
+                    return this.getValue(loop, 'loop');
+                },
+            }),
         },
 
         watch: {
-            volume(newValue) {
+            vVolume(newValue) {
                 this.setVolume(newValue);
+            },
+
+            vAutoplay(newValue) {
+                if (true === newValue) {
+                    this.$el.play();
+                }
             },
         },
 
         mounted() {
-            this.setVolume(this.volume);
+            this.setVolume(this.vVolume);
+        },
+
+        beforeDestroy() {
+            this.setVolume(0);
+            this.isDestroyed = true;
         },
 
         methods: {
-            setVolume(newVolume = 25) {
+            setVolume(newVolume) {
                 if (1 < newVolume) {
                     newVolume /= 100;
                 }
 
                 this.$el.volume = newVolume;
+            },
+
+            getValue(setting, key) {
+                if (null !== this[ key ]) {
+                    return this[ key ];
+                }
+
+                const { value } = setting;
+
+                return value;
             },
         },
     };

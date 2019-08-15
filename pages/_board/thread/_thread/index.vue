@@ -32,6 +32,7 @@
 
 <template>
     <div>
+        <threadpuller-settings />
         <thread-backlinks
             :back-link="{ name: 'Threads', params: { board: boardName } }"
             :external-href="externalHref"
@@ -52,6 +53,7 @@
     import { AllHtmlEntities as HTMLEntities } from 'html-entities';
     import ThreadBacklinks from '../../../../components/ThreadBacklinks';
     import PostsContainer from '../../../../components/posts/Container';
+    import ThreadpullerSettings from '../../../../components/settings/Container.vue';
     import PepeSadImage from '../../../../assets/images/pepe-sad.png';
 
     function getThread(store, threadId) {
@@ -83,7 +85,7 @@
     export default {
         name: 'Posts',
 
-        components: { PostsContainer, ThreadBacklinks },
+        components: { PostsContainer, ThreadBacklinks, ThreadpullerSettings },
 
         async validate({ params, store }) {
             const { board: boardName, thread: threadId } = params;
