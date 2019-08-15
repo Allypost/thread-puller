@@ -9,15 +9,23 @@ function baseUrl(isServer) {
 }
 
 async function fetchThreads(boardName, isServer) {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/threads`, { responseType: 'json' });
+    try {
+        const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/threads`, { responseType: 'json' });
 
-    return data;
+        return data;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function fetchThread(boardName, threadId, isServer) {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
+    try {
+        const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
 
-    return data;
+        return data;
+    } catch (e) {
+        return null;
+    }
 }
 
 export const state = () => (
@@ -62,6 +70,10 @@ export const actions = {
 
     async fetch({ state, commit }, { boardName, isServer }) {
         const threads = await fetchThreads(boardName, isServer);
+
+        if (!threads) {
+            return;
+        }
 
         commit('set', threads);
 

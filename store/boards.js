@@ -9,15 +9,23 @@ function baseUrl(isServer) {
 }
 
 async function fetchBoard(board, isServer) {
-    const { data } = await get(`${ baseUrl(isServer) }/api/board/${ board }`, { responseType: 'json' });
+    try {
+        const { data } = await get(`${ baseUrl(isServer) }/api/board/${ board }`, { responseType: 'json' });
 
-    return data;
+        return data;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function fetchBoards(isServer) {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards`, { responseType: 'json' });
+    try {
+        const { data } = await get(`${ baseUrl(isServer) }/api/boards`, { responseType: 'json' });
 
-    return data;
+        return data;
+    } catch (e) {
+        return null;
+    }
 }
 
 export const state = () => (
@@ -62,6 +70,10 @@ export const actions = {
 
     async fetch({ state, commit }, { isServer }) {
         const boards = await fetchBoards(isServer);
+
+        if (!boards) {
+            return;
+        }
 
         commit('set', boards);
 
