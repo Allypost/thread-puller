@@ -19,7 +19,7 @@
 <template>
     <header>
         <n-link
-            :to="threadLink"
+            :to="{ name: 'Posts', params: { board: thread.board, thread: thread.id } }"
             class="title"
         >
             <span
@@ -46,12 +46,6 @@
         },
 
         computed: {
-            threadLink() {
-                const { board, id } = this.thread;
-
-                return `/${ board }/thread/${ id }`;
-            },
-
             hasTitle() {
                 return Boolean(this.title);
             },

@@ -33,7 +33,7 @@
 <template>
     <div>
         <thread-backlinks
-            :back-link="backLink"
+            :back-link="{ name: 'Threads', params: { board: boardName } }"
             :external-href="externalHref"
         />
 
@@ -151,10 +151,6 @@
 
             externalHref() {
                 return `https://boards.4chan.org/${ this.boardName }/thread/${ this.threadId }`;
-            },
-
-            backLink() {
-                return `/${ this.boardName }/`;
             },
 
             originalPost() {

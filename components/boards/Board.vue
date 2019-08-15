@@ -79,7 +79,7 @@
         <header>
             <n-link
                 ref="link"
-                :to="board.link"
+                :to="{ name: 'Threads', params: { board: board.board } }"
                 class="title"
                 :event="approved ? 'click' : ''"
                 @click.native="handleClick"

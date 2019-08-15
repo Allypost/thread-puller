@@ -29,7 +29,7 @@
 <template>
     <div>
         <thread-backlinks
-            back-link="/"
+            :back-link="{ name: 'Boards' }"
             :external-href="externalHref"
         />
         <h1>Board: {{ board.link }}</h1>

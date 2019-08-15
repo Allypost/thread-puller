@@ -37,7 +37,7 @@
 
         props: {
             backLink: {
-                type: String,
+                type: [ String, Object ],
                 required: true,
             },
             externalHref: {
