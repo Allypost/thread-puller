@@ -26,7 +26,7 @@
                 text-decoration: none;
                 transition-property: box-shadow, color;
                 transition-duration: .25s;
-                transition-timing-function: cubic-bezier(.23, 1, .32, 1);
+                transition-timing-function: $transition-smooth;
             }
 
             .replies {
