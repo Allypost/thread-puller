@@ -26,6 +26,7 @@
     "@nuxtjs/router": "^1.4.0",
     "axios": "latest",
     "consola": "latest",
+    "cookie-universal-nuxt": "^2.0.17",
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "fluent-ffmpeg": "^2.1.2",
@@ -34,9 +35,9 @@
     "nuxt": "^2.0.0",
     "nuxt-svg-loader": "^1.0.1",
     "striptags": "^3.1.1",
-    "vuex": "latest",
+    "vue": "latest",
     "vue-router": "latest",
-    "vue": "latest"
+    "vuex": "latest"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.1.2",
