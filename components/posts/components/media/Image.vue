@@ -1,11 +1,11 @@
 <template>
-    <thread-img
+    <thread-image
         :alt="file.name"
         :src-set="src"
     />
 </template>
 <script>
-    import ThreadImg from '../../../threads/thread/media/components/Image.vue';
+    import ThreadImage from '../../../threads/thread/media/components/Image.vue';
 
     function isElementInViewport(el) {
         const scroll = window.scrollY || window.pageYOffset;
@@ -32,9 +32,9 @@
     }
 
     export default {
-        name: 'ThreadImage',
+        name: 'PostImage',
 
-        components: { ThreadImg },
+        components: { ThreadImage },
 
         props: {
             file: {

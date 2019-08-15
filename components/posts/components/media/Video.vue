@@ -1,14 +1,13 @@
 <template>
-    <thread-vid
+    <thread-video
         :file="file"
         :poster="poster"
         :preload="isVisible ? 'auto' : 'metadata'"
-        :autoplay="false"
     />
 </template>
 
 <script>
-    import ThreadVid from '../../../../components/threads/thread/media/components/Video.vue';
+    import ThreadVideo from '../../../../components/threads/thread/media/components/Video.vue';
     import MobileDetect from 'mobile-detect';
 
     function isElementInViewport(el) {
@@ -36,9 +35,9 @@
     }
 
     export default {
-        name: 'ThreadVideo',
+        name: 'PostVideo',
 
-        components: { ThreadVid },
+        components: { ThreadVideo },
 
         props: {
             file: {
@@ -95,9 +94,7 @@
             window.addEventListener('scroll', this.listener);
             this.listener();
 
-            this.isMobile = (
-                new MobileDetect()
-            ).mobile();
+            this.isMobile = (new MobileDetect()).mobile();
 
             this.computePoster();
         },

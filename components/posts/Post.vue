@@ -60,11 +60,11 @@
         class="resource"
     >
         <section>
-            <thread-video
+            <post-video
                 v-if="isVideo"
                 :file="file"
             />
-            <thread-image
+            <post-image
                 v-else
                 :file="file"
             />
@@ -105,14 +105,14 @@
 </template>
 
 <script>
-    import ThreadImage from './components/media/Image.vue';
-    import ThreadVideo from './components/media/Video.vue';
+    import PostImage from './components/media/Image.vue';
+    import PostVideo from './components/media/Video.vue';
     import LinkImage from '../../assets/images/link.svg';
 
     export default {
         name: 'ThreadPost',
 
-        components: { ThreadImage, ThreadVideo, LinkImage },
+        components: { PostImage, PostVideo, LinkImage },
 
         props: {
             post: {
