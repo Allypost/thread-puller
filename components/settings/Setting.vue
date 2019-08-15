@@ -14,12 +14,25 @@
             display: block;
             margin: .2em auto;
         }
+
+        .changed-notice {
+            opacity: .7;
+            font-size: .8em;
+
+            @include no-select();
+        }
     }
 </style>
 
 <template>
     <div class="setting-container">
-        <h3>{{ setting.title }}</h3>
+        <h3>
+            <span>{{ setting.title }}</span>
+            <span
+                v-if="wasChanged"
+                class="changed-notice"
+            > - changed</span>
+        </h3>
         <span>{{ setting.text }}</span>
         <div class="setting">
             <component
@@ -53,6 +66,7 @@
         data() {
             return {
                 value: undefined,
+                wasChanged: false,
             };
         },
 
@@ -77,6 +91,18 @@
             }),
         },
 
+        watch: {
+            value(newValue, oldValue) {
+                if (oldValue === undefined) {
+                    return;
+                }
+
+                const { value } = this.setting;
+
+                this.wasChanged = value !== newValue;
+            },
+        },
+
         created() {
             this.reset();
             this.$store.subscribe(({ type, payload: { setting } }) => {
@@ -87,12 +113,16 @@
                     return;
                 }
 
-                this.$nextTick(() => this.reset());
+                this.$nextTick(() => this.reset(true));
             });
         },
 
         methods: {
-            reset() {
+            reset(fromOtherWindow = false) {
+                if (fromOtherWindow && this.wasChanged) {
+                    return;
+                }
+
                 const { value } = this.setting;
 
                 this.value = value;
