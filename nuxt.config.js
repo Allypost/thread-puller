@@ -48,6 +48,7 @@ module.exports = {
         '@nuxtjs/pwa',
         '@bazzite/nuxt-optimized-images',
         'nuxt-svg-loader',
+        [ '@nuxtjs/router', { keepDefaultRouter: true } ],
     ],
     /*
      ** Axios module configuration
