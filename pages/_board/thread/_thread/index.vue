@@ -81,6 +81,8 @@
     }
 
     export default {
+        name: 'Posts',
+
         components: { PostsContainer, ThreadBacklinks },
 
         async validate({ params, store }) {

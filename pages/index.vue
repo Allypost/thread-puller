@@ -41,6 +41,8 @@
     }
 
     export default {
+        name: 'Boards',
+
         components: { BoardsContainer },
 
         head() {

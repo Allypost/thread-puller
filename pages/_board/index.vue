@@ -73,6 +73,7 @@
     }
 
     export default {
+        name: 'Threads',
 
         async validate({ params, store }) {
             const { board: boardName } = params;
