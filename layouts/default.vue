@@ -30,6 +30,7 @@
 <template>
     <div id="wrap">
         <nuxt />
+        <peer-count :socket="socket" />
         <footer>
             Copyright &copy; {{ new Date().getFullYear() }} Allypost | All content is courtesy of
             <a
@@ -56,8 +57,11 @@
 <script>
     import { mapGetters } from 'vuex';
     import { socket } from '../lib/SocketIO/socket';
+    import PeerCount from '../components/PeerCount';
 
     export default {
+        components: { PeerCount },
+
         data: () => (
             {
                 socket,
