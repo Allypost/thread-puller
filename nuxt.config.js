@@ -27,6 +27,10 @@ module.exports = {
         '~/api/4chan-images',
     ],
 
+    router: {
+        middleware: [ 'set-presence-cookie' ],
+    },
+
     /*
      ** Customize the progress-bar color
      */

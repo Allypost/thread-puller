@@ -1,8 +1,14 @@
+const http = require('http');
+
 const express = require('express');
 const consola = require('consola');
 const { Nuxt, Builder } = require('nuxt');
 
+const SocketIO = require('socket.io');
+
 const app = express();
+const server = http.createServer(app);
+const io = SocketIO(server);
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js');
@@ -25,11 +31,14 @@ async function start() {
     // Give nuxt middleware to express
     app.use(nuxt.render);
 
+    // Include Socket.IO client
+    await require('../api/presence')(io);
+
     // Listen the server
-    app.listen(port, host);
+    server.listen(port, host);
 
     consola.ready({
-        message: `Server listening on http://${host}:${port}`,
+        message: `Server listening on http://${ host }:${ port }`,
         badge: true,
     });
 }

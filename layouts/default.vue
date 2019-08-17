@@ -54,9 +54,13 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
+    import { socket } from '../lib/SocketIO/socket';
+
     export default {
         data: () => (
             {
+                socket,
                 donateLink: '',
             }
         ),
@@ -65,6 +69,16 @@
             hasDonateLink() {
                 return Boolean(this.donateLink);
             },
+
+            presenceID() {
+                const { id } = this.presence;
+
+                return id;
+            },
+
+            ...mapGetters({
+                'presence': 'presence/get',
+            }),
         },
 
         head() {
@@ -77,6 +91,50 @@
                     return 'ThreadPuller - Pull 4Chan media';
                 },
             };
+        },
+
+        watch: {
+            '$route.path'(path) {
+                this.updateLocation(path);
+            },
+        },
+
+        mounted() {
+            if (this.socket.connected) {
+                this.registerSocketListeners();
+            } else {
+                this.socket.on('connect', () => this.registerSocketListeners());
+            }
+        },
+
+        methods: {
+            registerSocketListeners() {
+                this.socket.emit('register', this.presenceID, () => {
+                    this.updateLocation();
+                    window.addEventListener('focus', this.getFocusListener(true));
+                    window.addEventListener('blur', this.getFocusListener(false));
+                });
+            },
+
+            getFocusListener(focused) {
+                return () => {
+                    this.socket.emit('update:focus', focused);
+                };
+            },
+
+            getPageData(pageOverride = null) {
+                return {
+                    page: pageOverride || window.location.pathname,
+                    focus: document.hasFocus(),
+                };
+            },
+
+            updateLocation(pageOverride = null) {
+                this.socket.emit(
+                    'update:location',
+                    this.getPageData(pageOverride),
+                );
+            },
         },
     };
 </script>
