@@ -180,7 +180,7 @@ function getSocketPeers(io, { groupBy = 'page', path = null } = {}) {
 }
 
 function addListeners(socket) {
-    const io = this;
+    const io = socket.server;
 
     socket.on('update:location', async (data, cb = null) => {
         await updatePresence(socket, data);
@@ -265,7 +265,8 @@ module.exports = async function(io) {
             };
 
             cb();
-            addListeners.call(io, socket);
+
+            addListeners(socket);
         });
 
         socket.on('disconnect', async () => {
