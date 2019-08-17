@@ -26,6 +26,7 @@
     >
         <thread-video
             v-if="expanded && isVideo"
+            :autoplay="true"
             :file="file"
         />
 
