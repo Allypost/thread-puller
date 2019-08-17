@@ -8,11 +8,15 @@ export const state = () => (
             value: 0,
         },
 
-        autoplay: {
-            title: 'Play on load',
-            text: 'Whether to automatically play videos when you load a page.',
-            value: false,
-        },
+        /*
+         // Disable for now
+
+         autoplay: {
+         title: 'Play on load',
+         text: 'Whether to automatically play videos when you load a page.',
+         value: false,
+         },
+         */
 
         loop: {
             title: 'Loop video',

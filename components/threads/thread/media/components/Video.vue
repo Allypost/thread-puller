@@ -67,6 +67,14 @@
                 };
             },
 
+            vAutoplay() {
+                if (null === this.autoplay) {
+                    return false;
+                } else {
+                    return this.autoplay;
+                }
+            },
+
             ...mapState('settings', {
                 vVolume({ volume }) {
                     if (this.isDestroyed) {
@@ -76,9 +84,12 @@
                     return this.getValue(volume, 'volume');
                 },
 
-                vAutoplay({ autoplay }) {
-                    return this.getValue(autoplay, 'autoplay');
-                },
+                /*
+                 // Disabled for now
+                 vAutoplay({ autoplay }) {
+                 return this.getValue(autoplay, 'autoplay');
+                 },
+                 */
 
                 vLoop({ loop }) {
                     return this.getValue(loop, 'loop');
