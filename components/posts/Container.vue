@@ -15,7 +15,7 @@
             display: grid;
 
             margin: 0 auto;
-            height: calc(100vh - 130px);
+            height: calc(98vh - 130px);
 
             text-align: center;
         }
@@ -27,7 +27,9 @@
     #focused-post-modal {
 
         .sweet-modal {
-            max-width: none;
+            max-width: 98vw;
+            max-height: 98vh;
+            background: $background-color;
 
             .thread-image {
 
