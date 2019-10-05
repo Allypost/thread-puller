@@ -17,10 +17,6 @@
     cursor: pointer;
     background-color: rgba(0, 0, 0, .5);
 
-    @media all {
-
-    }
-
     .settings-modal-content {
         @include no-select();
         @extend %card-shadow;
