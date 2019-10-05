@@ -2,6 +2,7 @@
     <thread-image
         :alt="file.name"
         :src-set="src"
+        @click.native="handleClick"
     />
 </template>
 <script>
@@ -100,6 +101,12 @@
 
         beforeDestroy() {
             window.removeEventListener('scroll', this.listener);
+        },
+
+        methods: {
+            handleClick() {
+                this.$store.commit('posts/setFocused', this.file.postId);
+            },
         },
     };
 </script>

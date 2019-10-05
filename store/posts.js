@@ -1,4 +1,5 @@
 import { get } from 'axios';
+import Vue from 'vue';
 
 function baseUrl(isServer) {
     if (isServer) {
@@ -21,6 +22,7 @@ async function fetchPosts(boardName, threadId, isServer) {
 export const state = () => (
     {
         entries: [],
+        focused: null,
     }
 );
 
@@ -28,11 +30,25 @@ export const getters = {
     get({ entries }) {
         return entries;
     },
+
+    getFocused({ focused }) {
+        return focused;
+    },
 };
 
 export const mutations = {
     set({ entries }, newEntries) {
         Object.assign(entries, newEntries);
+    },
+
+    setFocused(store, postId) {
+        const focused = store.entries.find(({ id }) => id === postId);
+
+        Vue.set(store, 'focused', focused);
+    },
+
+    setUnfocused(store) {
+        Vue.set(store, 'focused', null);
     },
 };
 
