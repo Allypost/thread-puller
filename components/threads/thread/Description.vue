@@ -34,6 +34,10 @@
     .quote {
         color: #8bc34a;
     }
+
+    .prettyprint {
+        white-space: pre-wrap;
+    }
 </style>
 
 <template>
