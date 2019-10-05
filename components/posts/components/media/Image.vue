@@ -1,10 +1,18 @@
+<style lang="scss" scoped>
+    .expandable-image {
+        cursor: zoom-in;
+    }
+</style>
+
 <template>
     <thread-image
+        class="expandable-image"
         :alt="file.name"
         :src-set="src"
         @click.native="handleClick"
     />
 </template>
+
 <script>
     import ThreadImage from '../../../threads/thread/media/components/Image.vue';
 

@@ -7,6 +7,7 @@
     }
 
     #focused-post-modal {
+        cursor: zoom-out;
         background-color: rgba(0, 0, 0, .5);
 
         .thread-image {
