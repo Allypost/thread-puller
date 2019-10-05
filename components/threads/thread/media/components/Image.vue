@@ -29,6 +29,7 @@
 <template>
     <span class="img-container">
         <img
+            draggable="false"
             :alt="alt"
             :src="src"
             :class="{isLoading}"
