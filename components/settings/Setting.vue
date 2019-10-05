@@ -105,7 +105,13 @@
 
         created() {
             this.reset();
-            this.$store.subscribe(({ type, payload: { setting } }) => {
+            this.$store.subscribe(({ type, payload }) => {
+                if (!payload) {
+                    return;
+                }
+
+                const { setting } = payload || {};
+
                 if (
                     'settings/change' !== type
                     || setting !== this.name
