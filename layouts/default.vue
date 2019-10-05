@@ -3,19 +3,29 @@
     @import "../assets/style/modules/include";
 
     #wrap {
+        $footer-height: 2em;
+
         position: relative;
         display: flex;
         flex-direction: column;
-        min-height: 100%;
+        min-height: 100vh;
         margin: 0;
         text-align: center;
         flex: 1 0 auto;
 
+        .page-container {
+            min-height: 100%;
+            padding-bottom: $footer-height;
+        }
+
         > footer {
+            position: absolute;
+            bottom: 0;
+            align-self: center;
             flex-shrink: 0;
+            height: $footer-height;
             max-width: 700px;
             margin: 0 auto;
-            margin-top: 2em;
             padding: 10px 18px;
             text-align: center;
             border-radius: 6px 6px 0 0;
@@ -29,7 +39,7 @@
 
 <template>
     <div id="wrap">
-        <nuxt />
+        <nuxt class="page-container" />
         <peer-count :socket="socket" />
         <footer>
             Copyright &copy; {{ new Date().getFullYear() }} Allypost | All content is courtesy of
