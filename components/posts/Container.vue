@@ -18,6 +18,7 @@
             margin: 0 auto;
             height: calc(98vh - 130px);
 
+            align-items: center;
             text-align: center;
         }
     }
@@ -28,18 +29,25 @@
     #focused-post-modal {
 
         .sweet-modal {
+            min-width: 90vw;
             max-width: 98vw;
             max-height: 98vh;
             background: $background-color;
+            padding: .5em;
+
+            .sweet-content {
+                padding: 64px 0 0 0;
+            }
 
             .thread-image {
 
                 > img {
                     @extend %card-shadow;
 
+                    min-width: 50%;
                     width: auto;
                     max-width: 100%;
-                    min-height: 100%;
+                    // min-height: 100%;
                     margin: 0 auto;
                 }
 
