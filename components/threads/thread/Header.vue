@@ -9,6 +9,7 @@
         font-weight: 700;
         font-size: 1.3em;
         color: #212121;
+        word-break: break-word;
     }
 
     .no-title {
