@@ -49,6 +49,7 @@ module.exports = {
      */
     plugins: [
         '~/plugins/load-settings-from-cookie',
+        '~/plugins/add-v-focus-directive',
         { src: '~plugins/share-vuex-settings-mutations.js', ssr: false },
     ],
     /*
