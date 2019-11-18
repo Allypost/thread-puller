@@ -1,3 +1,13 @@
+<style lang="scss" scoped>
+    @import "../assets/style/modules/include";
+
+    .hidden {
+        @include no-select();
+
+        opacity: 0;
+    }
+</style>
+
 <template>
     <label>
         Search:
@@ -6,6 +16,13 @@
             v-focus
             type="text"
         >
+        <button
+            :class="{ hidden: !query.length }"
+            :tabindex="-1 * !query.length"
+            @click="query = ''"
+        >
+            Clear
+        </button>
     </label>
 </template>
 
