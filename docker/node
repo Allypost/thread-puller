@@ -17,12 +17,11 @@ node_container() {
     ARGS+=(--user "$(id -u)")
 
     if ! docker/compose ps | grep "_${DOCKER_NAME}_" | grep "Up" &> /dev/null; then
-        docker/compose run --rm --no-deps -p "$PORT:3000" -e "PORT=3000" "${ARGS[@]}" "$DOCKER_NAME" "$@"
-
-        return
+        ARGS+=(-p "$PORT:3000")
+        ARGS+=(-e "PORT=3000")
     fi
 
-    docker/compose exec "${ARGS[@]}" "$DOCKER_NAME" "$@";
+    docker/compose run --rm --no-deps "${ARGS[@]}" "$DOCKER_NAME" "$@"
 }
 
 node_container "$@"
