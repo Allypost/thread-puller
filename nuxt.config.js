@@ -70,6 +70,7 @@ module.exports = {
         'nuxt-svg-loader',
         [ 'cookie-universal-nuxt', { parseJSON: false } ],
         [ '@nuxtjs/router', { keepDefaultRouter: true } ],
+        '~/modules/4chan/refresher',
     ],
     /*
      ** Axios module configuration
