@@ -30,6 +30,35 @@ function fetchData(cb) {
     };
 }
 
+function streamSearchData(generator) {
+    return async ({ body }, res) => {
+        const { query, nsfw: allowNSFW, board = '' } = body;
+
+        if (!query || 3 > query.length) {
+            return res.json([]);
+        }
+
+        const resultGenerator = generator(query, { board, allowNSFW });
+
+        res.set('Content-Type', 'application/stream+json');
+        res.set('Transfer-Encoding', 'chunked');
+
+        try {
+            let result = await resultGenerator.next();
+            while (!result.done) {
+                res.write(JSON.stringify(result.value));
+                res.write('\n');
+
+                result = await resultGenerator.next();
+            }
+        } catch (e) {
+            consola.log(e);
+        }
+
+        res.send();
+    };
+}
+
 /**
  * @param {String} query
  * @param {String} [board]
@@ -203,59 +232,8 @@ app.get('/boards/:board/thread/:thread', fetchData(async ({ params }) => {
     return await Posts.get(board, thread);
 }));
 
-app.post('/search', async ({ body }, res) => {
-    const { query, nsfw: allowNSFW, board = '' } = body;
-
-    if (!query) {
-        return res.json([]);
-    }
-
-    const resultGenerator = search4ChanBoardGenerator(query, { board, allowNSFW });
-
-    res.set('Content-Type', 'application/stream+json');
-    res.set('Transfer-Encoding', 'chunked');
-
-    try {
-        let result = await resultGenerator.next();
-        while (!result.done) {
-            res.write(JSON.stringify(result.value));
-            res.write('\n');
-
-            result = await resultGenerator.next();
-        }
-    } catch (e) {
-        consola.log(e);
-    }
-
-    res.send();
-});
-
-app.post('/search/local', async ({ body }, res) => {
-    const { query, nsfw: allowNSFW, board = '' } = body;
-
-    if (!query) {
-        return res.json([]);
-    }
-
-    const resultGenerator = searchBoardGenerator(query, { board, allowNSFW });
-
-    res.set('Content-Type', 'application/stream+json');
-    res.set('Transfer-Encoding', 'chunked');
-
-    try {
-        let result = await resultGenerator.next();
-        while (!result.done) {
-            res.write(JSON.stringify(result.value));
-            res.write('\n');
-
-            result = await resultGenerator.next();
-        }
-    } catch (e) {
-        consola.log(e);
-    }
-
-    res.send();
-});
+app.post('/search/remote', streamSearchData(search4ChanBoardGenerator));
+app.post('/search/local', streamSearchData(searchBoardGenerator));
 
 module.exports = {
     path: '/api/',
