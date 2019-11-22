@@ -46,14 +46,6 @@ module.exports = {
                 ignoreDestructuring: true,
             },
         ],
-        'capitalized-comments': [
-            'warn',
-            'always',
-            {
-                'ignorePattern': 'noinspection',
-                'ignoreInlineComments': true,
-            },
-        ],
         'comma-dangle': [ 'error', 'always-multiline' ],
         'comma-spacing': [
             'error',
