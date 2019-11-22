@@ -30,6 +30,8 @@
     import { Fuse } from '../lib/Search/Fuse';
 
     export default {
+        name: 'SearchInput',
+
         props: {
             data: {
                 type: Array,
