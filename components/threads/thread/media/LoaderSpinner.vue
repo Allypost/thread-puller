@@ -20,11 +20,28 @@
 </style>
 
 <template>
-    <div class="spinner" />
+    <div
+        class="spinner"
+        :style="style"
+    />
 </template>
 
 <script>
     export default {
         name: 'LoaderSpinner',
+
+        props: {
+            size: {
+                type: String,
+                default: '50px',
+            },
+        },
+
+        computed: {
+            style() {
+                const { size } = this;
+                return `width: ${ size }; height: ${ size }`;
+            },
+        },
     };
 </script>
