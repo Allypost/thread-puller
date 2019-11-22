@@ -12,11 +12,25 @@ export async function createRouter(ssrContext, createDefaultRouter) {
 }
 
 async function fixRoutes(defaultRoutes) {
-    for (const route of defaultRoutes) {
-        const { component } = route;
+    const routeChildren = [];
+
+    async function getRouteName(route) {
+        const { component, children = [], name: oldName } = route;
         const { name } = await component();
 
-        route.name = name || route.name;
+        if (children) {
+            routeChildren.push(...children);
+        }
+
+        return name || oldName;
+    }
+
+    for (const route of defaultRoutes) {
+        route.name = await getRouteName(route);
+    }
+
+    for (const route of routeChildren) {
+        route.name = await getRouteName(route);
     }
 
     // Default routes that come from `pages/`
