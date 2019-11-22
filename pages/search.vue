@@ -79,7 +79,7 @@
             <input
                 type="submit"
                 value="Search"
-                :disabled="loading"
+                :disabled="loading || !form.query"
                 @click.prevent="doSearch"
             >
         </form>
@@ -209,6 +209,10 @@
 
             async doSearch() {
                 if (this.loading) {
+                    return;
+                }
+
+                if (!this.form.query) {
                     return;
                 }
 
