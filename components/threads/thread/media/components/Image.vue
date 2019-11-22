@@ -33,7 +33,7 @@
             :alt="alt"
             :src="src"
             :class="{isLoading}"
-            @error="hadError = true"
+            @error="handleError"
             @load="isLoading = false"
         >
         <img-loader
@@ -45,6 +45,7 @@
 
 <script>
     import ImgLoader from '../Loader';
+    import FileDeletedImage from '../../../../../assets/images/deleted.gif';
 
     export default {
         name: 'ThreadMediaThumb',
@@ -64,24 +65,36 @@
 
         data() {
             return {
-                hadError: false,
+                errors: {},
                 isLoading: false,
             };
         },
 
         computed: {
             src() {
-                if (!this.hadError) {
-                    return this.srcSet.remote;
-                }
+                const { local, remote } = this.srcSet;
 
-                return this.srcSet.local;
+                const src = [ remote, local, FileDeletedImage ];
+
+                return src.find((src) => !this.srcHadError(src));
             },
         },
 
         watch: {
             src() {
                 this.isLoading = true;
+            },
+        },
+
+        methods: {
+            handleError() {
+                this.$set(this.errors, this.src, true);
+            },
+
+            srcHadError(src) {
+                const { errors } = this;
+
+                return Boolean(errors[ src ]);
             },
         },
     };
