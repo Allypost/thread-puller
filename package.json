@@ -25,6 +25,7 @@
     "@nuxtjs/pwa": "^2.6.0",
     "@nuxtjs/router": "^1.4.0",
     "axios": "latest",
+    "body-parser": "^1.19.0",
     "consola": "latest",
     "cookie-universal-nuxt": "^2.0.17",
     "cross-env": "^5.2.0",
