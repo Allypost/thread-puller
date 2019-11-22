@@ -49,6 +49,7 @@
                 Query:
                 <input
                     v-model="form.query"
+                    v-focus
                     type="text"
                     :disabled="loading"
                 >
