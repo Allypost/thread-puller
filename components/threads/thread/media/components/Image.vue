@@ -36,7 +36,7 @@
             @error="handleError"
             @load="isLoading = false"
         >
-        <img-loader
+        <LoaderSpinner
             v-if="isLoading"
             class="img-spinner"
         />
@@ -44,13 +44,13 @@
 </template>
 
 <script>
-    import ImgLoader from '../Loader';
+    import LoaderSpinner from '../LoaderSpinner';
     import FileDeletedImage from '../../../../../assets/images/deleted.gif';
 
     export default {
         name: 'ThreadMediaThumb',
 
-        components: { ImgLoader },
+        components: { LoaderSpinner },
 
         props: {
             srcSet: {

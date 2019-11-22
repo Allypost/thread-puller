@@ -25,6 +25,6 @@
 
 <script>
     export default {
-        name: 'ImgLoader',
+        name: 'LoaderSpinner',
     };
 </script>
