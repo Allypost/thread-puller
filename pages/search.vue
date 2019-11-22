@@ -79,7 +79,7 @@
             <input
                 type="submit"
                 value="Search"
-                :disabled="loading || !form.query"
+                :disabled="loading || form.query.length < 3"
                 @click.prevent="doSearch"
             >
         </form>
