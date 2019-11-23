@@ -1,6 +1,6 @@
 NODE_MODULES := ./node_modules
 
-.PHONY: up dev down install npm-install build clean
+.PHONY: up dev down install yarn-install build clean
 
 stop:
 	docker/compose stop
@@ -13,19 +13,19 @@ up: build
 
 dev: $(NODE_MODULES)
 	docker/compose up -d redis
-	docker/node npm run dev
+	docker/yarn dev
 	$(MAKE) down
 
 down:
 	docker/compose down
 
-install: clean npm-install
+install: clean yarn-install
 
-npm-install:
-	docker/node npm ic
+yarn-install:
+	docker/yarn install
 
 build: install
-	docker/node npm run build
+	docker/yarn build
 
 clean:
 	rm -rf $(NODE_MODULES) .nuxt
@@ -33,5 +33,4 @@ clean:
 build-containers:
 	docker/compose build
 
-$(NODE_MODULES):
-	$(MAKE) npm-install
+$(NODE_MODULES): yarn-install

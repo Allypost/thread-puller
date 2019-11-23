@@ -12,7 +12,7 @@
     "generate": "nuxt generate"
   },
   "lint-staged": {
-    "*.{js,vue}": "npm run lint"
+    "*.{js,vue}": "yarn lint"
   },
   "husky": {
     "hooks": {
