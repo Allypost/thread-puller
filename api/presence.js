@@ -270,9 +270,9 @@ module.exports = async function(io) {
                 },
             };
 
-            cb();
-
             addListeners(socket);
+
+            cb();
         });
 
         socket.on('disconnect', async () => {
