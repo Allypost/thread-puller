@@ -72,7 +72,7 @@
         </div>
 
 
-        <no-ssr>
+        <client-only>
             <sweet-modal
                 id="focused-post-modal"
                 ref="modal"
@@ -87,7 +87,7 @@
                     class="thread-image"
                 />
             </sweet-modal>
-        </no-ssr>
+        </client-only>
     </div>
 </template>
 

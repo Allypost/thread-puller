@@ -115,7 +115,7 @@
             :class="{ open }"
             @click="handleClickCog"
         >
-        <no-ssr>
+        <client-only>
             <sweet-modal
                 id="settings-modal"
                 ref="modal"
@@ -152,7 +152,7 @@
                     </button>
                 </div>
             </sweet-modal>
-        </no-ssr>
+        </client-only>
     </div>
 </template>
 
