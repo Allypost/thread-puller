@@ -24,12 +24,6 @@ module.exports = {
         'nuxt/no-cjs-in-config': 'off',
         'vue/html-indent': [
             'error', 4,
-            {
-                'SwitchCase': 1,
-                'VariableDeclarator': 'first',
-                'FunctionExpression': { 'parameters': 'first' },
-                'CallExpression': { 'arguments': 'first' },
-            },
         ],
         'vue/script-indent': [
             'error', 4,

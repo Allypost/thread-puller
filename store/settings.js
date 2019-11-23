@@ -49,7 +49,7 @@ export const getters = {
     },
 
     has(settings) {
-        return (settingName) => settings.hasOwnProperty(settingName);
+        return (settingName) => 'undefined' !== typeof settings[ settingName ];
     },
 };
 
