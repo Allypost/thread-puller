@@ -1,4 +1,6 @@
-const { callStorage, publishEvent } = require('../lib/Redis/redis');
+const consola = require('consola');
+
+const { getInstance, callStorage, publishEvent } = require('../lib/Redis/redis');
 
 const REDIS_PREFIX = 'presence:';
 const DATA_TIMEOUT_SECONDS = 60 * 3;
@@ -181,6 +183,53 @@ function getSocketPeers(io, { groupBy = 'page', path = null } = {}) {
     }
 }
 
+/**
+ * @param socket
+ * @returns {{activate: Function, deactivate: Function}}
+ */
+function addRedisListeners(socket) {
+    const redis = getInstance();
+
+    function deactivate() {
+        redis.disconnect();
+    }
+
+    function activate() {
+        redis.psubscribe('page-data:update:*', (err) => {
+            if (err) {
+                consola.error(err);
+            }
+        });
+
+        redis.on('pmessage', (pattern, channel, rawMessage) => {
+            const message = JSON.parse(rawMessage);
+            const messageMap = {
+                'page-data:update:*': pageDataUpdate,
+            };
+            const resolver = messageMap[ pattern ];
+
+            if (resolver) {
+                resolver(socket, message);
+            }
+        });
+
+
+        function pageDataUpdate(socket, message) {
+            const { data: presence } = socket.presence;
+            const { board: rBoard, thread: rThread } = message;
+            const { board: uBoard, thread: uThread } = presence.params;
+
+            if (rBoard !== uBoard || rThread !== uThread) {
+                return;
+            }
+
+            socket.emit('page-data:update', message);
+        }
+    }
+
+    return { activate, deactivate };
+}
+
 function addListeners(socket) {
     const io = socket.server;
 
@@ -255,6 +304,11 @@ module.exports = async function(io) {
 
         socket.monitoring = Boolean(monitor);
 
+        const {
+                  activate: activateRedisListeners,
+                  deactivate: deactivateRedisListeners,
+              } = addRedisListeners(socket);
+
         socket.on('register', (id, cb) => {
             if (!id || !cb || !isFunction(cb)) {
                 socket.disconnect();
@@ -271,6 +325,7 @@ module.exports = async function(io) {
             };
 
             addListeners(socket);
+            activateRedisListeners();
 
             cb();
         });
@@ -282,6 +337,7 @@ module.exports = async function(io) {
 
             const { id } = socket.presence;
 
+            deactivateRedisListeners();
             await updatePresence(socket, { page: null });
             await callStorage('del', redisSocketKey(socket));
             await publishEvent(redisSocketKey(socket, 'delete'), { id });

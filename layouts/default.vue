@@ -127,6 +127,20 @@
                     this.updateLocation();
                     window.addEventListener('focus', this.getFocusListener(true));
                     window.addEventListener('blur', this.getFocusListener(false));
+
+                    this.socket.on('page-data:update', async ({ board, thread, data }) => {
+                        if (board && thread) {
+                            return this.updatePosts(data);
+                        }
+
+                        if (board && !thread) {
+                            return this.updateThreads(data);
+                        }
+
+                        if (!board && !thread) {
+                            return this.updateBoards(data);
+                        }
+                    });
                 });
             },
 
@@ -151,6 +165,49 @@
                     'update:location',
                     this.getPageData(pageOverride),
                 );
+            },
+
+            async updateBoards(boards) {
+                return await this.doUpdate(boards, 'boards', 'board');
+            },
+
+            async updateThreads(threads) {
+                return await this.doUpdate(threads, 'threads');
+            },
+
+            async updatePosts(posts) {
+                return await this.doUpdate(posts, 'posts');
+            },
+
+            async doUpdate(newEntries, storeName, identifierKey = 'id') {
+                const oldEntries = this.$store.getters[ `${ storeName }/get` ];
+
+                for (const newEntry of newEntries) {
+                    const oldEntryIndex = oldEntries.findIndex((oldEntry) => oldEntry[ identifierKey ] === newEntry[ identifierKey ]);
+
+                    if (-1 === oldEntryIndex) {
+                        this.$store.commit(`${ storeName }/add`, newEntry);
+                    } else {
+                        this.$store.commit(`${ storeName }/update`, newEntry);
+                    }
+                }
+
+                // Get list of entries only in
+                // the old list (aka deleted entries)
+                // and remove them from the store
+                oldEntries
+                    .filter(
+                        ({ [ identifierKey ]: oldEntryId }) =>
+                            !newEntries.find(
+                                ({ [ identifierKey ]: newEntryId }) =>
+                                    oldEntryId === newEntryId,
+                            ),
+                    )
+                    .forEach(
+                        ({ id }) =>
+                            this.$store.commit(`${ storeName }/remove`, id),
+                    )
+                ;
             },
         },
     };
