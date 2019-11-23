@@ -52,13 +52,15 @@ async function updatePresence(socket, newData) {
     const updatedLocation = newData.page !== undefined && oldPage !== newData.page;
 
     const {
-              page  = oldData.page,
-              focus = oldData.focus,
+              page   = oldData.page,
+              focus  = oldData.focus,
+              params = oldData.params,
           } = newData;
 
     const data = {
         page: String(page),
         focus: Boolean(focus),
+        params: Object(params),
     };
 
     Object.assign(socket.presence.data, data);
@@ -261,7 +263,11 @@ module.exports = async function(io) {
 
             socket.presence = {
                 id,
-                data: {},
+                data: {
+                    page: '',
+                    focus: false,
+                    params: {},
+                },
             };
 
             cb();

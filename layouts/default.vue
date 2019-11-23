@@ -137,9 +137,12 @@
             },
 
             getPageData(pageOverride = null) {
+                const { params } = this.$route;
+
                 return {
                     page: pageOverride || window.location.pathname,
                     focus: document.hasFocus(),
+                    params,
                 };
             },
 
