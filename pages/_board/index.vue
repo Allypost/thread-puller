@@ -84,23 +84,16 @@
             return await boardExists(store, { boardName, isServer });
         },
 
-        head() {
-            const { link, title, description } = this.board;
-
-            const decodedDescription = this.decodeEntities(description);
-
-            return {
-                title: link,
-                meta: [
-                    e('og:title', `${ link } - ${ title } | ThreadPuller`),
-                    e('og:description', decodedDescription),
-                    e('description', decodedDescription),
-                    e('og:image', PepeImage),
-                ],
-            };
-        },
-
         components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
+
+        async fetch({ store, params }) {
+            const { board: boardName } = params;
+            const isServer = process.server;
+
+            await fetchBoard(store, { boardName, isServer });
+
+            await store.dispatch('threads/fetch', { isServer, boardName });
+        },
 
         computed: {
             boardName() {
@@ -124,20 +117,27 @@
             }),
         },
 
-        async fetch({ store, params }) {
-            const { board: boardName } = params;
-            const isServer = process.server;
-
-            await fetchBoard(store, { boardName, isServer });
-
-            await store.dispatch('threads/fetch', { isServer, boardName });
-        },
-
         methods: {
             decodeEntities(text) {
                 const htmlEntities = new HTMLEntities();
                 return htmlEntities.decode(text);
             },
+        },
+
+        head() {
+            const { link, title, description } = this.board;
+
+            const decodedDescription = this.decodeEntities(description);
+
+            return {
+                title: link,
+                meta: [
+                    e('og:title', `${ link } - ${ title } | ThreadPuller`),
+                    e('og:description', decodedDescription),
+                    e('description', decodedDescription),
+                    e('og:image', PepeImage),
+                ],
+            };
         },
 
     };

@@ -94,30 +94,13 @@
             return await threadExists(store, { boardName, threadId, isServer });
         },
 
-        head() {
-            const { body: originalPostBody, file: originalPostFile } = this.originalPost;
-            const title = `/${ this.boardName }/ - ${ this.escapedTitle }`;
+        async fetch({ store, params }) {
+            const { board: boardName, thread: threadId } = params;
+            const isServer = process.server;
 
-            const description = this
-                .decodeEntities(originalPostBody.content || originalPostBody.title, { maxLength: 200, br2nl: true })
-                .replace(/\n/gi, '\\n');
+            await fetchThread(store, { boardName, threadId, isServer });
 
-            const meta = [
-                e('og:title', title),
-                e('og:description', description),
-                e('description', description),
-            ];
-
-            if (originalPostFile) {
-                meta.push(e('og:image', originalPostFile.src.remote.thumb));
-            } else {
-                meta.push(e('og:image', PepeSadImage));
-            }
-
-            return {
-                title,
-                meta,
-            };
+            await store.dispatch('posts/fetch', { isServer, boardName, threadId });
         },
 
         computed: {
@@ -166,15 +149,6 @@
             }),
         },
 
-        async fetch({ store, params }) {
-            const { board: boardName, thread: threadId } = params;
-            const isServer = process.server;
-
-            await fetchThread(store, { boardName, threadId, isServer });
-
-            await store.dispatch('posts/fetch', { isServer, boardName, threadId });
-        },
-
         methods: {
             decodeEntities(rawText, { maxLength = 150, keepTags = '<br>', br2nl = false }) {
                 const normalizedText = rawText.replace(/<br>\s*(<br>)+/gi, '<br>');
@@ -190,6 +164,32 @@
 
                 return `${ trimmedText.substr(0, lastSpace) }…`;
             },
+        },
+
+        head() {
+            const { body: originalPostBody, file: originalPostFile } = this.originalPost;
+            const title = `/${ this.boardName }/ - ${ this.escapedTitle }`;
+
+            const description = this
+                .decodeEntities(originalPostBody.content || originalPostBody.title, { maxLength: 200, br2nl: true })
+                .replace(/\n/gi, '\\n');
+
+            const meta = [
+                e('og:title', title),
+                e('og:description', description),
+                e('description', description),
+            ];
+
+            if (originalPostFile) {
+                meta.push(e('og:image', originalPostFile.src.remote.thumb));
+            } else {
+                meta.push(e('og:image', PepeSadImage));
+            }
+
+            return {
+                title,
+                meta,
+            };
         },
     };
 </script>

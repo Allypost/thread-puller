@@ -122,16 +122,10 @@
 
         components: { ThreadBacklinks, BoardThread, LoaderSpinner },
 
-        head() {
-            return {
-                title: 'Search',
-                meta: [
-                    e('og:title', 'Search | ThreadPuller'),
-                    e('og:description', 'Search the current boards.'),
-                    e('description', 'Search the current boards.'),
-                    e('og:image', PepeImage),
-                ],
-            };
+        async fetch({ store }) {
+            const isServer = process.server;
+
+            await store.dispatch('boards/fetch', { isServer });
         },
 
         data() {
@@ -166,12 +160,6 @@
             ...mapGetters({
                 'boards': 'boards/get',
             }),
-        },
-
-        async fetch({ store }) {
-            const isServer = process.server;
-
-            await store.dispatch('boards/fetch', { isServer });
         },
 
         methods: {
@@ -242,6 +230,18 @@
                 this.progress.value = 0;
                 this.progress.max = 1;
             },
+        },
+
+        head() {
+            return {
+                title: 'Search',
+                meta: [
+                    e('og:title', 'Search | ThreadPuller'),
+                    e('og:description', 'Search the current boards.'),
+                    e('description', 'Search the current boards.'),
+                    e('og:image', PepeImage),
+                ],
+            };
         },
     };
 </script>

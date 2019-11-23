@@ -45,6 +45,12 @@
 
         components: { BoardsContainer },
 
+        async fetch({ store }) {
+            const isServer = process.server;
+
+            await store.dispatch('boards/fetch', { isServer });
+        },
+
         head() {
             return {
                 title: '',
@@ -55,12 +61,6 @@
                     e('og:image', PepeImage),
                 ],
             };
-        },
-
-        async fetch({ store }) {
-            const isServer = process.server;
-
-            await store.dispatch('boards/fetch', { isServer });
         },
     };
 </script>
