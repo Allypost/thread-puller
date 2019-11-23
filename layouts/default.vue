@@ -95,18 +95,6 @@
             }),
         },
 
-        head() {
-            return {
-                titleTemplate(titleChunk) {
-                    if (titleChunk) {
-                        return `${ titleChunk } | ThreadPuller`;
-                    }
-
-                    return 'ThreadPuller - Pull 4Chan media';
-                },
-            };
-        },
-
         watch: {
             '$route.path'(path) {
                 this.updateLocation(path);
@@ -209,6 +197,18 @@
                     )
                 ;
             },
+        },
+
+        head() {
+            return {
+                titleTemplate(titleChunk) {
+                    if (titleChunk) {
+                        return `${ titleChunk } | ThreadPuller`;
+                    }
+
+                    return 'ThreadPuller - Pull 4Chan media';
+                },
+            };
         },
     };
 </script>
