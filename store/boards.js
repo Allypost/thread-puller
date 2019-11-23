@@ -1,4 +1,5 @@
 import { get } from 'axios';
+import { mutationSet } from './helpers/entryCRUD';
 
 function baseUrl(isServer) {
     if (isServer) {
@@ -45,13 +46,7 @@ export const getters = {
 };
 
 export const mutations = {
-    set({ entries }, newEntries) {
-        Object.assign(entries, newEntries);
-    },
-
-    add({ entries }, ...newEntries) {
-        Object.assign(entries, newEntries);
-    },
+    ...mutationSet({ identifierKey: 'board' }),
 };
 
 export const actions = {

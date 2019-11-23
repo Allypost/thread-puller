@@ -1,5 +1,6 @@
 import { get } from 'axios';
 import Vue from 'vue';
+import { mutationSet } from './helpers/entryCRUD';
 
 function baseUrl(isServer) {
     if (isServer) {
@@ -37,9 +38,7 @@ export const getters = {
 };
 
 export const mutations = {
-    set({ entries }, newEntries) {
-        Object.assign(entries, newEntries);
-    },
+    ...mutationSet(),
 
     setFocused(store, postId) {
         const focused = store.entries.find(({ id }) => id === postId);
