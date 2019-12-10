@@ -210,6 +210,12 @@ async function* searchBoardGenerator(query, { board = '', allowNSFW = true }) {
     }
 }
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
 app.get('/boards', fetchData(async () => {
     return await Boards.get();
 }));
