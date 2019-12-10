@@ -5,6 +5,7 @@ import http from 'http';
 import ffmpeg from 'fluent-ffmpeg';
 
 const app = express();
+app.disable('x-powered-by');
 
 app.get('/i/:board/:resource.:ext', (req, res) => {
     const { ext, resource, board } = req.params;

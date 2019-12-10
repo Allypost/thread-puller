@@ -9,6 +9,7 @@ import PostInfo from '../lib/Formatters/PostInfo';
 import { Fuse } from '../lib/Search/Fuse';
 
 const app = express();
+app.disable('x-powered-by');
 
 app.use(bodyParser.json());
 

@@ -10,6 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const io = SocketIO(server);
 
+app.disable('x-powered-by');
+
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js');
 config.dev = 'production' !== process.env.NODE_ENV;
