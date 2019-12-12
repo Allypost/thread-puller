@@ -45,7 +45,8 @@
     "string-kit": "^0.8.15",
     "striptags": "^3.1.1",
     "uuid": "^3.2.1",
-    "vue-server-renderer": "^2.6.10"
+    "vue-server-renderer": "^2.6.10",
+    "snyk": "^1.258.2"
   },
   "devDependencies": {
     "@symfony/webpack-encore": "^0.27.0",
@@ -65,7 +66,6 @@
     "postcss-font-magician": "^2.2.1",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^7.0.1",
-    "snyk": "^1.200.1",
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
     "vue-linkify": "^1.0.1",
@@ -80,7 +80,9 @@
     "start-presence": "node ./scripts/threadpuller-presence.js",
     "downloader": "node threadpuller-downloader.js",
     "compile": "encore production",
-    "encore": "encore"
+    "encore": "encore",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "nodemonConfig": {
     "ignore": [
@@ -88,5 +90,6 @@
       "static/js/*.js"
     ]
   },
-  "license": "ISC"
+  "license": "ISC",
+  "snyk": true
 }
