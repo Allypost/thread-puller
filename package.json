@@ -45,7 +45,7 @@
     "string-kit": "^0.8.15",
     "striptags": "^3.1.1",
     "uuid": "^3.2.1",
-    "vue-server-renderer": "^2.6.10"
+    "vue-server-renderer": "^2.6.11"
   },
   "devDependencies": {
     "@symfony/webpack-encore": "^0.27.0",
