@@ -29,6 +29,7 @@ html {
 a {
     display: inline-block;
     color: #cfd8dc;
+    word-break: break-word;
 
     &:hover {
         text-decoration: none;
