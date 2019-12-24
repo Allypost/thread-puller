@@ -9,27 +9,29 @@
 </style>
 
 <template>
-    <div>
-        <n-link :to="{ name: 'Search' }">
-            Advanced search
-        </n-link>
-        <br>
-        <label>
-            Search:
-            <input
-                v-model="query"
-                v-focus
-                type="text"
-            >
-            <button
-                :class="{ hidden: !query.length }"
-                :tabindex="-1 * !query.length"
-                @click="query = ''"
-            >
-                Clear
-            </button>
-        </label>
-    </div>
+    <client-only>
+        <div>
+            <n-link :to="{ name: 'Search' }">
+                Advanced search
+            </n-link>
+            <br>
+            <label>
+                Search:
+                <input
+                    v-model="query"
+                    v-focus
+                    type="text"
+                >
+                <button
+                    :class="{ hidden: !query.length }"
+                    :tabindex="-1 * !query.length"
+                    @click="query = ''"
+                >
+                    Clear
+                </button>
+            </label>
+        </div>
+    </client-only>
 </template>
 
 <script>
