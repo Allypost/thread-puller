@@ -42,6 +42,7 @@
 
 <template>
     <section
+        v-linkified
         class="description"
         :class="{isLong, expanded}"
         @click="expanded = !expanded"

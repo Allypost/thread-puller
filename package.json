@@ -26,8 +26,8 @@
     "@nuxtjs/eslint-module": "^1.1.0",
     "@nuxtjs/pwa": "^3.0.0-beta.19",
     "@nuxtjs/router": "^1.5.0",
-    "axios": "latest",
     "autoprefixer": "latest",
+    "axios": "latest",
     "babel-eslint": "^10.0.3",
     "body-parser": "^1.19.0",
     "consola": "latest",
@@ -58,6 +58,7 @@
     "sweet-modal-vue": "^2.0.0",
     "uuid": "^3.3.3",
     "vue": "latest",
+    "vue-linkify": "^1.0.1",
     "vue-router": "^3.1.3",
     "vuex": "latest",
     "vuex-shared-mutations": "^1.0.2"
