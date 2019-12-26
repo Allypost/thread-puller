@@ -48,6 +48,7 @@ module.exports = {
      ** Plugins to load before mounting the App
      */
     plugins: [
+        { src: '~plugins/add-client-polyfill.js', ssr: false },
         '~/plugins/load-settings-from-cookie',
         '~/plugins/add-v-focus-directive',
         '~/plugins/add-linkify-directive',

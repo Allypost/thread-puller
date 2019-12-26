@@ -55,5 +55,45 @@
                 return `post-${ id }`;
             },
         },
+
+        mounted() {
+            const { hash = '' } = this.$route;
+
+            if (hash.trim().length) {
+                const
+                    values =
+                        hash
+                            .trim()
+                            .substring(1)
+                            .split('&')
+                            .map((el) => el.split('='))
+                            .reduce(
+                                (acc, [ k, v ]) => ({
+                                    ...acc,
+                                    [ decodeURIComponent(k) ]: decodeURIComponent(v),
+                                }),
+                                {},
+                            );
+
+                const { 'scroll-to': scrollTo } = values;
+
+                if (scrollTo && Number(scrollTo) === this.thread.id) {
+                    window.requestIdleCallback(
+                        () => {
+                            try {
+                                const top = this.$el.documentOffsetTop() - (window.innerHeight / 2);
+                                window.scrollTo(0, top);
+                                // this.$el.scrollIntoView(false);
+                                // eslint-disable-next-line no-empty
+                            } catch {
+                            }
+                        },
+                        {
+                            timeout: 850,
+                        },
+                    );
+                }
+            }
+        },
     };
 </script>

@@ -34,7 +34,7 @@
     <div>
         <threadpuller-settings />
         <thread-backlinks
-            :back-link="{ name: 'Threads', params: { board: boardName } }"
+            :back-link="{ name: 'Threads', params: { board: boardName }, hash: hash }"
             :external-href="externalHref"
         />
 
@@ -142,6 +142,25 @@
                 const [ originalPost ] = this.posts;
 
                 return originalPost;
+            },
+
+            hash() {
+                return (
+                    Object
+                        .entries(this.hashData)
+                        .reduce(
+                            (acc, [ k, v ]) =>
+                                `${ acc }${ encodeURIComponent(k) }=${ encodeURIComponent(v) }&`,
+                            '#',
+                        )
+                        .slice(0, -1)
+                );
+            },
+
+            hashData() {
+                return {
+                    'scroll-to': this.threadId,
+                };
             },
 
             ...mapGetters({
