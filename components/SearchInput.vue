@@ -19,7 +19,6 @@
                 Search:
                 <input
                     v-model="query"
-                    v-focus
                     type="text"
                 >
                 <button
