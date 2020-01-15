@@ -53,6 +53,7 @@ module.exports = {
         '~/plugins/add-v-focus-directive',
         '~/plugins/add-linkify-directive',
         { src: '~plugins/share-vuex-settings-mutations.js', ssr: false },
+        { src: '~plugins/analytics/goatcounter.js', ssr: false },
     ],
     /*
      ** Nuxt.js dev-modules
@@ -125,5 +126,8 @@ module.exports = {
     },
     optimizedImages: {
         optimizeImages: true,
+    },
+    env: {
+        THREADPULLER_GOATCOUNTER_URL: process.env.THREADPULLER_GOATCOUNTER_URL,
     },
 };
