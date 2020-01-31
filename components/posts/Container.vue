@@ -3,7 +3,7 @@
 
     .container {
         @extend %container-base;
-        align-items: baseline;
+        align-items: end;
     }
 
     #focused-post-modal {
