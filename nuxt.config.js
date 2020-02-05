@@ -20,6 +20,11 @@ module.exports = {
         link: [
             { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         ],
+        script: [
+            { innerHTML: 'window.goatcounter={no_onload: true}', type: 'text/javascript', charset: 'utf-8' },
+            { src: '//gc.zgo.at/count.js', 'data-goatcounter': process.env.THREADPULLER_GOATCOUNTER_URL, async: true },
+        ],
+        __dangerouslyDisableSanitizers: [ 'script' ],
     },
 
     serverMiddleware: [
