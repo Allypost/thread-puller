@@ -31,28 +31,30 @@
             @updateData="filteredThreads = arguments[0]"
             @updateQuery="updateQuery"
         />
-        <div class="sort-container">
-            <label>
-                Sort posts by
-                <select v-model="sort.key">
-                    <option
-                        selected
-                        value="none"
+        <client-only>
+            <div class="sort-container">
+                <label>
+                    Sort posts by
+                    <select v-model="sort.key">
+                        <option
+                            selected
+                            value="none"
+                        >
+                            none
+                        </option>
+                        <option value="images">image #</option>
+                        <option value="replies">reply #</option>
+                    </select>
+                    <select
+                        v-if="sort.key !== 'none'"
+                        v-model="sort.direction"
                     >
-                        none
-                    </option>
-                    <option value="images">image #</option>
-                    <option value="replies">reply #</option>
-                </select>
-                <select
-                    v-if="sort.key !== 'none'"
-                    v-model="sort.direction"
-                >
-                    <option value="desc">&darr;</option>
-                    <option value="asc">&uarr;</option>
-                </select>
-            </label>
-        </div>
+                        <option value="desc">&darr;</option>
+                        <option value="asc">&uarr;</option>
+                    </select>
+                </label>
+            </div>
+        </client-only>
         <div class="container">
             <board-thread
                 v-for="thread in sortedThreads"
