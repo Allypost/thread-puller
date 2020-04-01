@@ -1,8 +1,25 @@
-<style scoped lang="scss">
+<style lang="scss" scoped>
     @import "../../assets/style/modules/include";
 
     .container {
         @extend %container-base;
+        margin-top: 0;
+    }
+
+    .sort-container {
+        margin: 1em 1em .5em;
+        text-align: right;
+
+        select {
+            font-size: 100%;
+            padding: .2em .3em;
+            color: $text-color;
+            border-width: 1px;
+            border-style: solid;
+            border-color: currentColor;
+            border-radius: 3px;
+            background: none;
+        }
     }
 </style>
 
@@ -14,9 +31,31 @@
             @updateData="filteredThreads = arguments[0]"
             @updateQuery="updateQuery"
         />
+        <div class="sort-container">
+            <label>
+                Sort posts by
+                <select v-model="sort.key">
+                    <option
+                        selected
+                        value="none"
+                    >
+                        none
+                    </option>
+                    <option value="images">image #</option>
+                    <option value="replies">reply #</option>
+                </select>
+                <select
+                    v-if="sort.key !== 'none'"
+                    v-model="sort.direction"
+                >
+                    <option value="desc">&darr;</option>
+                    <option value="asc">&uarr;</option>
+                </select>
+            </label>
+        </div>
         <div class="container">
             <board-thread
-                v-for="thread in threads"
+                v-for="thread in sortedThreads"
                 :key="thread.id"
                 :thread="thread"
             />
@@ -37,6 +76,10 @@
         data() {
             return {
                 filteredThreads: null,
+                sort: {
+                    key: 'none',
+                    direction: 'desc',
+                },
                 keys: [
                     {
                         name: 'body.title',
@@ -57,6 +100,26 @@
         computed: {
             threads() {
                 return this.filteredThreads || this.rawThreads;
+            },
+
+            sortedThreads() {
+                const sortKey = this.sort.key;
+                const sortDir = this.sort.direction;
+
+                if ('none' === sortKey) {
+                    return this.threads;
+                }
+
+                const factor = 'asc' === sortDir ? 1 : -1;
+
+                return (
+                    Array
+                        .from(this.threads)
+                        .sort(
+                            (a, b) =>
+                                (a.meta[ sortKey ] - b.meta[ sortKey ]) * factor,
+                        )
+                );
             },
 
             ...mapGetters({
