@@ -1,4 +1,6 @@
 <style lang="scss" scoped>
+    @import "../../../assets/style/modules/include";
+
     $content-height: 140px;
 
     .content {
@@ -8,8 +10,8 @@
         min-height: $content-height;
         overflow: hidden;
         border-radius: 6px 6px 0 0;
-        color: #ffffff;
-        background-color: #383838;
+        color: $text-color;
+        background-color: $board-content-background-color;
 
         &[data-no-description] {
             grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);

@@ -1,8 +1,8 @@
 @import "modules/include";
 
 ::selection {
-    color: #fafafa;
-    background: #212121;
+    color: $text-color;
+    background: grayscale($background-color);
 }
 
 *,
@@ -22,18 +22,18 @@ html {
     height: 100%;
     margin: 0;
     text-align: center;
-    color: #eceff1;
+    color: $text-color;
     background-color: $background-color;
 }
 
 a {
     display: inline-block;
-    color: #cfd8dc;
+    color: $link-color;
     word-break: break-word;
 
     &:hover {
         text-decoration: none;
-        color: #ffffff;
+        color: $text-color;
     }
 
 }
@@ -41,12 +41,12 @@ a {
 s {
     cursor: help;
     text-decoration: none;
-    color: #000000;
-    background: #000000;
-    box-shadow: 0 0 1em -8px #ffffff;
+    color: invert($text-color);
+    background: invert($text-color);
+    box-shadow: 0 0 1em -8px $text-color;
 
     &:hover {
-        color: #ffffff;
+        color: $text-color;
     }
 }
 

@@ -1,4 +1,6 @@
 <style lang="scss" scoped>
+    @import "../../../assets/style/modules/include";
+
     header {
         margin-bottom: .3em;
     }
@@ -8,7 +10,7 @@
         text-align: center;
         font-weight: 700;
         font-size: 1.3em;
-        color: #212121;
+        color: invert($text-color);
         word-break: break-word;
     }
 

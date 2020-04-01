@@ -33,7 +33,7 @@
         text-align: center;
         font-weight: 700;
         text-decoration: underline;
-        color: #212121;
+        color: invert($text-color);
 
         &:hover {
             text-decoration: none;
@@ -52,7 +52,7 @@
 
 
     .board[data-nsfw] {
-        background-color: #ff9e9e;
+        background-color: adjust-color($nsfw-color, $lightness: lightness($board-background-color) / 2);
 
         header::before {
             display: inline-block;
@@ -63,9 +63,9 @@
             padding: .2em .4em;
             border-radius: 4px;
             bottom: 3px;
-            color: #ffffff;
-            text-shadow: 1px 1px 1px #000000;
-            background: #e53935;
+            color: $text-color;
+            text-shadow: 1px 1px 1px invert($text-color);
+            background: $nsfw-color;
         }
 
     }

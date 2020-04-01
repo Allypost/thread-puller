@@ -31,8 +31,10 @@
 </style>
 
 <style lang="scss">
+    @import "../../../assets/style/modules/include";
+
     .quote {
-        color: #8bc34a;
+        color: $quote-color;
     }
 
     .prettyprint {

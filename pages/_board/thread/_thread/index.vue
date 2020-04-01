@@ -26,7 +26,7 @@
     h2 {
         font-size: #{$header-font-size * .8};
         margin-top: 0;
-        color: #ffffff;
+        color: $text-color;
     }
 </style>
 

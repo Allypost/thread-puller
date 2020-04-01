@@ -14,7 +14,7 @@
         display: grid;
         font-size: .8em;
         border-radius: 0 0 6px 6px;
-        background-color: #5e5e5e;
+        background-color: $board-footer-background-color;
         align-items: center;
     }
 </style>

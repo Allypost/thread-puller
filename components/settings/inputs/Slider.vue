@@ -55,7 +55,7 @@
         border-radius: 3px;
 
         &:focus {
-            color: #fafafa;
+            color: $text-color;
         }
     }
 

@@ -11,9 +11,17 @@ $large-and-up: "only screen and (min-width : #{$large-screen})" !default;
 // Transitions
 $transition-smooth: cubic-bezier(.23, 1, .32, 1);
 
+$text-color: #fafafa;
+$link-color: #cfd8dc;
 $background-color: #263238;
 $board-background-color: #9e9e9e;
+$board-content-background-color: darken($board-background-color, 40%);
+$board-footer-background-color: darken($board-background-color, 25%);
 $settings-background-color: #e0e0e0;
+
+$quote-color: #8bc34a;
+$nsfw-color: #e53935;
 
 $success-color: #4caf50;
 $warning-color: #fdd835;
+$error-color: #f44336;
