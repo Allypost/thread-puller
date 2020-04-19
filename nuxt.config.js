@@ -79,6 +79,7 @@ module.exports = {
         [ 'cookie-universal-nuxt', { parseJSON: false } ],
         [ '@nuxtjs/router', { keepDefaultRouter: true } ],
         '~/modules/4chan/refresher',
+        '~/modules/presence',
     ],
     /*
      ** Axios module configuration
