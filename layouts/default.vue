@@ -42,7 +42,21 @@
         <nuxt class="page-container" />
         <peer-count :socket="socket" />
         <footer>
-            Copyright &copy; {{ new Date().getFullYear() }} Allypost | All content is courtesy of
+            Copyright &copy; {{ new Date().getFullYear() }}
+            <a
+                v-if="hasRepositoryUrl"
+                :href="repositoryUrl"
+                rel="noopener noreferrer"
+                target="_blank"
+            >
+                Allypost
+            </a>
+            <span
+                v-else
+            >
+                Allypost
+            </span>
+            | All content is courtesy of
             <a
                 href="https://www.4chan.org"
                 rel="noopener noreferrer"
@@ -76,12 +90,17 @@
             {
                 socket,
                 donateLink: '',
+                repositoryUrl: process.env.THREADPULLER_REPOSITORY_URL,
             }
         ),
 
         computed: {
             hasDonateLink() {
                 return Boolean(this.donateLink);
+            },
+
+            hasRepositoryUrl() {
+                return Boolean(this.repositoryUrl);
             },
 
             presenceID() {

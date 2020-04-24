@@ -135,5 +135,6 @@ module.exports = {
     },
     env: {
         THREADPULLER_GOATCOUNTER_URL: process.env.THREADPULLER_GOATCOUNTER_URL,
+        THREADPULLER_REPOSITORY_URL: process.env.THREADPULLER_REPOSITORY_URL,
     },
 };
