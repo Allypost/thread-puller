@@ -79,7 +79,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapMutations } from 'vuex';
     import { socket } from '../lib/SocketIO/socket';
     import PeerCount from '../components/PeerCount';
 
@@ -132,6 +132,7 @@
             registerSocketListeners() {
                 this.socket.emit('register', this.presenceID, () => {
                     this.updateLocation();
+                    this.setPresenceConnected(true);
                     window.addEventListener('focus', this.getFocusListener(true));
                     window.addEventListener('blur', this.getFocusListener(false));
 
@@ -216,6 +217,10 @@
                     )
                 ;
             },
+
+            ...mapMutations({
+                'setPresenceConnected': 'presence/SET_CONNECTED',
+            }),
         },
 
         head() {

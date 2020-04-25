@@ -60,7 +60,7 @@ async function updatePresence(socket, newData) {
           } = newData;
 
     const data = {
-        page: String(page),
+        page: String(page || ''),
         focus: Boolean(focus),
         params: Object(params),
     };
@@ -69,6 +69,14 @@ async function updatePresence(socket, newData) {
 
     await callStorage('set', redisKey, JSON.stringify(data), 'EX', DATA_TIMEOUT_SECONDS);
     await publishEvent(redisSocketKey(socket, 'update'), { id, data });
+    socket.to('monitoring').emit('user:update', {
+        type: 'update',
+        data: {
+            id,
+            socketId: socket.id,
+            data,
+        },
+    });
 
     if (updatedLocation) {
         socket.leave(oldPage);
@@ -233,6 +241,14 @@ function addRedisListeners(socket) {
 function addListeners(socket) {
     const io = socket.server;
 
+    socket.on('monitor:join', (cb = null) => {
+        socket.join('monitoring');
+
+        if (isFunction(cb)) {
+            cb();
+        }
+    });
+
     socket.on('update:location', async (data, cb = null) => {
         await updatePresence(socket, data);
 
@@ -297,14 +313,6 @@ module.exports = async function(io) {
 
     io.on('connection', (socket) => {
         const {
-                  query: {
-                      monitor,
-                  },
-              } = socket.handshake;
-
-        socket.monitoring = Boolean(monitor);
-
-        const {
                   activate: activateRedisListeners,
                   deactivate: deactivateRedisListeners,
               } = addRedisListeners(socket);
@@ -341,6 +349,13 @@ module.exports = async function(io) {
             await updatePresence(socket, { page: null });
             await callStorage('del', redisSocketKey(socket));
             await publishEvent(redisSocketKey(socket, 'delete'), { id });
+            socket.to('monitoring').emit('user:update', {
+                type: 'delete',
+                data: {
+                    id,
+                    socketId: socket.id,
+                },
+            });
         });
 
     });

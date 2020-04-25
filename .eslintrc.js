@@ -29,6 +29,7 @@ module.exports = {
             'error', 4,
             {
                 'baseIndent': 1,
+                'switchCase': 1,
             },
         ],
         'array-bracket-spacing': [ 'error', 'always' ],

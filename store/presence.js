@@ -2,6 +2,7 @@ export const state = () => (
     {
         name: '',
         id: '',
+        connected: false,
     }
 );
 
@@ -12,6 +13,10 @@ export const getters = {
 
     name({ name }) {
         return name;
+    },
+
+    connected({ connected }) {
+        return connected;
     },
 
     get({ id, name }) {
@@ -31,5 +36,9 @@ export const mutations = {
     SET_PRESENCE(state, { id, name }) {
         state.id = id;
         state.name = name;
+    },
+
+    SET_CONNECTED(state, connected = true) {
+        state.connected = Boolean(connected);
     },
 };
