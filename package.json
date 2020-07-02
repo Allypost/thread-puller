@@ -7,7 +7,7 @@
     "node": "9.3.0"
   },
   "dependencies": {
-    "bcrypt": "^3.0.2",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "concurrently": "^4.1.0",
