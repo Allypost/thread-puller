@@ -65,6 +65,7 @@
     "vuex-shared-mutations": "^1.0.2"
   },
   "devDependencies": {
+    "@nuxt/types": "^2.14.1",
     "husky": "^3.1.0",
     "lint-staged": "^9.4.3",
     "nodemon": "^2.0.1"
