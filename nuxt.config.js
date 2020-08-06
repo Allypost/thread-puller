@@ -66,6 +66,7 @@ module.exports = {
     buildModules: [
         // Doc: https://github.com/nuxt-community/eslint-module
         '@nuxtjs/eslint-module',
+        '@aceforth/nuxt-optimized-images',
     ],
     /*
      ** Nuxt.js modules
@@ -74,7 +75,6 @@ module.exports = {
         // Doc: https://axios.nuxtjs.org/usage
         '@nuxtjs/axios',
         '@nuxtjs/pwa',
-        '@bazzite/nuxt-optimized-images',
         'nuxt-svg-loader',
         [ 'cookie-universal-nuxt', { parseJSON: false } ],
         [ '@nuxtjs/router', { keepDefaultRouter: true } ],
