@@ -27,7 +27,7 @@
         <thread-header :thread="thread" />
         <thread-content :thread="thread" />
         <footer>
-            <span>{{ thread.meta.images }} images | {{ thread.meta.replies }} replies</span>
+            <span>{{ thread.meta.images }} images | {{ thread.meta.replies }} replies <span v-if="showBoardName">| /{{ thread.board }}/</span></span>
         </footer>
     </article>
 </template>
@@ -45,6 +45,13 @@
             thread: {
                 type: Object,
                 required: true,
+            },
+            showBoardName: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false;
+                },
             },
         },
 
