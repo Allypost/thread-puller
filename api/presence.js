@@ -205,7 +205,7 @@ function addRedisListeners(socket) {
     function activate() {
         redis.psubscribe('page-data:update:*', (err) => {
             if (err) {
-                consola.error(err);
+                consola.error('page data update subscription error', err);
             }
         });
 

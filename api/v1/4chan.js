@@ -2,11 +2,11 @@ import axios from 'axios';
 import express from 'express';
 import bodyParser from 'body-parser';
 import consola from 'consola';
-import Boards from '../lib/Fetchers/4chan/Boards';
-import Posts from '../lib/Fetchers/4chan/Posts';
-import Threads from '../lib/Fetchers/4chan/Threads';
-import PostInfo from '../lib/Formatters/PostInfo';
-import { Fuse } from '../lib/Search/Fuse';
+import Boards from '../../lib/Fetchers/4chan/Boards';
+import Posts from '../../lib/Fetchers/4chan/Posts';
+import Threads from '../../lib/Fetchers/4chan/Threads';
+import PostInfo from '../../lib/Formatters/PostInfo';
+import { Fuse } from '../../lib/Search/Fuse';
 
 const app = express();
 app.disable('x-powered-by');

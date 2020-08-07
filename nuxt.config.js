@@ -28,8 +28,12 @@ module.exports = {
     },
 
     serverMiddleware: [
-        '~/api/4chan',
-        '~/api/4chan-images',
+        '~/api/v1/4chan',
+        '~/api/v1/4chan-images',
+        {
+            path: '/api/v2',
+            handler: '~/api/v2/index',
+        },
     ],
 
     router: {

@@ -30,7 +30,7 @@ app.get('/i/:board/:resource.:ext', (req, res) => {
 
             resp.pipe(res, { end: true });
         })
-        .on('error', (e) => consola.error(e))
+        .on('error', (e) => consola.error('image fetch error', e))
         .end();
 });
 
@@ -46,7 +46,7 @@ app.get('/thumb/:board/:resource.:ext.png', (req, res) => {
         .outputOptions('-f image2pipe')
         .outputOptions('-vcodec png')
         .on('error', (err) => {
-            consola.error(err);
+            consola.error('thumb transcode png error', err);
 
             res.status(404).end();
         })
@@ -68,7 +68,7 @@ app.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
         .outputOptions('-vframes 1')
         .outputOptions('-vcodec mjpeg')
         .on('error', (err) => {
-            consola.error(err);
+            consola.error('thumb transcode jpg error', err);
 
             res.status(404).end();
         })
