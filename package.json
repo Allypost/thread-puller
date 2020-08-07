@@ -20,6 +20,7 @@
     }
   },
   "dependencies": {
+    "@aceforth/nuxt-optimized-images": "^1.1.0",
     "@nuxt/server": "^2.12.2",
     "@nuxtjs/axios": "^5.8.0",
     "@nuxtjs/eslint-config": "^1.1.2",
@@ -65,7 +66,6 @@
     "vuex-shared-mutations": "^1.0.2"
   },
   "devDependencies": {
-    "@aceforth/nuxt-optimized-images": "^1.1.0",
     "@nuxt/types": "^2.14.1",
     "husky": "^3.1.0",
     "lint-staged": "^9.4.3",
