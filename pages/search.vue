@@ -101,6 +101,7 @@
                 v-for="thread in results"
                 :key="thread.item.id"
                 :thread="thread.item"
+                show-board-name
             />
         </div>
     </div>
