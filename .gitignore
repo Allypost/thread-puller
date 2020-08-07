@@ -91,4 +91,7 @@ sw.*
 # Mac OSX
 .DS_Store
 
+# Linux
+.directory
+
 !**/.gitkeep
