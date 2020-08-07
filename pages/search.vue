@@ -107,7 +107,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapActions, mapGetters } from 'vuex';
     import ThreadBacklinks from '../components/ThreadBacklinks';
     import BoardThread from '../components/threads/Thread';
     import PepeImage from '../assets/images/pepe.png';
@@ -163,37 +163,9 @@
         },
 
         methods: {
-            async * makeTextFileLineIterator(response) {
-                const utf8Decoder = new TextDecoder('utf-8');
-                const reader = response.body.getReader();
-                let { value: chunk, done: readerDone } = await reader.read();
-                chunk = chunk ? utf8Decoder.decode(chunk) : '';
-
-                const re = /\n|\r|\r\n/gm;
-                let startIndex = 0;
-                let result;
-
-                for (; ;) {
-                    result = re.exec(chunk);
-                    if (!result) {
-                        if (readerDone) {
-                            break;
-                        }
-                        const remainder = chunk.substr(startIndex);
-                        ({ value: chunk, done: readerDone } = await reader.read());
-                        chunk = remainder + (chunk ? utf8Decoder.decode(chunk) : '');
-                        re.lastIndex = 0;
-                        startIndex = 0;
-                        continue;
-                    }
-                    yield chunk.substring(startIndex, result.index);
-                    startIndex = re.lastIndex;
-                }
-                if (startIndex < chunk.length) {
-                    // last line didn't end in a newline char
-                    yield chunk.substr(startIndex);
-                }
-            },
+            ...mapActions({
+                'searchThreads': 'search/searchThreads',
+            }),
 
             async doSearch() {
                 if (this.loading) {
@@ -207,24 +179,10 @@
                 this.loading = true;
                 this.$set(this, 'results', []);
 
-                const result = await fetch('/api/search/local', {
-                    method: 'POST',
-                    body: JSON.stringify(this.form),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const isServer = process.server;
+                const result = await this.searchThreads({ ...this.form, isServer });
 
-                for await(const line of this.makeTextFileLineIterator(result)) {
-                    const { threads, results, total } = JSON.parse(line);
-
-                    this.progress.value = results;
-                    this.progress.max = total;
-
-                    const newResults = [ ...this.results, ...threads ].sort(({ score: a }, { score: b }) => a - b);
-
-                    this.$set(this, 'results', newResults);
-                }
+                this.$set(this, 'results', result);
 
                 this.loading = false;
                 this.progress.value = 0;
