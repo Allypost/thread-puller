@@ -200,4 +200,4 @@ router.post('/search/posts', async ({ body }) => {
   );
 });
 
-export default router.expose();
+export default router;

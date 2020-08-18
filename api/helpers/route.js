@@ -431,8 +431,18 @@ export const registerRoutesInFolder = (folder) => {
           .join('.')
       ;
 
-      // Register route
-      router.use(`/${ routeName }`, require(filePath).default);
+      const routePath = `/${ routeName }`;
+      const getHandler = () => {
+        const router = require(filePath).default;
+
+        if (router instanceof Router) {
+          return router.expose();
+        }
+
+        return router;
+      };
+
+      router.use(routePath, getHandler());
     })
   ;
 
