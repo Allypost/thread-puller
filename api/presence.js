@@ -6,189 +6,187 @@ const REDIS_PREFIX = 'presence:';
 const DATA_TIMEOUT_SECONDS = 60 * 3;
 
 function isFunction(value) {
-    if (!value) {
-        return false;
-    }
+  if (!value) {
+    return false;
+  }
 
-    if ('[object Function]' === Object.prototype.toString.call(value)) {
-        return true;
-    }
+  if ('[object Function]' === Object.prototype.toString.call(value)) {
+    return true;
+  }
 
-    if ('function' === typeof value) {
-        return true;
-    }
+  if ('function' === typeof value) {
+    return true;
+  }
 
-    return value instanceof Function;
+  return value instanceof Function;
 }
 
 function redisSocketKey(socket, infix = '') {
-    const { id } = socket.presence;
+  const { id } = socket.presence;
 
-    if (!infix) {
-        return `${ REDIS_PREFIX }${ id }:${ socket.id }`;
-    }
+  if (!infix) {
+    return `${ REDIS_PREFIX }${ id }:${ socket.id }`;
+  }
 
-    const fixedInfix =
-              infix
-                  .trim()
-                  // Remove `:` characters from start
-                  .replace(/^:+/, '')
-                  // Remove `:` characters from end
-                  .replace(/:+$/, '')
-    ;
+  const fixedInfix =
+    infix
+      .trim()
+      // Remove `:` characters from start
+      .replace(/^:+/, '')
+      // Remove `:` characters from end
+      .replace(/:+$/, '')
+  ;
 
-    return `${ REDIS_PREFIX }${ fixedInfix }:${ id }:${ socket.id }`;
+  return `${ REDIS_PREFIX }${ fixedInfix }:${ id }:${ socket.id }`;
 }
 
 async function clean() {
-    return await callStorage('clean-old-presence-data', `${ REDIS_PREFIX }*`);
+  return await callStorage('clean-old-presence-data', `${ REDIS_PREFIX }*`);
 }
 
 async function updatePresence(socket, newData) {
 
-    const { id, data: oldData } = socket.presence;
+  const { id, data: oldData } = socket.presence;
 
-    const redisKey = redisSocketKey(socket);
+  const redisKey = redisSocketKey(socket);
 
-    const oldPage = oldData.page;
-    const updatedLocation = newData.page !== undefined && oldPage !== newData.page;
+  const oldPage = oldData.page;
+  const updatedLocation = newData.page !== undefined && oldPage !== newData.page;
 
-    const {
-              page   = oldData.page,
-              focus  = oldData.focus,
-              params = oldData.params,
-          } = newData;
+  const {
+    page = oldData.page,
+    focus = oldData.focus,
+    params = oldData.params,
+  } = newData;
 
-    const data = {
-        page: String(page || ''),
-        focus: Boolean(focus),
-        params: Object(params),
-    };
+  const data = {
+    page: String(page || ''),
+    focus: Boolean(focus),
+    params: Object(params),
+  };
 
-    Object.assign(socket.presence.data, data);
+  Object.assign(socket.presence.data, data);
 
-    await callStorage('set', redisKey, JSON.stringify(data), 'EX', DATA_TIMEOUT_SECONDS);
-    await publishEvent(redisSocketKey(socket, 'update'), { id, data });
-    socket.to('monitoring').emit('user:update', {
-        type: 'update',
-        data: {
-            id,
-            socketId: socket.id,
-            data,
-        },
-    });
+  await callStorage('set', redisKey, JSON.stringify(data), 'EX', DATA_TIMEOUT_SECONDS);
+  await publishEvent(redisSocketKey(socket, 'update'), { id, data });
+  socket.to('monitoring').emit('user:update', {
+    type: 'update',
+    data: {
+      id,
+      socketId: socket.id,
+      data,
+    },
+  });
 
-    if (updatedLocation) {
-        socket.leave(oldPage);
-        socket.join(data.page);
+  if (updatedLocation) {
+    socket.leave(oldPage);
+    socket.join(data.page);
 
-        socket.server.to(oldPage).emit('event:peers:page:count', getSocketPagePeerCount(socket.server, { page: oldPage }));
-        socket.server.to(data.page).emit('event:peers:page:count', getSocketPagePeerCount(socket.server, { page: data.page }));
-    }
+    socket.server.to(oldPage).emit('event:peers:page:count', getSocketPagePeerCount(socket.server, { page: oldPage }));
+    socket.server.to(data.page).emit('event:peers:page:count', getSocketPagePeerCount(socket.server, { page: data.page }));
+  }
 
-    return data;
+  return data;
 }
 
 function getSocketPagePeerCount(io, { page } = {}) {
-    if (!page) {
-        return 0;
-    }
+  if (!page) {
+    return 0;
+  }
 
-    const { [ page ]: room = {} } = io.sockets.adapter.rooms;
-    const { sockets = {} } = room;
+  const { [ page ]: room = {} } = io.sockets.adapter.rooms;
+  const { sockets = {} } = room;
 
-    return Object.keys(sockets).length;
+  return Object.keys(sockets).length;
 }
 
 function getSocketPagePeers(io, { page } = {}) {
-    if (!page) {
-        return null;
-    }
+  if (!page) {
+    return null;
+  }
 
-    const { [ page ]: room = {} } = io.sockets.adapter.rooms;
-    const { sockets = {} } = room;
+  const { [ page ]: room = {} } = io.sockets.adapter.rooms;
+  const { sockets = {} } = room;
 
-    return (
-        Object
-            .keys(sockets)
-            .reduce((acc, id) => {
-                const { presence } = io.sockets.sockets[ id ];
-                const
-                    {
-                        id: presenceID,
-                        data: {
-                            focus,
-                        },
-                    } = presence;
+  return (
+    Object
+      .keys(sockets)
+      .reduce((acc, id) => {
+        const { presence } = io.sockets.sockets[ id ];
+        const
+          {
+            id: presenceID,
+            data: { focus },
+          } = presence;
 
-                if (!acc[ presenceID ]) {
-                    acc[ presenceID ] = [];
-                }
+        if (!acc[ presenceID ]) {
+          acc[ presenceID ] = [];
+        }
 
-                acc[ presenceID ].push({ id, focus });
+        acc[ presenceID ].push({ id, focus });
 
-                return acc;
-            }, {})
-    );
+        return acc;
+      }, {})
+  );
 }
 
 
 function getSocketPeers(io, { groupBy = 'page', path = null } = {}) {
-    function getPageRooms(io) {
-        const { rooms } = io.sockets.adapter;
+  function getPageRooms(io) {
+    const { rooms } = io.sockets.adapter;
 
-        if (path && rooms[ path ]) {
-            return [ path ];
-        } else {
-            return (
-                Object
-                    .keys(rooms)
-                    .filter((name) => name.startsWith('/'))
-            );
-        }
+    if (path && rooms[ path ]) {
+      return [ path ];
+    } else {
+      return (
+        Object
+          .keys(rooms)
+          .filter((name) => name.startsWith('/'))
+      );
     }
+  }
 
-    function byPage(io) {
-        const rooms = getPageRooms(io);
+  function byPage(io) {
+    const rooms = getPageRooms(io);
 
-        return (
-            rooms
-                .reduce((acc, page) => {
-                    acc[ page ] = getSocketPagePeers(io, { page });
+    return (
+      rooms
+        .reduce((acc, page) => {
+          acc[ page ] = getSocketPagePeers(io, { page });
 
-                    return acc;
-                }, {})
-        );
-    }
+          return acc;
+        }, {})
+    );
+  }
 
-    function byID(io) {
-        const rooms = getPageRooms(io);
+  function byID(io) {
+    const rooms = getPageRooms(io);
 
-        return (
-            rooms
-                .reduce((acc, page) => {
-                    const pagePeers = getSocketPagePeers(io, { page });
+    return (
+      rooms
+        .reduce((acc, page) => {
+          const pagePeers = getSocketPagePeers(io, { page });
 
-                    for (const [ id, sessions ] of Object.entries(pagePeers)) {
-                        if (!acc[ id ]) {
-                            acc[ id ] = [];
-                        }
+          for (const [ id, sessions ] of Object.entries(pagePeers)) {
+            if (!acc[ id ]) {
+              acc[ id ] = [];
+            }
 
-                        acc[ id ].push(...sessions.map((session) => Object.assign(session, { page })));
-                    }
+            acc[ id ].push(...sessions.map((session) => Object.assign(session, { page })));
+          }
 
-                    return acc;
-                }, {})
-        );
-    }
+          return acc;
+        }, {})
+    );
+  }
 
-    switch (groupBy) {
-        case 'id':
-            return byID(io);
-        case 'page':
-        default:
-            return byPage(io);
-    }
+  switch (groupBy) {
+    case 'id':
+      return byID(io);
+    case 'page':
+    default:
+      return byPage(io);
+  }
 }
 
 /**
@@ -196,168 +194,168 @@ function getSocketPeers(io, { groupBy = 'page', path = null } = {}) {
  * @returns {{activate: Function, deactivate: Function}}
  */
 function addRedisListeners(socket) {
-    const redis = getInstance();
+  const redis = getInstance();
 
-    function deactivate() {
-        redis.disconnect();
+  function deactivate() {
+    redis.disconnect();
+  }
+
+  function activate() {
+    redis.psubscribe('page-data:update:*', (err) => {
+      if (err) {
+        consola.error('page data update subscription error', err);
+      }
+    });
+
+    redis.on('pmessage', (pattern, channel, rawMessage) => {
+      const message = JSON.parse(rawMessage);
+      const messageMap = {
+        'page-data:update:*': pageDataUpdate,
+      };
+      const resolver = messageMap[ pattern ];
+
+      if (resolver) {
+        resolver(socket, message);
+      }
+    });
+
+
+    function pageDataUpdate(socket, message) {
+      const { data: presence } = socket.presence;
+      const { board: rBoard, thread: rThread } = message;
+      const { board: uBoard, thread: uThread } = presence.params;
+
+      if (rBoard !== uBoard || rThread !== uThread) {
+        return;
+      }
+
+      socket.emit('page-data:update', message);
     }
+  }
 
-    function activate() {
-        redis.psubscribe('page-data:update:*', (err) => {
-            if (err) {
-                consola.error('page data update subscription error', err);
-            }
-        });
-
-        redis.on('pmessage', (pattern, channel, rawMessage) => {
-            const message = JSON.parse(rawMessage);
-            const messageMap = {
-                'page-data:update:*': pageDataUpdate,
-            };
-            const resolver = messageMap[ pattern ];
-
-            if (resolver) {
-                resolver(socket, message);
-            }
-        });
-
-
-        function pageDataUpdate(socket, message) {
-            const { data: presence } = socket.presence;
-            const { board: rBoard, thread: rThread } = message;
-            const { board: uBoard, thread: uThread } = presence.params;
-
-            if (rBoard !== uBoard || rThread !== uThread) {
-                return;
-            }
-
-            socket.emit('page-data:update', message);
-        }
-    }
-
-    return { activate, deactivate };
+  return { activate, deactivate };
 }
 
 function addListeners(socket) {
-    const io = socket.server;
+  const io = socket.server;
 
-    socket.on('monitor:join', (cb = null) => {
-        socket.join('monitoring');
+  socket.on('monitor:join', (cb = null) => {
+    socket.join('monitoring');
 
-        if (isFunction(cb)) {
-            cb();
-        }
-    });
+    if (isFunction(cb)) {
+      cb();
+    }
+  });
 
-    socket.on('update:location', async (data, cb = null) => {
-        await updatePresence(socket, data);
+  socket.on('update:location', async (data, cb = null) => {
+    await updatePresence(socket, data);
 
-        if (isFunction(cb)) {
-            cb();
-        }
-    });
+    if (isFunction(cb)) {
+      cb();
+    }
+  });
 
-    socket.on('update:focus', async (isFocused, cb = null) => {
-        await updatePresence(socket, { focus: isFocused });
+  socket.on('update:focus', async (isFocused, cb = null) => {
+    await updatePresence(socket, { focus: isFocused });
 
-        if (isFunction(cb)) {
-            cb();
-        }
-    });
+    if (isFunction(cb)) {
+      cb();
+    }
+  });
 
-    socket.on('get:peers:page', (path, cb = null) => {
-        if (!isFunction(cb)) {
-            return;
-        }
+  socket.on('get:peers:page', (path, cb = null) => {
+    if (!isFunction(cb)) {
+      return;
+    }
 
-        const { data: presence } = socket.presence;
-        const { page } = presence;
+    const { data: presence } = socket.presence;
+    const { page } = presence;
 
-        const data = getSocketPagePeers(io, { page: path || page });
+    const data = getSocketPagePeers(io, { page: path || page });
 
-        cb(data);
-    });
+    cb(data);
+  });
 
-    socket.on('get:peers:page:count', (page, cb = null) => {
-        if (!isFunction(cb)) {
-            return;
-        }
+  socket.on('get:peers:page:count', (page, cb = null) => {
+    if (!isFunction(cb)) {
+      return;
+    }
 
-        cb(getSocketPagePeerCount(io, { page }));
-    });
+    cb(getSocketPagePeerCount(io, { page }));
+  });
 
-    socket.on('get:peers:all', (cb = null) => {
-        if (!isFunction(cb)) {
-            return;
-        }
+  socket.on('get:peers:all', (cb = null) => {
+    if (!isFunction(cb)) {
+      return;
+    }
 
-        const data = getSocketPeers(io, { groupBy: 'page' });
+    const data = getSocketPeers(io, { groupBy: 'page' });
 
-        cb(data);
-    });
+    cb(data);
+  });
 
-    socket.on('get:peers:all:by-id', (cb = null) => {
-        if (!isFunction(cb)) {
-            return;
-        }
+  socket.on('get:peers:all:by-id', (cb = null) => {
+    if (!isFunction(cb)) {
+      return;
+    }
 
-        const data = getSocketPeers(io, { groupBy: 'id' });
+    const data = getSocketPeers(io, { groupBy: 'id' });
 
-        cb(data);
-    });
+    cb(data);
+  });
 }
 
 
 module.exports = async function(io) {
-    await clean();
+  await clean();
 
-    io.on('connection', (socket) => {
-        const {
-                  activate: activateRedisListeners,
-                  deactivate: deactivateRedisListeners,
-              } = addRedisListeners(socket);
+  io.on('connection', (socket) => {
+    const {
+      activate: activateRedisListeners,
+      deactivate: deactivateRedisListeners,
+    } = addRedisListeners(socket);
 
-        socket.on('register', (id, cb) => {
-            if (!id || !cb || !isFunction(cb)) {
-                socket.disconnect();
-                return;
-            }
+    socket.on('register', (id, cb) => {
+      if (!id || !cb || !isFunction(cb)) {
+        socket.disconnect();
+        return;
+      }
 
-            socket.presence = {
-                id,
-                data: {
-                    page: '',
-                    focus: false,
-                    params: {},
-                },
-            };
+      socket.presence = {
+        id,
+        data: {
+          page: '',
+          focus: false,
+          params: {},
+        },
+      };
 
-            addListeners(socket);
-            activateRedisListeners();
+      addListeners(socket);
+      activateRedisListeners();
 
-            cb();
-        });
-
-        socket.on('disconnect', async () => {
-            if (!socket.presence) {
-                return;
-            }
-
-            const { id } = socket.presence;
-
-            deactivateRedisListeners();
-            await updatePresence(socket, { page: null });
-            await callStorage('del', redisSocketKey(socket));
-            await publishEvent(redisSocketKey(socket, 'delete'), { id });
-            socket.to('monitoring').emit('user:update', {
-                type: 'delete',
-                data: {
-                    id,
-                    socketId: socket.id,
-                },
-            });
-        });
-
+      cb();
     });
+
+    socket.on('disconnect', async () => {
+      if (!socket.presence) {
+        return;
+      }
+
+      const { id } = socket.presence;
+
+      deactivateRedisListeners();
+      await updatePresence(socket, { page: null });
+      await callStorage('del', redisSocketKey(socket));
+      await publishEvent(redisSocketKey(socket, 'delete'), { id });
+      socket.to('monitoring').emit('user:update', {
+        type: 'delete',
+        data: {
+          id,
+          socketId: socket.id,
+        },
+      });
+    });
+
+  });
 
 };

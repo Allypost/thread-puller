@@ -1,26 +1,26 @@
 @import "../../include";
 
 #settings {
-    position: absolute;
-    top: 1em;
-    right: 1em;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    transition: #{$transition-smooth} transform .3s, #{$transition-smooth} opacity .3s;
-    opacity: .5;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: #{$transition-smooth} transform .3s, #{$transition-smooth} opacity .3s;
+  opacity: .5;
 
-    &:hover {
-        opacity: .75;
-    }
+  &:hover {
+    opacity: .75;
+  }
 
 }
 
 body.settings-open {
 
-    #settings {
-        transform: rotateZ(180deg);
-        opacity: 1;
-    }
+  #settings {
+    transform: rotateZ(180deg);
+    opacity: 1;
+  }
 
 }

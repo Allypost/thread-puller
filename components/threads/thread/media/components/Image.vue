@@ -1,101 +1,101 @@
-<style scoped lang="scss">
-    @import "../../../../../assets/style/modules/include";
+<style lang="scss" scoped>
+  @import "../../../../../assets/style/modules/include";
 
-    .img-container {
-        width: 100%;
-        position: relative;
-        display: inline-block;
+  .img-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .img-spinner {
+    position: absolute;
+    top: .5em;
+    right: .5em;
+  }
+
+  img {
+    width: 100%;
+    transition: .25s filter ease-out;
+    filter: none;
+
+    &.isLoading {
+      filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius="2");
+      filter: blur(2px);
     }
-
-    .img-spinner {
-        position: absolute;
-        top: .5em;
-        right: .5em;
-    }
-
-    img {
-        width: 100%;
-        filter: none;
-        transition: .25s filter ease-out;
-
-        &.isLoading {
-            filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
-            filter: blur(2px);
-        }
-    }
+  }
 
 </style>
 
 <template>
-    <span class="img-container">
-        <img
-            draggable="false"
-            :alt="alt"
-            :src="src"
-            :class="{isLoading}"
-            @error="handleError"
-            @load="isLoading = false"
-        >
-        <LoaderSpinner
-            v-if="isLoading"
-            class="img-spinner"
-        />
-    </span>
+  <span class="img-container">
+    <img
+      :alt="alt"
+      :class="{isLoading}"
+      :src="src"
+      draggable="false"
+      @error="handleError"
+      @load="isLoading = false"
+    >
+    <LoaderSpinner
+      v-if="isLoading"
+      class="img-spinner"
+    />
+  </span>
 </template>
 
 <script>
-    import LoaderSpinner from '../LoaderSpinner';
-    import FileDeletedImage from '../../../../../assets/images/deleted.gif';
+  import FileDeletedImage from '../../../../../assets/images/deleted.gif';
+  import LoaderSpinner from '../LoaderSpinner';
 
-    export default {
-        name: 'ThreadMediaThumb',
+  export default {
+    name: 'ThreadMediaThumb',
 
-        components: { LoaderSpinner },
+    components: { LoaderSpinner },
 
-        props: {
-            srcSet: {
-                type: Object,
-                required: true,
-            },
-            alt: {
-                type: String,
-                required: true,
-            },
-        },
+    props: {
+      srcSet: {
+        type: Object,
+        required: true,
+      },
+      alt: {
+        type: String,
+        required: true,
+      },
+    },
 
-        data() {
-            return {
-                errors: {},
-                isLoading: false,
-            };
-        },
+    data() {
+      return {
+        errors: {},
+        isLoading: false,
+      };
+    },
 
-        computed: {
-            src() {
-                const { local, remote } = this.srcSet;
+    computed: {
+      src() {
+        const { local, remote } = this.srcSet;
 
-                const src = [ remote, local, FileDeletedImage ];
+        const src = [ remote, local, FileDeletedImage ];
 
-                return src.find((src) => !this.srcHadError(src));
-            },
-        },
+        return src.find((src) => !this.srcHadError(src));
+      },
+    },
 
-        watch: {
-            src() {
-                this.isLoading = true;
-            },
-        },
+    watch: {
+      src() {
+        this.isLoading = true;
+      },
+    },
 
-        methods: {
-            handleError() {
-                this.$set(this.errors, this.src, true);
-            },
+    methods: {
+      handleError() {
+        this.$set(this.errors, this.src, true);
+      },
 
-            srcHadError(src) {
-                const { errors } = this;
+      srcHadError(src) {
+        const { errors } = this;
 
-                return Boolean(errors[ src ]);
-            },
-        },
-    };
+        return Boolean(errors[ src ]);
+      },
+    },
+  };
 </script>

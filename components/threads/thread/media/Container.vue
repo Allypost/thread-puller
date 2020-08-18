@@ -1,101 +1,101 @@
 <style lang="scss" scoped>
-    .container {
-        max-height: 140px;
-        overflow: hidden;
+  .container {
+    overflow: hidden;
+    max-height: 140px;
 
-        &.expanded {
-            max-height: initial;
-        }
-
-        .img {
-            width: 100%;
-            cursor: zoom-in;
-
-            &.expanded {
-                cursor: zoom-out;
-            }
-        }
+    &.expanded {
+      max-height: initial;
     }
+
+    .img {
+      width: 100%;
+      cursor: zoom-in;
+
+      &.expanded {
+        cursor: zoom-out;
+      }
+    }
+  }
 </style>
 
 <template>
-    <section
-        class="container"
-        :class="{ expanded }"
-        @click="expanded = !expanded"
-    >
-        <thread-video
-            v-if="expanded && isVideo"
-            :autoplay="true"
-            :file="file"
-        />
+  <section
+    :class="{ expanded }"
+    class="container"
+    @click="expanded = !expanded"
+  >
+    <thread-video
+      v-if="expanded && isVideo"
+      :autoplay="true"
+      :file="file"
+    />
 
-        <thread-image
-            v-else
-            :src-set="srcset"
-            :alt="file.name"
-            class="img"
-            :class="{expanded}"
-        />
-    </section>
+    <thread-image
+      v-else
+      :alt="file.name"
+      :class="{expanded}"
+      :src-set="srcset"
+      class="img"
+    />
+  </section>
 </template>
 
 <script>
-    import ThreadVideo from './components/Video';
-    import ThreadImage from './components/Image';
+  import ThreadImage from './components/Image';
+  import ThreadVideo from './components/Video';
 
-    export default {
+  export default {
 
-        name: 'ThreadMediaContainer',
+    name: 'ThreadMediaContainer',
 
-        components: { ThreadVideo, ThreadImage },
+    components: { ThreadVideo, ThreadImage },
 
-        props: {
-            file: {
-                type: [ Object, null ],
-                required: true,
-            },
-        },
+    props: {
+      file: {
+        type: [ Object, null ],
+        required: true,
+      },
+    },
 
-        data() {
-            return {
-                expanded: false,
-            };
-        },
+    data() {
+      return {
+        expanded: false,
+      };
+    },
 
-        computed: {
-            isVideo() {
-                return this.file.meta.isVideo;
-            },
+    computed: {
+      isVideo() {
+        return this.file.meta.isVideo;
+      },
 
-            thumbSrc() {
-                const { src } = this.file;
-                const { local, remote } = src;
+      thumbSrc() {
+        const { src } = this.file;
+        const { local, remote } = src;
 
-                return {
-                    local: local.thumb,
-                    remote: remote.thumb,
-                };
-            },
+        return {
+          local: local.thumb,
+          remote: remote.thumb,
+        };
+      },
 
-            fullSrc() {
-                const { src } = this.file;
-                const { local, remote } = src;
+      fullSrc() {
+        const { src } = this.file;
+        const { local, remote } = src;
 
-                return {
-                    local: local.full,
-                    remote: remote.full,
-                };
-            },
+        return {
+          local: local.full,
+          remote: remote.full,
+        };
+      },
 
-            srcset() {
-                if (this.expanded) {
-                    return this.fullSrc;
-                } else {
-                    return this.thumbSrc;
-                }
-            },
-        },
+      srcset() {
+        if (this.expanded) {
+          return this.fullSrc;
+        } else {
+          return this.thumbSrc;
+        }
+      },
+    },
 
-    };
+  };
 </script>

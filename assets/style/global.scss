@@ -1,53 +1,53 @@
 @import "modules/include";
 
 ::selection {
-    color: $text-color;
-    background: grayscale($background-color);
+  color: $text-color;
+  background: grayscale($background-color);
 }
 
 *,
 *:before,
 *:after {
-    box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 html, body {
-    margin: 0;
+  margin: 0;
 }
 
 html {
-    font-family: sans-serif;
-    font-size: 1rem;
-    box-sizing: border-box;
-    height: 100%;
-    margin: 0;
-    text-align: center;
-    color: $text-color;
-    background-color: $background-color;
+  font-family: sans-serif;
+  font-size: 1rem;
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  text-align: center;
+  color: $text-color;
+  background-color: $background-color;
 }
 
 a {
-    display: inline-block;
-    color: $link-color;
-    word-break: break-word;
+  display: inline-block;
+  word-break: break-word;
+  color: $link-color;
 
-    &:hover {
-        text-decoration: none;
-        color: $text-color;
-    }
+  &:hover {
+    text-decoration: none;
+    color: $text-color;
+  }
 
 }
 
 s {
-    cursor: help;
-    text-decoration: none;
-    color: invert($text-color);
-    background: invert($text-color);
-    box-shadow: 0 0 1em -8px $text-color;
+  cursor: help;
+  text-decoration: none;
+  color: invert($text-color);
+  background: invert($text-color);
+  box-shadow: 0 0 1em -8px $text-color;
 
-    &:hover {
-        color: $text-color;
-    }
+  &:hover {
+    color: $text-color;
+  }
 }
 
 @import "modules/flash/include";

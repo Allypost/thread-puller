@@ -1,65 +1,65 @@
 <style lang="scss" scoped>
-    @import "../../../assets/style/modules/include";
+  @import "../../../assets/style/modules/include";
 
-    header {
-        margin-bottom: .3em;
-    }
+  header {
+    margin-bottom: .3em;
+  }
 
-    .title {
-        margin: 0;
-        text-align: center;
-        font-weight: 700;
-        font-size: 1.3em;
-        color: invert($text-color);
-        word-break: break-word;
-    }
+  .title {
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+    word-break: break-word;
+    color: invert($text-color);
+  }
 
-    .no-title {
-        font-weight: normal;
-    }
+  .no-title {
+    font-weight: normal;
+  }
 </style>
 
 <template>
-    <header>
-        <n-link
-            :to="{ name: 'Posts', params: { board: thread.board, thread: thread.id } }"
-            class="title"
-        >
-            <span
-                v-if="hasTitle"
-                v-html="title"
-            />
-            <i
-                v-else
-                class="no-title"
-            >No title</i>
-        </n-link>
-    </header>
+  <header>
+    <n-link
+      :to="{ name: 'Posts', params: { board: thread.board, thread: thread.id } }"
+      class="title"
+    >
+      <span
+        v-if="hasTitle"
+        v-html="title"
+      />
+      <i
+        v-else
+        class="no-title"
+      >No title</i>
+    </n-link>
+  </header>
 </template>
 
 <script>
-    export default {
-        name: 'ThreadHeader',
+  export default {
+    name: 'ThreadHeader',
 
-        props: {
-            thread: {
-                type: Object,
-                required: true,
-            },
-        },
+    props: {
+      thread: {
+        type: Object,
+        required: true,
+      },
+    },
 
-        computed: {
-            hasTitle() {
-                return Boolean(this.title);
-            },
+    computed: {
+      hasTitle() {
+        return Boolean(this.title);
+      },
 
-            title() {
-                const { body } = this.thread;
-                const { title } = body;
+      title() {
+        const { body } = this.thread;
+        const { title } = body;
 
-                return title;
-            },
-        },
+        return title;
+      },
+    },
 
-    };
+  };
 </script>

@@ -1,50 +1,50 @@
 @import "variables";
 
 %card-shadow {
-    position: relative;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.24), 0 3px 1px -2px rgba(0, 0, 0, 0.22), 0 1px 5px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.24), 0 3px 1px -2px rgba(0, 0, 0, 0.22), 0 1px 5px 0 rgba(0, 0, 0, 0.3);
 
+  &::after {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    content: "";
+    transition: opacity .3s #{$transition-smooth};
+    opacity: 0;
+    border-radius: inherit;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.24), 0 1px 10px 0 rgba(0, 0, 0, 0.22), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  }
+
+  &:hover {
     &::after {
-        position: absolute;
-        z-index: -1;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        content: '';
-        transition: opacity .3s #{$transition-smooth};
-        opacity: 0;
-        border-radius: inherit;
-        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.24), 0 1px 10px 0 rgba(0, 0, 0, 0.22), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+      opacity: 1;
     }
-
-    &:hover {
-        &::after {
-            opacity: 1;
-        }
-    }
+  }
 
 }
 
 %container-base {
-    display: grid;
-    grid-gap: 1em;
-    margin: 1em;
-    align-items: center;
+  display: grid;
+  align-items: center;
+  margin: 1em;
+  grid-gap: 1em;
 
-    @media #{$large-and-up} {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
+  @media #{$large-and-up} {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 
-    @media #{$large-and-down} {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  @media #{$large-and-down} {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
-    @media #{$medium-and-down} {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  @media #{$medium-and-down} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-    @media #{$small-and-down} {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
+  @media #{$small-and-down} {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 }

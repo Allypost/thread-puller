@@ -1,52 +1,52 @@
 <template>
-    <thread-video
-        v-if="isVideo"
-        :file="file"
-    />
+  <thread-video
+    v-if="isVideo"
+    :file="file"
+  />
 
-    <thread-image
-        v-else
-        :src-set="srcset"
-        :alt="alt"
-    />
+  <thread-image
+    v-else
+    :alt="alt"
+    :src-set="srcset"
+  />
 </template>
 
 <script>
-    import ThreadVideo from './components/Video';
-    import ThreadImage from './components/Image';
+  import ThreadImage from './components/Image';
+  import ThreadVideo from './components/Video';
 
-    export default {
-        name: 'ThreadMedia',
+  export default {
+    name: 'ThreadMedia',
 
-        components: { ThreadImage, ThreadVideo },
+    components: { ThreadImage, ThreadVideo },
 
-        props: {
-            file: {
-                type: Object,
-                required: true,
-            },
-        },
+    props: {
+      file: {
+        type: Object,
+        required: true,
+      },
+    },
 
-        computed: {
-            isVideo() {
-                return this.file.meta.isVideo;
-            },
+    computed: {
+      isVideo() {
+        return this.file.meta.isVideo;
+      },
 
-            alt() {
-                const { name } = this.file;
+      alt() {
+        const { name } = this.file;
 
-                return name;
-            },
+        return name;
+      },
 
-            srcset() {
-                const { src } = this.file;
-                const { local, remote } = src;
+      srcset() {
+        const { src } = this.file;
+        const { local, remote } = src;
 
-                return {
-                    local: local.full,
-                    remote: remote.full,
-                };
-            },
-        },
-    };
+        return {
+          local: local.full,
+          remote: remote.full,
+        };
+      },
+    },
+  };
 </script>

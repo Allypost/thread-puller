@@ -1,144 +1,148 @@
 <style lang="scss" scoped>
-    @import "../../assets/style/modules/include";
+  @import "../../assets/style/modules/include";
 
-    %text-shadow {
-        text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
+  %text-shadow {
+    text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
+  }
+
+  h1, h2 {
+    @extend %text-shadow;
+    @include no-select();
+  }
+
+  h1 {
+    font-size: 3em;
+    margin: .67em 0;
+    text-align: center;
+
+    > a {
+      text-shadow: none;
     }
+  }
 
-    h1, h2 {
-        @extend %text-shadow;
-        @include no-select();
-    }
-
-    h1 {
-        text-align: center;
-        font-size: 3em;
-        margin: .67em 0;
-
-        > a {
-            text-shadow: none;
-        }
-    }
-
-    h2 {
-        margin-top: -.5em;
-        margin-bottom: 1.2em;
-    }
+  h2 {
+    margin-top: -.5em;
+    margin-bottom: 1.2em;
+  }
 </style>
 
 <template>
-    <div>
-        <threadpuller-settings />
-        <thread-backlinks
-            :back-link="{ name: 'Boards' }"
-            :external-href="externalHref"
-        />
-        <h1>Board: {{ board.link }}</h1>
-        <h2 v-html="board.description" />
+  <div>
+    <threadpuller-settings />
+    <thread-backlinks
+      :back-link="{ name: 'Boards' }"
+      :external-href="externalHref"
+    />
+    <h1>Board: {{ board.link }}</h1>
+    <h2 v-html="board.description" />
 
-        <threads-container />
-    </div>
+    <threads-container />
+  </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
-    import { AllHtmlEntities as HTMLEntities } from 'html-entities';
-    import ThreadBacklinks from '../../components/ThreadBacklinks';
-    import ThreadsContainer from '../../components/threads/Container';
-    import ThreadpullerSettings from '../../components/settings/Container.vue';
-    import PepeImage from '../../assets/images/pepe.png';
+  import {
+    AllHtmlEntities as HTMLEntities,
+  } from 'html-entities';
+  import {
+    mapGetters,
+  } from 'vuex';
+  import PepeImage from '../../assets/images/pepe.png';
+  import ThreadBacklinks from '../../components/ThreadBacklinks';
+  import ThreadpullerSettings from '../../components/settings/Container.vue';
+  import ThreadsContainer from '../../components/threads/Container';
 
-    function getBoard(store, boardName) {
-        return store.getters[ 'boards/getOne' ](boardName);
+  function getBoard(store, boardName) {
+    return store.getters[ 'boards/getOne' ](boardName);
+  }
+
+  async function fetchBoard(store, { isServer, boardName, cached = false }) {
+    const board = getBoard(store, boardName);
+
+    if (board && cached) {
+      return board;
     }
 
-    async function fetchBoard(store, { isServer, boardName, cached = false }) {
-        const board = getBoard(store, boardName);
+    await store.dispatch('boards/fetchOne', { isServer, boardName });
 
-        if (board && cached) {
-            return board;
-        }
+    return getBoard(store, boardName);
+  }
 
-        await store.dispatch('boards/fetchOne', { isServer, boardName });
+  async function boardExists(store, { isServer, boardName, cached = true }) {
+    const board = await fetchBoard(store, { isServer, boardName, cached });
 
-        return getBoard(store, boardName);
-    }
+    return Boolean(board);
+  }
 
-    async function boardExists(store, { isServer, boardName, cached = true }) {
-        const board = await fetchBoard(store, { isServer, boardName, cached });
+  function e(name, content) {
+    return { hid: name, name, content };
+  }
 
-        return Boolean(board);
-    }
+  export default {
+    name: 'Threads',
 
-    function e(name, content) {
-        return { hid: name, name, content };
-    }
+    async validate({ params, store }) {
+      const { board: boardName } = params;
+      const isServer = process.server;
 
-    export default {
-        name: 'Threads',
+      return await boardExists(store, { boardName, isServer });
+    },
 
-        async validate({ params, store }) {
-            const { board: boardName } = params;
-            const isServer = process.server;
+    components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
 
-            return await boardExists(store, { boardName, isServer });
-        },
+    async fetch({ store, params }) {
+      const { board: boardName } = params;
+      const isServer = process.server;
 
-        components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
+      await fetchBoard(store, { boardName, isServer });
 
-        async fetch({ store, params }) {
-            const { board: boardName } = params;
-            const isServer = process.server;
+      await store.dispatch('threads/fetch', { isServer, boardName });
+    },
 
-            await fetchBoard(store, { boardName, isServer });
+    computed: {
+      boardName() {
+        //noinspection JSUnresolvedVariable
+        const { params } = this.$route;
+        const { board } = params;
 
-            await store.dispatch('threads/fetch', { isServer, boardName });
-        },
+        return board;
+      },
 
-        computed: {
-            boardName() {
-                //noinspection JSUnresolvedVariable
-                const { params } = this.$route;
-                const { board } = params;
+      externalHref() {
+        return `https://boards.4chan.org/${ this.boardName }/`;
+      },
 
-                return board;
-            },
+      board() {
+        return this.getBoard(this.boardName);
+      },
 
-            externalHref() {
-                return `https://boards.4chan.org/${ this.boardName }/`;
-            },
+      ...mapGetters({
+        getBoard: 'boards/getOne',
+      }),
+    },
 
-            board() {
-                return this.getBoard(this.boardName);
-            },
+    methods: {
+      decodeEntities(text) {
+        const htmlEntities = new HTMLEntities();
+        return htmlEntities.decode(text);
+      },
+    },
 
-            ...mapGetters({
-                getBoard: 'boards/getOne',
-            }),
-        },
+    head() {
+      const { link, title, description } = this.board;
 
-        methods: {
-            decodeEntities(text) {
-                const htmlEntities = new HTMLEntities();
-                return htmlEntities.decode(text);
-            },
-        },
+      const decodedDescription = this.decodeEntities(description);
 
-        head() {
-            const { link, title, description } = this.board;
+      return {
+        title: link,
+        meta: [
+          e('og:title', `${ link } - ${ title } | ThreadPuller`),
+          e('og:description', decodedDescription),
+          e('description', decodedDescription),
+          e('og:image', PepeImage),
+        ],
+      };
+    },
 
-            const decodedDescription = this.decodeEntities(description);
-
-            return {
-                title: link,
-                meta: [
-                    e('og:title', `${ link } - ${ title } | ThreadPuller`),
-                    e('og:description', decodedDescription),
-                    e('description', decodedDescription),
-                    e('og:image', PepeImage),
-                ],
-            };
-        },
-
-    };
+  };
 </script>
