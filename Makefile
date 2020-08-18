@@ -19,6 +19,13 @@ dev: $(NODE_MODULES)
 down:
 	docker/compose down
 
+lint:
+ifdef fix
+	docker/yarn lint --fix
+else
+	docker/yarn lint
+endif
+
 install: clean yarn-install
 
 yarn-install:
