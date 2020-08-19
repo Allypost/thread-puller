@@ -5,7 +5,7 @@ import express from 'express';
 import Boards from '../../lib/Fetchers/4chan/Boards';
 import Posts from '../../lib/Fetchers/4chan/Posts';
 import Threads from '../../lib/Fetchers/4chan/Threads';
-import PostInfo from '../../lib/Formatters/PostInfo';
+import PostInfo from '../../lib/Formatters/4chan/PostInfo';
 import {
   Fuse,
 } from '../../lib/Search/Fuse';
