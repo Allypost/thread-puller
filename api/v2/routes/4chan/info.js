@@ -16,7 +16,7 @@ router.get('/boards', async () => {
   return await Boards.get();
 });
 
-router.get('/board/:board', async ({ params }) => {
+router.get('/boards/:board', async ({ params }) => {
   const { board } = params;
 
   return await Boards.info(board);
@@ -28,7 +28,7 @@ router.get('/boards/:board/threads', async ({ params }) => {
   return await Threads.get(board);
 });
 
-router.get('/boards/:board/thread/:thread', async ({ params }) => {
+router.get('/boards/:board/threads/:thread/posts', async ({ params }) => {
   const { board, thread } = params;
 
   return await Posts.get(board, thread);
