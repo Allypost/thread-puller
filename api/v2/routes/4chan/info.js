@@ -2,11 +2,13 @@ import Boards from '../../../../lib/Fetchers/4chan/Boards';
 import Posts from '../../../../lib/Fetchers/4chan/Posts';
 import Threads from '../../../../lib/Fetchers/4chan/Threads';
 import {
+  HttpStatus,
+} from '../../../../lib/Helpers/Http';
+import {
   Fuse,
 } from '../../../../lib/Search/Fuse';
 import {
   ApiError,
-  HttpStatus,
   Router,
 } from '../../../helpers/route';
 
@@ -114,7 +116,7 @@ router.post('/search/threads', async ({ body }) => {
   if (!query || 3 >= query.length) {
     throw new ApiError(
       'Search term must be at least 3 characters long',
-      HttpStatus.Names.Conflict,
+      HttpStatus.Error.Client.Conflict,
     );
   }
 
@@ -161,14 +163,14 @@ router.post('/search/posts', async ({ body }) => {
   if (!query || 3 >= query.length) {
     throw new ApiError(
       'Search term must be at least 3 characters long',
-      HttpStatus.Names.Conflict,
+      HttpStatus.Error.Client.Conflict,
     );
   }
 
   if (!board) {
     throw new ApiError(
       'The board must be set',
-      HttpStatus.Names.Conflict,
+      HttpStatus.Error.Client.Conflict,
     );
   }
 

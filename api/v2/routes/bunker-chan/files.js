@@ -3,6 +3,9 @@ import consola from 'consola';
 import {
   Router,
 } from 'express';
+import {
+  HttpStatus,
+} from '../../../../lib/Helpers/Http';
 
 const router = new Router();
 
@@ -31,6 +34,8 @@ router.get('/.media/:resource', async (req, res) => {
     response.data.pipe(res);
   } catch (e) {
     consola.error('image fetch error', e);
+    res.status(HttpStatus.Error.Server.InternalServerError);
+    res.end();
   }
 });
 
