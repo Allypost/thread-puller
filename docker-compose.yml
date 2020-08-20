@@ -1,22 +1,22 @@
 version: '3'
 services:
-    web:
-        build:
-            context: .
-            dockerfile: .docker/node/Dockerfile
-        restart: always
-        volumes:
-            - .:/web
-        depends_on:
-            - redis
-        env_file:
-          - .env
-        command:
-            "npm run start"
+  web:
+    build:
+      context: .
+      dockerfile: .docker/node/Dockerfile
+    restart: always
+    volumes:
+      - .:/web
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    command:
+      "npm run start"
 
-    redis:
-        build: .docker/redis
-        restart: always
-        volumes:
-            - .docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
-            - .storage/redis:/data
+  redis:
+    build: .docker/redis
+    restart: always
+    volumes:
+      - .docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - .storage/redis:/data
