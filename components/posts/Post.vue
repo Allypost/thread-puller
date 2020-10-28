@@ -1,59 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
-
-  .resource {
-    @extend %card-shadow;
-
-    display: grid;
-    overflow: hidden;
-    transform: translateZ(0);
-    border-radius: 8px;
-    background: #37474f;
-    grid-template-rows: 1fr 3em;
-
-    footer {
-      display: grid;
-      align-items: center;
-      padding: 0 .69em;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 1.8em;
-      grid-template-areas: "replies post-btn mentions link";
-      grid-column-gap: .5em;
-
-      .footer-button {
-        padding: .5em 1em;
-        transition-timing-function: $transition-smooth;
-        transition-duration: .25s;
-        transition-property: box-shadow, color;
-        text-decoration: none;
-        border: 1px solid #263238;
-        border-radius: 6px;
-      }
-
-      .replies {
-        grid-area: replies;
-      }
-
-      .mentions {
-        grid-area: mentions;
-      }
-
-      .post-btn {
-        background-color: $background-color;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
-        grid-area: post-btn;
-      }
-
-      .link {
-        display: block;
-        padding: 0;
-        border: none;
-        grid-area: link;
-      }
-    }
-
-  }
-</style>
-
 <template>
   <article
     :id="`p${ post.id }`"
@@ -137,3 +81,59 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../assets/style/modules/include";
+
+  .resource {
+    @extend %card-shadow;
+
+    display: grid;
+    overflow: hidden;
+    transform: translateZ(0);
+    border-radius: 8px;
+    background: #37474f;
+    grid-template-rows: 1fr 3em;
+
+    footer {
+      display: grid;
+      align-items: center;
+      padding: 0 .69em;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 1.8em;
+      grid-template-areas: "replies post-btn mentions link";
+      grid-column-gap: .5em;
+
+      .footer-button {
+        padding: .5em 1em;
+        transition-timing-function: $transition-smooth;
+        transition-duration: .25s;
+        transition-property: box-shadow, color;
+        text-decoration: none;
+        border: 1px solid #263238;
+        border-radius: 6px;
+      }
+
+      .replies {
+        grid-area: replies;
+      }
+
+      .mentions {
+        grid-area: mentions;
+      }
+
+      .post-btn {
+        background-color: $background-color;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+        grid-area: post-btn;
+      }
+
+      .link {
+        display: block;
+        padding: 0;
+        border: none;
+        grid-area: link;
+      }
+    }
+
+  }
+</style>

@@ -1,36 +1,3 @@
-<style lang="scss" scoped>
-  @import "../assets/style/modules/include";
-
-  .peers {
-    font-weight: bold;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    display: none;
-    padding: .2em .6em;
-    border-top-right-radius: 5px;
-    background: $background-color;
-
-    @include no-select();
-
-    &.show {
-      display: inline-block;
-    }
-
-    .help-text {
-      display: none;
-    }
-
-    &:hover {
-
-      .help-text {
-        display: inline;
-      }
-
-    }
-  }
-</style>
-
 <template>
   <div
     :class="{ show }"
@@ -80,3 +47,36 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../assets/style/modules/include";
+
+  .peers {
+    font-weight: bold;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: none;
+    padding: .2em .6em;
+    border-top-right-radius: 5px;
+    background: $background-color;
+
+    @include no-select();
+
+    &.show {
+      display: inline-block;
+    }
+
+    .help-text {
+      display: none;
+    }
+
+    &:hover {
+
+      .help-text {
+        display: inline;
+      }
+
+    }
+  }
+</style>

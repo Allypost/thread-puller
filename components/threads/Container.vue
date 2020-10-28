@@ -1,28 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
-
-  .container {
-    @extend %container-base;
-    margin-top: 0;
-  }
-
-  .sort-container {
-    margin: 1em 1em .5em;
-    text-align: right;
-
-    select {
-      font-size: 100%;
-      padding: .2em .3em;
-      color: $text-color;
-      border-width: 1px;
-      border-style: solid;
-      border-color: currentColor;
-      border-radius: 3px;
-      background: none;
-    }
-  }
-</style>
-
 <template>
   <div>
     <SearchInput
@@ -138,3 +113,28 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../assets/style/modules/include";
+
+  .container {
+    @extend %container-base;
+    margin-top: 0;
+  }
+
+  .sort-container {
+    margin: 1em 1em .5em;
+    text-align: right;
+
+    select {
+      font-size: 100%;
+      padding: .2em .3em;
+      color: $text-color;
+      border-width: 1px;
+      border-style: solid;
+      border-color: currentColor;
+      border-radius: 3px;
+      background: none;
+    }
+  }
+</style>

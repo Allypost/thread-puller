@@ -1,63 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
-
-  .container {
-    @extend %container-base;
-    align-items: end;
-  }
-
-  #focused-post-modal {
-    cursor: zoom-out;
-    background-color: rgba(0, 0, 0, .5);
-
-    .thread-image {
-      @include no-select();
-
-      display: grid;
-
-      align-items: center;
-      height: calc(98vh - 130px);
-
-      margin: 0 auto;
-      text-align: center;
-    }
-  }
-</style>
-<style lang="scss">
-  @import "../../assets/style/modules/include";
-
-  #focused-post-modal {
-
-    .sweet-modal {
-      min-width: 90vw;
-      max-width: 98vw;
-      max-height: 98vh;
-      padding: .5em;
-      background: $background-color;
-
-      .sweet-content {
-        padding: 64px 0 0 0;
-      }
-
-      .thread-image {
-
-        > img {
-          @extend %card-shadow;
-
-          width: auto;
-          min-width: 50%;
-          max-width: 100%;
-          // min-height: 100%;
-          margin: 0 auto;
-        }
-
-      }
-
-    }
-
-  }
-</style>
-
 <template>
   <div
     :class="{ hasImageFocused: Boolean(focusedImage) }"
@@ -159,3 +99,62 @@
   };
 </script>
 
+<style lang="scss" scoped>
+  @import "../../assets/style/modules/include";
+
+  .container {
+    @extend %container-base;
+    align-items: end;
+  }
+
+  #focused-post-modal {
+    cursor: zoom-out;
+    background-color: rgba(0, 0, 0, .5);
+
+    .thread-image {
+      @include no-select();
+
+      display: grid;
+
+      align-items: center;
+      height: calc(98vh - 130px);
+
+      margin: 0 auto;
+      text-align: center;
+    }
+  }
+</style>
+<style lang="scss">
+  @import "../../assets/style/modules/include";
+
+  #focused-post-modal {
+
+    .sweet-modal {
+      min-width: 90vw;
+      max-width: 98vw;
+      max-height: 98vh;
+      padding: .5em;
+      background: $background-color;
+
+      .sweet-content {
+        padding: 64px 0 0 0;
+      }
+
+      .thread-image {
+
+        > img {
+          @extend %card-shadow;
+
+          width: auto;
+          min-width: 50%;
+          max-width: 100%;
+          // min-height: 100%;
+          margin: 0 auto;
+        }
+
+      }
+
+    }
+
+  }
+</style>

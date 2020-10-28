@@ -1,3 +1,45 @@
+<template>
+  <section
+    v-linkified
+    :class="{isLong, expanded}"
+    class="description"
+    @click="expanded = !expanded"
+    v-html="description"
+  />
+</template>
+
+<script>
+  export default {
+    name: 'ThreadDescription',
+
+    props: {
+      description: {
+        type: String,
+        required: true,
+      },
+    },
+
+    data() {
+      return {
+        isLong: false,
+        expanded: false,
+      };
+    },
+
+    computed: {
+
+      hasDescription() {
+        return Boolean(this.description);
+      },
+
+    },
+
+    mounted() {
+      this.isLong = 164 < this.$el.scrollHeight;
+    },
+  };
+</script>
+
 <style lang="scss" scoped>
   $content-height: 140px;
 
@@ -41,45 +83,3 @@
     white-space: pre-wrap;
   }
 </style>
-
-<template>
-  <section
-    v-linkified
-    :class="{isLong, expanded}"
-    class="description"
-    @click="expanded = !expanded"
-    v-html="description"
-  />
-</template>
-
-<script>
-  export default {
-    name: 'ThreadDescription',
-
-    props: {
-      description: {
-        type: String,
-        required: true,
-      },
-    },
-
-    data() {
-      return {
-        isLong: false,
-        expanded: false,
-      };
-    },
-
-    computed: {
-
-      hasDescription() {
-        return Boolean(this.description);
-      },
-
-    },
-
-    mounted() {
-      this.isLong = 164 < this.$el.scrollHeight;
-    },
-  };
-</script>

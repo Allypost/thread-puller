@@ -1,3 +1,45 @@
+<template>
+  <div
+    class="checkbox-container"
+  >
+    <input
+      :id="id"
+      v-model="value"
+      :name="id"
+      type="checkbox"
+      @input="$emit('input', $event.target.checked)"
+    >
+    <label :for="id">{{ name }}</label>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'ThreadpullerCheckbox',
+
+    props: {
+      name: {
+        type: String,
+        required: true,
+      },
+
+      value: {
+        type: Boolean,
+        default: false,
+      },
+    },
+
+    computed: {
+      id() {
+        const timePart = Number(new Date()).toString(36);
+        const randPart = Math.random().toString(36).slice(2);
+
+        return `${ this.name }-${ timePart }-${ randPart }`;
+      },
+    },
+  };
+</script>
+
 <style lang="scss" scoped>
   @import "../../../assets/style/modules/include";
 
@@ -64,45 +106,3 @@
     }
   }
 </style>
-
-<template>
-  <div
-    class="checkbox-container"
-  >
-    <input
-      :id="id"
-      v-model="value"
-      :name="id"
-      type="checkbox"
-      @input="$emit('input', $event.target.checked)"
-    >
-    <label :for="id">{{ name }}</label>
-  </div>
-</template>
-
-<script>
-  export default {
-    name: 'ThreadpullerCheckbox',
-
-    props: {
-      name: {
-        type: String,
-        required: true,
-      },
-
-      value: {
-        type: Boolean,
-        default: false,
-      },
-    },
-
-    computed: {
-      id() {
-        const timePart = Number(new Date()).toString(36);
-        const randPart = Math.random().toString(36).slice(2);
-
-        return `${ this.name }-${ timePart }-${ randPart }`;
-      },
-    },
-  };
-</script>

@@ -1,27 +1,3 @@
-<style lang="scss" scoped>
-  @import "../assets/style/modules/include";
-
-  .container {
-    text-align: left;
-
-    > * {
-      cursor: default;
-    }
-  }
-
-  .focus-indicator {
-    font-weight: bold;
-    transition: opacity .1s ease-out;
-    opacity: 0;
-    color: $warning-color;
-
-    &.focused {
-      cursor: help;
-      opacity: 1;
-    }
-  }
-</style>
-
 <template>
   <div class="container">
     <h4>Currently online: {{ usersOnPage }}</h4>
@@ -176,3 +152,27 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../assets/style/modules/include";
+
+  .container {
+    text-align: left;
+
+    > * {
+      cursor: default;
+    }
+  }
+
+  .focus-indicator {
+    font-weight: bold;
+    transition: opacity .1s ease-out;
+    opacity: 0;
+    color: $warning-color;
+
+    &.focused {
+      cursor: help;
+      opacity: 1;
+    }
+  }
+</style>

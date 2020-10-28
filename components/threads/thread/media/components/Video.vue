@@ -1,9 +1,3 @@
-<style>
-  video {
-    width: 100%;
-  }
-</style>
-
 <template>
   <video
     :autoplay="vAutoplay"
@@ -141,3 +135,9 @@
     },
   };
 </script>
+
+<style>
+  video {
+    width: 100%;
+  }
+</style>

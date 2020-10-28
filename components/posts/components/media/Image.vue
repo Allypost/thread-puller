@@ -1,9 +1,3 @@
-<style lang="scss" scoped>
-  .expandable-image {
-    cursor: zoom-in;
-  }
-</style>
-
 <template>
   <thread-image
     :alt="file.name"
@@ -118,3 +112,9 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  .expandable-image {
+    cursor: zoom-in;
+  }
+</style>

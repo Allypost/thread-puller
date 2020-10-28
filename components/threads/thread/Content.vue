@@ -1,38 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../../assets/style/modules/include";
-
-  $content-height: 140px;
-
-  .content {
-    display: grid;
-    overflow: hidden;
-    min-height: $content-height;
-    color: $text-color;
-    border-radius: 6px 6px 0 0;
-    background-color: $board-content-background-color;
-    grid-template-columns: [media] minmax(0, 1fr) [description] minmax(0, 2fr);
-    grid-template-areas: "media description";
-
-    &[data-no-description] {
-      align-items: center;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);
-      grid-template-areas: "_ media __";
-    }
-
-    &[data-no-file] {
-      align-items: center;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 4fr) minmax(0, 1fr);
-      grid-template-areas: "_ description __";
-    }
-
-    &.extended {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "media" "description";
-    }
-
-  }
-</style>
-
 <template>
   <section
     :class="{ extended }"
@@ -95,3 +60,38 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../../assets/style/modules/include";
+
+  $content-height: 140px;
+
+  .content {
+    display: grid;
+    overflow: hidden;
+    min-height: $content-height;
+    color: $text-color;
+    border-radius: 6px 6px 0 0;
+    background-color: $board-content-background-color;
+    grid-template-columns: [media] minmax(0, 1fr) [description] minmax(0, 2fr);
+    grid-template-areas: "media description";
+
+    &[data-no-description] {
+      align-items: center;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);
+      grid-template-areas: "_ media __";
+    }
+
+    &[data-no-file] {
+      align-items: center;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 4fr) minmax(0, 1fr);
+      grid-template-areas: "_ description __";
+    }
+
+    &.extended {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "media" "description";
+    }
+
+  }
+</style>

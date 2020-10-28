@@ -1,31 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../../../../assets/style/modules/include";
-
-  .img-container {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-  }
-
-  .img-spinner {
-    position: absolute;
-    top: .5em;
-    right: .5em;
-  }
-
-  img {
-    width: 100%;
-    transition: .25s filter ease-out;
-    filter: none;
-
-    &.isLoading {
-      filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius="2");
-      filter: blur(2px);
-    }
-  }
-
-</style>
-
 <template>
   <span class="img-container">
     <img
@@ -99,3 +71,31 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../../../../assets/style/modules/include";
+
+  .img-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .img-spinner {
+    position: absolute;
+    top: .5em;
+    right: .5em;
+  }
+
+  img {
+    width: 100%;
+    transition: .25s filter ease-out;
+    filter: none;
+
+    &.isLoading {
+      filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius="2");
+      filter: blur(2px);
+    }
+  }
+
+</style>

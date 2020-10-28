@@ -1,24 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../../assets/style/modules/include";
-
-  header {
-    margin-bottom: .3em;
-  }
-
-  .title {
-    font-size: 1.3em;
-    font-weight: 700;
-    margin: 0;
-    text-align: center;
-    word-break: break-word;
-    color: invert($text-color);
-  }
-
-  .no-title {
-    font-weight: normal;
-  }
-</style>
-
 <template>
   <header>
     <n-link
@@ -63,3 +42,24 @@
 
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../../assets/style/modules/include";
+
+  header {
+    margin-bottom: .3em;
+  }
+
+  .title {
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+    word-break: break-word;
+    color: invert($text-color);
+  }
+
+  .no-title {
+    font-weight: normal;
+  }
+</style>

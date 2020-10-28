@@ -1,25 +1,3 @@
-<style lang="scss" scoped>
-  @import "../assets/style/modules/include";
-
-  .container {
-    > h1,
-    > h2 {
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 1), 0 0 5px #000000, 3px 3px 8px #000000;
-
-      a {
-        text-shadow: none;
-      }
-
-      @include no-select();
-    }
-
-    > h1 + h2 {
-      margin-top: -.5em;
-      margin-bottom: 1.2em;
-    }
-  }
-</style>
-
 <template>
   <div class="container">
     <h1>
@@ -64,3 +42,25 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../assets/style/modules/include";
+
+  .container {
+    > h1,
+    > h2 {
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 1), 0 0 5px #000000, 3px 3px 8px #000000;
+
+      a {
+        text-shadow: none;
+      }
+
+      @include no-select();
+    }
+
+    > h1 + h2 {
+      margin-top: -.5em;
+      margin-bottom: 1.2em;
+    }
+  }
+</style>

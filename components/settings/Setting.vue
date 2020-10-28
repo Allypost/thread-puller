@@ -1,29 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
-
-  .setting-container {
-    @extend %card-shadow;
-
-    margin: .5em 0;
-    padding: 1em;
-    color: $background-color;
-    border-radius: 5px;
-    background: $settings-background-color;
-
-    & > * {
-      display: block;
-      margin: .2em auto;
-    }
-
-    .changed-notice {
-      font-size: .8em;
-      opacity: .7;
-
-      @include no-select();
-    }
-  }
-</style>
-
 <template>
   <div class="setting-container">
     <h3>
@@ -138,3 +112,29 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../assets/style/modules/include";
+
+  .setting-container {
+    @extend %card-shadow;
+
+    margin: .5em 0;
+    padding: 1em;
+    color: $background-color;
+    border-radius: 5px;
+    background: $settings-background-color;
+
+    & > * {
+      display: block;
+      margin: .2em auto;
+    }
+
+    .changed-notice {
+      font-size: .8em;
+      opacity: .7;
+
+      @include no-select();
+    }
+  }
+</style>

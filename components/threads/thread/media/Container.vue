@@ -1,23 +1,3 @@
-<style lang="scss" scoped>
-  .container {
-    overflow: hidden;
-    max-height: 140px;
-
-    &.expanded {
-      max-height: initial;
-    }
-
-    .img {
-      width: 100%;
-      cursor: zoom-in;
-
-      &.expanded {
-        cursor: zoom-out;
-      }
-    }
-  }
-</style>
-
 <template>
   <section
     :class="{ expanded }"
@@ -99,3 +79,23 @@
 
   };
 </script>
+
+<style lang="scss" scoped>
+  .container {
+    overflow: hidden;
+    max-height: 140px;
+
+    &.expanded {
+      max-height: initial;
+    }
+
+    .img {
+      width: 100%;
+      cursor: zoom-in;
+
+      &.expanded {
+        cursor: zoom-out;
+      }
+    }
+  }
+</style>

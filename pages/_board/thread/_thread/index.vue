@@ -1,35 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../../../assets/style/modules/include";
-
-  %text-shadow {
-    text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
-  }
-
-  $header-font-size: 3em;
-
-  h1, h2 {
-    @extend %text-shadow;
-    @include no-select();
-  }
-
-  h1 {
-    font-size: $header-font-size;
-    margin: .67em 0;
-    margin-bottom: 0;
-    text-align: center;
-
-    > a {
-      text-shadow: none;
-    }
-  }
-
-  h2 {
-    font-size: #{$header-font-size * .8};
-    margin-top: 0;
-    color: $text-color;
-  }
-</style>
-
 <template>
   <div>
     <threadpuller-settings />
@@ -216,3 +184,35 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../../../assets/style/modules/include";
+
+  %text-shadow {
+    text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
+  }
+
+  $header-font-size: 3em;
+
+  h1, h2 {
+    @extend %text-shadow;
+    @include no-select();
+  }
+
+  h1 {
+    font-size: $header-font-size;
+    margin: .67em 0;
+    margin-bottom: 0;
+    text-align: center;
+
+    > a {
+      text-shadow: none;
+    }
+  }
+
+  h2 {
+    font-size: #{$header-font-size * .8};
+    margin-top: 0;
+    color: $text-color;
+  }
+</style>

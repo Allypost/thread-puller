@@ -1,24 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
-
-  .board {
-    font-size: 1.4em;
-    display: grid;
-    padding: .5em;
-    border-radius: 4px;
-    background-color: $board-background-color;
-    grid-template-rows: auto 1fr 1.5em;
-  }
-
-  footer {
-    font-size: .8em;
-    display: grid;
-    align-items: center;
-    border-radius: 0 0 6px 6px;
-    background-color: $board-footer-background-color;
-  }
-</style>
-
 <template>
   <article
     :id="id"
@@ -104,3 +83,24 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../assets/style/modules/include";
+
+  .board {
+    font-size: 1.4em;
+    display: grid;
+    padding: .5em;
+    border-radius: 4px;
+    background-color: $board-background-color;
+    grid-template-rows: auto 1fr 1.5em;
+  }
+
+  footer {
+    font-size: .8em;
+    display: grid;
+    align-items: center;
+    border-radius: 0 0 6px 6px;
+    background-color: $board-footer-background-color;
+  }
+</style>

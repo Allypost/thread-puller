@@ -1,13 +1,3 @@
-<style lang="scss" scoped>
-  @import "../assets/style/modules/include";
-
-  .hidden {
-    @include no-select();
-
-    opacity: 0;
-  }
-</style>
-
 <template>
   <client-only>
     <div>
@@ -145,3 +135,13 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../assets/style/modules/include";
+
+  .hidden {
+    @include no-select();
+
+    opacity: 0;
+  }
+</style>

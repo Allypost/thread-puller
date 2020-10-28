@@ -1,11 +1,3 @@
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
-
-  .container {
-    @extend %container-base;
-  }
-</style>
-
 <template>
   <div>
     <SearchInput
@@ -73,3 +65,11 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../assets/style/modules/include";
+
+  .container {
+    @extend %container-base;
+  }
+</style>
