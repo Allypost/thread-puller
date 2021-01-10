@@ -5,8 +5,8 @@ function meta(name, content) {
 module.exports = {
   mode: 'universal',
   /*
-     ** Headers of the page
-     */
+   ** Headers of the page
+   */
   head: {
     title: process.env.npm_package_name || '',
     meta: [
@@ -41,21 +41,23 @@ module.exports = {
   },
 
   /*
-     ** Customize the progress-bar color
-     */
+   ** Customize the progress-bar color
+   */
   loading: {
     color: '#fafafa',
     failedColor: '#e53935',
     height: '8px',
     continuous: true,
   },
+
   /*
-     ** Global CSS
-     */
+   ** Global CSS
+   */
   css: [],
+
   /*
-     ** Plugins to load before mounting the App
-     */
+   ** Plugins to load before mounting the App
+   */
   plugins: [
     { src: '~plugins/add-client-polyfill.js', ssr: false },
     '~/plugins/load-settings-from-cookie',
@@ -64,35 +66,39 @@ module.exports = {
     { src: '~plugins/share-vuex-settings-mutations.js', ssr: false },
     { src: '~plugins/analytics/goatcounter.js', ssr: false },
   ],
+
   /*
-     ** Nuxt.js dev-modules
-     */
+   ** Nuxt.js dev-modules
+   */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@aceforth/nuxt-optimized-images',
   ],
+
   /*
-     ** Nuxt.js modules
-     */
+   ** Nuxt.js modules
+   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     'nuxt-svg-loader',
     [ 'cookie-universal-nuxt', { parseJSON: false } ],
-    [ '@nuxtjs/router', { keepDefaultRouter: true } ],
+    '@nuxtjs/router-extras',
     '~/modules/4chan/refresher',
     '~/modules/presence',
   ],
+
   /*
-     ** Axios module configuration
-     ** See https://axios.nuxtjs.org/options
-     */
+   ** Axios module configuration
+   ** See https://axios.nuxtjs.org/options
+   */
   axios: {},
+
   /*
-     ** Build configuration
-     */
+   ** Build configuration
+   */
   build: {
     loaders: {
       vue: {
@@ -114,15 +120,6 @@ module.exports = {
       },
     },
 
-    filenames: {
-      app: ({ isDev }) => isDev ? '[name].js' : '[chunkhash].js',
-      chunk: ({ isDev }) => isDev ? '[name].js' : '[id].[chunkhash].js',
-      css: ({ isDev }) => isDev ? '[name].css' : '[contenthash].css',
-      img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[hash].[ext]',
-      font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[hash].[ext]',
-      video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[hash].[ext]',
-    },
-
     optimization: {
       concatenateModules: true,
       moduleIds: 'hashed',
@@ -133,10 +130,18 @@ module.exports = {
         name: false,
       },
     },
+
+    splitChunks: {
+      layouts: true,
+      pages: true,
+      commons: true,
+    },
   },
+
   optimizedImages: {
     optimizeImages: true,
   },
+
   env: {
     THREADPULLER_GOATCOUNTER_URL: process.env.THREADPULLER_GOATCOUNTER_URL,
     THREADPULLER_REPOSITORY_URL: process.env.THREADPULLER_REPOSITORY_URL,

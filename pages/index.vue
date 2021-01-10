@@ -10,6 +10,10 @@
   </div>
 </template>
 
+<router>
+name: Boards
+</router>
+
 <script>
   import PepeImage from '../assets/images/pepe.png';
   import BoardsContainer from '../components/boards/Container';

@@ -12,6 +12,10 @@
   </div>
 </template>
 
+<router>
+name: Threads
+</router>
+
 <script>
   import {
     AllHtmlEntities as HTMLEntities,

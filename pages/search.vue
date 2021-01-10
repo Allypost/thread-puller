@@ -71,6 +71,10 @@
   </div>
 </template>
 
+<router>
+name: Search
+</router>
+
 <script>
   import {
     mapActions,

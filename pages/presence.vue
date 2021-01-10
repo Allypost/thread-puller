@@ -34,6 +34,10 @@
   </div>
 </template>
 
+<router>
+name: Presence
+</router>
+
 <script>
   import {
     mapState,

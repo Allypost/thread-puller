@@ -15,6 +15,10 @@
   </div>
 </template>
 
+<router>
+name: Posts
+</router>
+
 <script>
   import {
     AllHtmlEntities as HTMLEntities,
