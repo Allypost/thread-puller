@@ -1,13 +1,57 @@
 <template>
-  <div class="container">
-    <h1>
-      ThreadPuller - Pull 4chan image threads
-    </h1>
-    <h2>
-      Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.
-    </h2>
-    <boards-container />
-  </div>
+  <app-max-width-container>
+    <v-row class="mt-6">
+      <v-col cols="12">
+        <h1
+          :class="$style.title"
+          class="text-center text-h2"
+        >
+          ThreadPuller - Pull 4chan image threads
+        </h1>
+      </v-col>
+
+      <v-col cols="12">
+        <h2
+          :class="$style.title"
+          class="text-center text-h4"
+        >
+          Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.
+        </h2>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col
+        v-for="board in boards"
+        :key="board.board"
+        cols="12"
+        lg="4"
+        xl="3"
+        xs="6"
+      >
+        <v-card
+          :class="{
+            [$style.card]: true,
+
+            'red': board.nsfw,
+            'lighten-3': !$vuetify.theme.dark,
+            'darken-4': $vuetify.theme.dark,
+          }"
+          :to="{
+            name: 'Threads',
+            params: board,
+          }"
+          elevation="2"
+        >
+          <v-card-title v-text="board.link" />
+
+          <v-card-subtitle v-text="board.title" />
+
+          <v-card-text v-html="board.description" />
+        </v-card>
+      </v-col>
+    </v-row>
+  </app-max-width-container>
 </template>
 
 <router>
@@ -15,8 +59,11 @@ name: Boards
 </router>
 
 <script>
-  import PepeImage from '../assets/images/pepe.png';
-  import BoardsContainer from '../components/boards/Container';
+  import {
+    mapGetters,
+  } from 'vuex';
+  import PepeImage from '~/assets/images/pepe.png';
+  import AppMaxWidthContainer from '~/components/AppMaxWidthContainer';
 
   function e(name, content) {
     return { hid: name, name, content };
@@ -25,12 +72,16 @@ name: Boards
   export default {
     name: 'Boards',
 
-    components: { BoardsContainer },
+    components: { AppMaxWidthContainer },
 
-    async fetch({ store }) {
-      const isServer = process.server;
+    async validate({ store }) {
+      return await store.dispatch('boards/fetch');
+    },
 
-      await store.dispatch('boards/fetch', { isServer });
+    computed: {
+      ...mapGetters({
+        'boards': 'boards/BOARDS',
+      }),
     },
 
     head() {
@@ -47,24 +98,14 @@ name: Boards
   };
 </script>
 
-<style lang="scss" scoped>
-  @import "../assets/style/modules/include";
+<style lang="scss" module>
+  @import "assets/style/modules/include";
 
-  .container {
-    > h1,
-    > h2 {
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 1), 0 0 5px #000000, 3px 3px 8px #000000;
+  .title {
+    @include no-select();
+  }
 
-      a {
-        text-shadow: none;
-      }
-
-      @include no-select();
-    }
-
-    > h1 + h2 {
-      margin-top: -.5em;
-      margin-bottom: 1.2em;
-    }
+  .card {
+    height: 100%;
   }
 </style>

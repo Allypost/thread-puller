@@ -1,18 +1,120 @@
 <template>
-  <div>
-    <threadpuller-settings />
-    <thread-backlinks
-      :back-link="{ name: 'Threads', params: { board: boardName }, hash: hash }"
-      :external-href="externalHref"
-    />
+  <app-max-width-container style="margin-top: 1em;">
+    <v-row>
+      <v-col cols="12">
+        <nuxt-link
+          :to="{ name: 'Threads', params: { board: boardName } }"
+          v-text="'Back'"
+        />
+        |
+        <a
+          :href="externalHref"
+          rel="noopener noreferrer"
+          target="_blank"
+          v-text="'Go to thread'"
+        />
+      </v-col>
+    </v-row>
 
-    <h1>Board:</h1>
-    <h2>/{{ boardName }}/</h2>
-    <h1>Thread:</h1>
-    <h2 v-html="title" />
+    <v-row>
+      <v-col cols="12">
+        <h1>
+          Board: <span v-text="boardName" />
+        </h1>
+      </v-col>
+    </v-row>
 
-    <posts-container />
-  </div>
+    <v-row>
+      <v-col cols="12">
+        <h1>
+          Thread: <span v-text="title" />
+        </h1>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col
+        v-for="post in posts"
+        :key="post.id"
+        cols="12"
+        lg="3"
+        md="4"
+        sm="6"
+      >
+        <v-card
+          :id="`p${post.id}`"
+          :loading="post.loading"
+        >
+          <v-img
+            :aspect-ratio="post.file.dimensions.main.width / post.file.dimensions.main.height"
+            :class="$style.image"
+            :lazy-src="post.file.src.remote.thumb"
+            :src="post.file.src.remote.full"
+            :title="post.file.name"
+            contain
+            @click="openImage = post"
+            @load="post.loading = false"
+          />
+
+          <v-card-actions
+            :class="$style.actions"
+          >
+            <v-btn
+              :class="$style.goToPost"
+              :href="externalHrefFor(post)"
+              color="secondary"
+              target="_blank"
+            >
+              Go to post
+            </v-btn>
+
+            <v-btn
+              :class="$style.link"
+              :href="`#p${post.id}`"
+              icon
+              title="Link to this post"
+            >
+              <v-icon>mdi-link-variant</v-icon>
+            </v-btn>
+
+            <v-btn
+              v-if="post.meta.hasReplies"
+              :class="$style.replies"
+              plain
+            >
+              Replies: {{ post.meta.replies.length }}
+            </v-btn>
+
+            <v-btn
+              v-if="post.meta.hasMentions"
+              :class="$style.mentions"
+              plain
+            >
+              Mentions: {{ post.meta.mentions.length }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-dialog
+      :value="openImage"
+      @input="openImage = $event ? openImage : null"
+    >
+      <v-card
+        v-if="openImage"
+        :class="$style.dialog"
+      >
+        <v-img
+          :aspect-ratio="openImage.file.dimensions.main.width / openImage.file.dimensions.main.height"
+          :lazy-src="openImage.file.src.remote.thumb"
+          :src="openImage.file.src.remote.full"
+          :title="openImage.file.name"
+          contain
+        />
+      </v-card>
+    </v-dialog>
+  </app-max-width-container>
 </template>
 
 <router>
@@ -24,35 +126,8 @@ name: Posts
     AllHtmlEntities as HTMLEntities,
   } from 'html-entities';
   import striptags from 'striptags';
-  import {
-    mapGetters,
-  } from 'vuex';
-  import PepeSadImage from '../../../../assets/images/pepe-sad.png';
-  import ThreadBacklinks from '../../../../components/ThreadBacklinks';
-  import PostsContainer from '../../../../components/posts/Container';
-  import ThreadpullerSettings from '../../../../components/settings/Container.vue';
-
-  function getThread(store, threadId) {
-    return store.getters[ 'threads/getOne' ](threadId);
-  }
-
-  async function fetchThread(store, { isServer, boardName, threadId, cached = false }) {
-    const threads = getThread(store, boardName, threadId);
-
-    if (threads && cached) {
-      return threads;
-    }
-
-    await store.dispatch('threads/fetchOne', { isServer, boardName, threadId });
-
-    return getThread(store, threadId);
-  }
-
-  async function threadExists(store, { isServer, boardName, threadId, cached = true }) {
-    const thread = await fetchThread(store, { isServer, boardName, threadId, cached });
-
-    return Boolean(thread);
-  }
+  import PepeSadImage from '@/assets/images/pepe-sad.png';
+  import AppMaxWidthContainer from '@/components/AppMaxWidthContainer';
 
   function e(name, content) {
     return { hid: name, name, content };
@@ -61,22 +136,38 @@ name: Posts
   export default {
     name: 'Posts',
 
-    components: { PostsContainer, ThreadBacklinks, ThreadpullerSettings },
+    components: {
+      AppMaxWidthContainer,
+    },
 
     async validate({ params, store }) {
       const { board: boardName, thread: threadId } = params;
-      const isServer = process.server;
 
-      return await threadExists(store, { boardName, threadId, isServer });
+      return await store.dispatch('posts/fetch', { boardName, threadId });
     },
 
-    async fetch({ store, params }) {
-      const { board: boardName, thread: threadId } = params;
-      const isServer = process.server;
+    async asyncData({ store }) {
+      const postList =
+        store
+          .getters[ 'posts/POSTS' ]
+          .filter(({ file }) => file)
+          .map((post) => ({
+            ...post,
+            loading: true,
+            meta: {
+              ...post.meta,
+              hasMentions: 0 < post.meta.mentions.length,
+              hasReplies: 0 < post.meta.replies.length,
+            },
+          }))
+      ;
+      const posts = postList.reduce((acc, post) => ({ ...acc, [ post.id ]: post }), {});
 
-      await fetchThread(store, { boardName, threadId, isServer });
-
-      await store.dispatch('posts/fetch', { isServer, boardName, threadId });
+      return {
+        postList,
+        posts,
+        openImage: null,
+      };
     },
 
     computed: {
@@ -89,7 +180,6 @@ name: Posts
       },
 
       threadId() {
-        //noinspection JSUnresolvedVariable
         const { params } = this.$route;
         const { thread } = params;
 
@@ -111,11 +201,11 @@ name: Posts
       },
 
       externalHref() {
-        return `https://boards.4chan.org/${ this.boardName }/thread/${ this.threadId }`;
+        return this.externalHrefFor({ id: this.threadId });
       },
 
       originalPost() {
-        const [ originalPost ] = this.posts;
+        const [ originalPost ] = this.postList;
 
         return originalPost;
       },
@@ -138,10 +228,6 @@ name: Posts
           'scroll-to': this.threadId,
         };
       },
-
-      ...mapGetters({
-        posts: 'posts/get',
-      }),
     },
 
     methods: {
@@ -158,6 +244,10 @@ name: Posts
         const lastSpace = Math.min(Math.max(0, trimmedText.lastIndexOf(' ')) || maxLength, maxLength);
 
         return `${ trimmedText.substr(0, lastSpace) }…`;
+      },
+
+      externalHrefFor({ id }) {
+        return `https://boards.4chan.org/${ this.boardName }/thread/${ this.threadId }#p${ id }`;
       },
     },
 
@@ -189,34 +279,43 @@ name: Posts
   };
 </script>
 
-<style lang="scss" scoped>
-  @import "../../../../assets/style/modules/include";
+<style lang="scss" module>
+  @import "assets/style/modules/include";
 
-  %text-shadow {
-    text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
+  .image {
+    cursor: zoom-in;
   }
 
-  $header-font-size: 3em;
-
-  h1, h2 {
-    @extend %text-shadow;
-    @include no-select();
+  .dialog {
+    min-width: 90vw;
+    max-width: 98vw;
   }
 
-  h1 {
-    font-size: $header-font-size;
-    margin: .67em 0;
-    margin-bottom: 0;
-    text-align: center;
+  .actions {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 36px;
+    grid-template-areas: "replies go-to-post mentions link";
+    grid-column-gap: .5em;
 
-    > a {
-      text-shadow: none;
+    > * + * {
+      margin-left: 0 !important;
     }
-  }
 
-  h2 {
-    font-size: #{$header-font-size * .8};
-    margin-top: 0;
-    color: $text-color;
+    .replies {
+      grid-area: replies;
+    }
+
+    .goToPost {
+      grid-area: go-to-post;
+    }
+
+    .mentions {
+      grid-area: mentions;
+    }
+
+    .link {
+      grid-area: link;
+    }
   }
 </style>

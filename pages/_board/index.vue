@@ -1,15 +1,43 @@
 <template>
-  <div>
-    <threadpuller-settings />
-    <thread-backlinks
-      :back-link="{ name: 'Boards' }"
-      :external-href="externalHref"
-    />
-    <h1>Board: {{ board.link }}</h1>
-    <h2 v-html="board.description" />
+  <app-max-width-container>
+    <v-row class="mt-6">
+      <v-col cols="12">
+        <h1
+          :class="$style.title"
+          class="text-center text-h2"
+        >
+          Board: {{ board.link }}
+        </h1>
+      </v-col>
 
-    <threads-container />
-  </div>
+      <v-col cols="12">
+        <h2
+          :class="$style.title"
+          class="text-center text-h4"
+          v-html="board.description"
+        />
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col
+        v-for="thread in threads"
+        :key="thread.id"
+        cols="12"
+        lg="3"
+        md="4"
+        sm="6"
+        class="d-flex"
+      >
+        <client-only>
+          <thread-card
+            class="flex-grow-1"
+            :thread="thread"
+          />
+        </client-only>
+      </v-col>
+    </v-row>
+  </app-max-width-container>
 </template>
 
 <router>
@@ -23,32 +51,9 @@ name: Threads
   import {
     mapGetters,
   } from 'vuex';
-  import PepeImage from '../../assets/images/pepe.png';
-  import ThreadBacklinks from '../../components/ThreadBacklinks';
-  import ThreadpullerSettings from '../../components/settings/Container.vue';
-  import ThreadsContainer from '../../components/threads/Container';
-
-  function getBoard(store, boardName) {
-    return store.getters[ 'boards/getOne' ](boardName);
-  }
-
-  async function fetchBoard(store, { isServer, boardName, cached = false }) {
-    const board = getBoard(store, boardName);
-
-    if (board && cached) {
-      return board;
-    }
-
-    await store.dispatch('boards/fetchOne', { isServer, boardName });
-
-    return getBoard(store, boardName);
-  }
-
-  async function boardExists(store, { isServer, boardName, cached = true }) {
-    const board = await fetchBoard(store, { isServer, boardName, cached });
-
-    return Boolean(board);
-  }
+  import PepeImage from '~/assets/images/pepe.png';
+  import AppMaxWidthContainer from '~/components/AppMaxWidthContainer';
+  import ThreadCard from '~/components/threads/ThreadCard';
 
   function e(name, content) {
     return { hid: name, name, content };
@@ -59,20 +64,16 @@ name: Threads
 
     async validate({ params, store }) {
       const { board: boardName } = params;
-      const isServer = process.server;
 
-      return await boardExists(store, { boardName, isServer });
+      return (
+        await store.dispatch('boards/fetchOne', { boardName })
+        && await store.dispatch('threads/fetch', { boardName })
+      );
     },
 
-    components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
-
-    async fetch({ store, params }) {
-      const { board: boardName } = params;
-      const isServer = process.server;
-
-      await fetchBoard(store, { boardName, isServer });
-
-      await store.dispatch('threads/fetch', { isServer, boardName });
+    components: {
+      ThreadCard,
+      AppMaxWidthContainer,
     },
 
     computed: {
@@ -88,12 +89,9 @@ name: Threads
         return `https://boards.4chan.org/${ this.boardName }/`;
       },
 
-      board() {
-        return this.getBoard(this.boardName);
-      },
-
       ...mapGetters({
-        getBoard: 'boards/getOne',
+        board: 'boards/BOARD',
+        threads: 'threads/THREADS',
       }),
     },
 
@@ -123,30 +121,21 @@ name: Threads
   };
 </script>
 
-<style lang="scss" scoped>
-  @import "../../assets/style/modules/include";
+<style lang="scss" module>
+  @import "assets/style/modules/include";
 
-  %text-shadow {
-    text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
-  }
-
-  h1, h2 {
-    @extend %text-shadow;
+  .title {
     @include no-select();
   }
 
-  h1 {
-    font-size: 3em;
-    margin: .67em 0;
-    text-align: center;
+  .card {
+    height: 100%;
 
-    > a {
-      text-shadow: none;
+    .cardText {
+      display: inline-block;
+      overflow: hidden;
+      max-height: 80px;
+      text-overflow: ellipsis;
     }
-  }
-
-  h2 {
-    margin-top: -.5em;
-    margin-bottom: 1.2em;
   }
 </style>

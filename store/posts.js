@@ -1,72 +1,34 @@
-import {
-  get,
-} from 'axios';
 import Vue from 'vue';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchPosts(boardName, threadId, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
 
 export const state = () => (
   {
-    entries: [],
-    focused: null,
+    posts: [],
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
-  },
-
-  getFocused({ focused }) {
-    return focused;
+  POSTS(store) {
+    return store.posts;
   },
 };
 
 export const mutations = {
-  ...mutationSet(),
-
-  setFocused(store, postId) {
-    const focused = store.entries.find(({ id }) => id === postId);
-
-    Vue.set(store, 'focused', focused);
-  },
-
-  setUnfocused(store) {
-    Vue.set(store, 'focused', null);
+  SET_POSTS(store, threads) {
+    Vue.set(store, 'posts', threads);
   },
 };
 
 export const actions = {
+  async fetch({ state, commit }, { boardName, threadId }) {
+    const url = `/4chan/info/boards/${ boardName }/threads/${ threadId }/posts`;
+    const { error, data } = await this.$api.$get(url);
 
-  async fetch({ state, commit }, { boardName, threadId, isServer }) {
-    const posts = await fetchPosts(boardName, threadId, isServer);
-
-    if (!posts) {
-      return;
+    if (error || !Array.isArray(data)) {
+      return [];
     }
 
-    commit('set', posts);
+    commit('SET_POSTS', data);
 
-    return state.entries;
+    return state.posts;
   },
-
 };

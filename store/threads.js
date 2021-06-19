@@ -1,82 +1,57 @@
-import {
-  get,
-} from 'axios';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchThreads(boardName, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/threads`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchThread(boardName, threadId, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
+import Vue from 'vue';
 
 export const state = () => (
   {
-    entries: [],
+    threads: [],
+    thread: null,
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
+  THREADS(store) {
+    return store.threads;
   },
 
-  getOne({ entries }) {
-    return (threadId) => entries.find((thread) => String(thread.id) === String(threadId));
+  THREAD(store) {
+    return store.thread;
   },
 };
 
 export const mutations = {
-  ...mutationSet(),
+  SET_THREADS(store, threads) {
+    Vue.set(store, 'threads', threads);
+  },
+
+  SET_THREAD(store, thread) {
+    Vue.set(store, 'thread', thread);
+  },
 };
 
 export const actions = {
+  async fetchOne({ state, commit }, { boardName, threadId }) {
+    const url = `/4chan/info/boards/${ boardName }/threads/${ threadId }`;
+    const { error, data } = await this.$api.$get(url);
 
-  async fetchOne({ state, commit }, { boardName, threadId, isServer }) {
-    const threads = await fetchThread(boardName, threadId, isServer);
-
-    if (!threads) {
+    if (error) {
       return;
     }
 
-    commit('set', threads);
+    commit('SET_THREAD', data);
 
-    return state.entries.find((stateThread) => String(stateThread.id) === String(threads.id));
+    return state.thread;
   },
 
-  async fetch({ state, commit }, { boardName, isServer }) {
-    const threads = await fetchThreads(boardName, isServer);
+  async fetch({ state, commit }, { boardName }) {
+    const url = `/4chan/info/boards/${ boardName }/threads`;
+    const { error, data } = await this.$api.$get(url);
 
-    if (!threads) {
+    if (error) {
       return;
     }
 
-    commit('set', threads);
+    commit('SET_THREADS', data);
 
-    return state.entries;
+    return state.threads;
   },
 
 };

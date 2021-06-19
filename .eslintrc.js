@@ -179,6 +179,7 @@ module.exports = {
       alias: {
         map: [
           [ '@', './' ],
+          [ '~', './' ],
         ],
         extensions: [
           '.vue',

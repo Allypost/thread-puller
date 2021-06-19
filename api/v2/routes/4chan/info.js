@@ -21,7 +21,16 @@ router.get('/boards', async () => {
 router.get('/boards/:board', async ({ params }) => {
   const { board } = params;
 
-  return await Boards.info(board);
+  const info = await Boards.info(board);
+
+  if (!info) {
+    throw new ApiError(
+      'Board not found',
+      HttpStatus.ClientError.NotFound,
+    );
+  }
+
+  return info;
 });
 
 router.get('/boards/:board/threads', async ({ params }) => {

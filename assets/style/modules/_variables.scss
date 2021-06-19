@@ -11,6 +11,16 @@ $large-and-up: "only screen and (min-width : #{$large-screen})" !default;
 // Transitions
 $transition-smooth: cubic-bezier(.23, 1, .32, 1);
 
+$content-max-width: 95vw;
+$content-max-width-mobile: 100vw;
+
+$breakpoints: (
+  xs: 600px,
+  sm: 960px,
+  md: 1264px,
+  lg: 1904px,
+) !default;
+
 $text-color: #fafafa;
 $link-color: #cfd8dc;
 $background-color: #263238;

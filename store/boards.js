@@ -1,82 +1,58 @@
-import {
-  get,
-} from 'axios';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchBoard(board, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/board/${ board }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchBoards(isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
+import Vue from 'vue';
 
 export const state = () => (
   {
-    entries: [],
+    boards: [],
+    board: null,
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
+  BOARDS({ boards }) {
+    return boards;
   },
 
-  getOne({ entries }) {
-    return (boardName) => entries.find((board) => board.board === boardName);
+  BOARD({ board }) {
+    return board;
   },
 };
 
 export const mutations = {
-  ...mutationSet({ identifierKey: 'board' }),
+  setBoard(state, board) {
+    Vue.set(state, 'board', board);
+  },
+
+  setBoards(state, boards) {
+    Vue.set(state, 'boards', boards);
+  },
 };
 
 export const actions = {
 
-  async fetchOne({ state, commit }, { boardName, isServer }) {
-    const board = await fetchBoard(boardName, isServer);
+  async fetchOne({ state, commit }, { boardName }) {
+    const url = `/4chan/info/boards/${ boardName }`;
+    const { error, data } = await this.$api.$get(url);
 
-    if (!board) {
+    if (error) {
       return;
     }
 
-    commit('add', board);
+    commit('setBoard', data);
 
-    return state.entries.find((b) => b.name === board.name);
+    return state.board;
   },
 
-  async fetch({ state, commit }, { isServer }) {
-    const boards = await fetchBoards(isServer);
+  async fetch({ state, commit }) {
+    const url = '/4chan/info/boards';
+    const { error, data } = await this.$api.$get(url);
 
-    if (!boards) {
+    if (error) {
       return;
     }
 
-    commit('set', boards);
+    commit('setBoards', data);
 
-    return state.entries;
+    return state.boards;
   },
 
 };

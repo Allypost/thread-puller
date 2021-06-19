@@ -1,9 +1,9 @@
 <template>
   <div
-    :class="{ show }"
-    class="peers"
+    v-if="show"
+    :class="$style.peers"
   >
-    <span class="title">P: </span><span class="count">{{ peers }}</span><span class="help-text"> {{ helpText }}</span>
+    <span class="title">P: </span><span class="count">{{ peers }}</span><span :class="$style.helpText"> {{ helpText }}</span>
   </div>
 </template>
 
@@ -48,32 +48,29 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../assets/style/modules/include";
+
+  .helpText {
+    display: none;
+  }
 
   .peers {
     font-weight: bold;
     position: fixed;
+    z-index: 9;
     bottom: 0;
     left: 0;
-    display: none;
+    display: inline-block;
     padding: .2em .6em;
     border-top-right-radius: 5px;
     background: $background-color;
 
     @include no-select();
 
-    &.show {
-      display: inline-block;
-    }
-
-    .help-text {
-      display: none;
-    }
-
     &:hover {
 
-      .help-text {
+      .helpText {
         display: inline;
       }
 

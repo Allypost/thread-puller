@@ -119,6 +119,8 @@ export const apiRoute = (fn) => asyncWrapper(async (req, res, next) => {
       data: e.data,
     });
 
+    errorData.url = req.originalUrl;
+
     if ('development' === process.env.NODE_ENV && !(e instanceof ApiError)) {
       errorData._errorObject = e;
     }

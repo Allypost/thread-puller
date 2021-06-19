@@ -1,9 +1,21 @@
+import minifyTheme from 'minify-css-string';
+import colors from 'vuetify/lib/util/colors';
+
 function meta(name, content) {
   return { hid: name, name, content };
 }
 
+const themeColours = {
+  primary: colors.lightGreen,
+  secondary: colors.blueGrey,
+  accent: colors.lightBlue,
+  error: colors.red,
+  warning: colors.yellow,
+  info: colors.teal,
+  success: colors.green,
+};
+
 module.exports = {
-  mode: 'universal',
   /*
    ** Headers of the page
    */
@@ -44,8 +56,8 @@ module.exports = {
    ** Customize the progress-bar color
    */
   loading: {
-    color: '#fafafa',
-    failedColor: '#e53935',
+    color: themeColours.primary,
+    failedColor: themeColours.error,
     height: '8px',
     continuous: true,
   },
@@ -59,6 +71,7 @@ module.exports = {
    ** Plugins to load before mounting the App
    */
   plugins: [
+    '~/plugins/axios',
     { src: '~plugins/add-client-polyfill.js', ssr: false },
     '~/plugins/load-settings-from-cookie',
     '~/plugins/add-v-focus-directive',
@@ -72,6 +85,7 @@ module.exports = {
    */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
+    '@nuxtjs/vuetify',
     '@nuxtjs/eslint-module',
     '@aceforth/nuxt-optimized-images',
   ],
@@ -95,6 +109,17 @@ module.exports = {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {},
+
+  vuetify: {
+    theme: {
+      light: themeColours,
+      dark: themeColours,
+      options: {
+        minifyTheme,
+        customProperties: true,
+      },
+    },
+  },
 
   /*
    ** Build configuration
