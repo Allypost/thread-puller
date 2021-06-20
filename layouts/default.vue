@@ -39,7 +39,6 @@
 <template>
   <div id="wrap">
     <nuxt class="page-container" />
-    <peer-count :socket="socket" />
     <footer>
       Copyright &copy; {{ new Date().getFullYear() }}
       <a
@@ -78,154 +77,13 @@
 </template>
 
 <script>
-  import {
-    mapGetters,
-    mapMutations,
-  } from 'vuex';
-  import PeerCount from '../components/PeerCount';
-  import {
-    socket,
-  } from '../lib/SocketIO/socket';
-
   export default {
-    components: { PeerCount },
-
     data: () => (
       {
-        socket,
         donateLink: '',
         repositoryUrl: process.env.THREADPULLER_REPOSITORY_URL,
       }
     ),
-
-    computed: {
-      hasDonateLink() {
-        return Boolean(this.donateLink);
-      },
-
-      hasRepositoryUrl() {
-        return Boolean(this.repositoryUrl);
-      },
-
-      presenceID() {
-        const { id } = this.presence;
-
-        return id;
-      },
-
-      ...mapGetters({
-        presence: 'presence/get',
-      }),
-    },
-
-    watch: {
-      '$route.path'(path) {
-        this.updateLocation(path);
-      },
-    },
-
-    mounted() {
-      if (this.socket.connected) {
-        this.registerSocketListeners();
-      } else {
-        this.socket.on('connect', () => this.registerSocketListeners());
-      }
-    },
-
-    methods: {
-      registerSocketListeners() {
-        this.socket.emit('register', this.presenceID, () => {
-          this.updateLocation();
-          this.setPresenceConnected(true);
-          window.addEventListener('focus', this.getFocusListener(true));
-          window.addEventListener('blur', this.getFocusListener(false));
-
-          this.socket.on('page-data:update', ({ board, thread, data }) => {
-            if (board && thread) {
-              return this.updatePosts(data);
-            }
-
-            if (board && !thread) {
-              return this.updateThreads(data);
-            }
-
-            if (!board && !thread) {
-              return this.updateBoards(data);
-            }
-          });
-        });
-      },
-
-      getFocusListener(focused) {
-        return () => {
-          this.socket.emit('update:focus', focused);
-        };
-      },
-
-      getPageData(pageOverride = null) {
-        const { params } = this.$route;
-
-        return {
-          page: pageOverride || window.location.pathname,
-          focus: document.hasFocus(),
-          params,
-        };
-      },
-
-      updateLocation(pageOverride = null) {
-        this.socket.emit(
-          'update:location',
-          this.getPageData(pageOverride),
-        );
-      },
-
-      async updateBoards(boards) {
-        return await this.doUpdate(boards, 'boards', 'board');
-      },
-
-      async updateThreads(threads) {
-        return await this.doUpdate(threads, 'threads');
-      },
-
-      async updatePosts(posts) {
-        return await this.doUpdate(posts, 'posts');
-      },
-
-      doUpdate(newEntries, storeName, identifierKey = 'id') {
-        const oldEntries = this.$store.getters[ `${ storeName }/get` ];
-
-        for (const newEntry of newEntries) {
-          const oldEntryIndex = oldEntries.findIndex((oldEntry) => oldEntry[ identifierKey ] === newEntry[ identifierKey ]);
-
-          if (-1 === oldEntryIndex) {
-            this.$store.commit(`${ storeName }/add`, newEntry);
-          } else {
-            this.$store.commit(`${ storeName }/update`, newEntry);
-          }
-        }
-
-        // Get list of entries only in
-        // the old list (aka deleted entries)
-        // and remove them from the store
-        oldEntries
-          .filter(
-            ({ [ identifierKey ]: oldEntryId }) =>
-              !newEntries.find(
-                ({ [ identifierKey ]: newEntryId }) =>
-                  oldEntryId === newEntryId,
-              ),
-          )
-          .forEach(
-            ({ id }) =>
-              this.$store.commit(`${ storeName }/remove`, id),
-          )
-        ;
-      },
-
-      ...mapMutations({
-        setPresenceConnected: 'presence/SET_CONNECTED',
-      }),
-    },
 
     head() {
       return {
@@ -237,6 +95,16 @@
           return 'ThreadPuller - Pull 4Chan media';
         },
       };
+    },
+
+    computed: {
+      hasDonateLink() {
+        return Boolean(this.donateLink);
+      },
+
+      hasRepositoryUrl() {
+        return Boolean(this.repositoryUrl);
+      },
     },
   };
 </script>

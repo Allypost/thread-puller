@@ -71,10 +71,6 @@ export default {
     },
   ],
 
-  router: {
-    middleware: [ 'set-presence-cookie' ],
-  },
-
   /*
    ** Customize the progress-bar color
    */
@@ -130,7 +126,6 @@ export default {
     [ 'cookie-universal-nuxt', { parseJSON: false } ],
     '@nuxtjs/router-extras',
     '~/modules/4chan/refresher',
-    '~/modules/presence',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
