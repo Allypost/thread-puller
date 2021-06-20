@@ -4,7 +4,7 @@
   >
     <input
       :id="id"
-      v-model="value"
+      v-model="valueProp"
       :name="id"
       type="checkbox"
       @input="$emit('input', $event.target.checked)"
@@ -29,12 +29,30 @@
       },
     },
 
+    data() {
+      return {
+        valueProp: this.value,
+      };
+    },
+
     computed: {
       id() {
         const timePart = Number(new Date()).toString(36);
         const randPart = Math.random().toString(36).slice(2);
 
         return `${ this.name }-${ timePart }-${ randPart }`;
+      },
+    },
+
+    watch: {
+      valueProp(newValue) {
+        this.$emit('input', Boolean(newValue));
+      },
+
+      value(newValue) {
+        if (newValue !== this.valueProp) {
+          this.valueProp = newValue;
+        }
       },
     },
   };
@@ -81,14 +99,12 @@
       left: calc(-1em + #{$left-padding});
       display: block;
       overflow: hidden;
-
       width: 1.4em;
       height: 1.2em;
       cursor: pointer !important;
       transition: all .5s #{$transition-smooth};
       color: transparent;
       border-radius: 6px;
-
       background: $settings-background-color;
 
       &:hover {
