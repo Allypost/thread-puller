@@ -8,13 +8,11 @@ input[type="range"] {
   border-radius: 3px;
   outline: none;
   background: #36484f;
-
   appearance: none;
 
   &:focus {
     outline: none;
   }
-
 }
 
 $thumb-list: -webkit-slider-thumb -moz-range-thumb -ms-thumb;
@@ -29,7 +27,6 @@ $thumb-color: lighten($background-color, 30%);
     background-color: lighten($thumb-color, 5%);
     box-shadow: 1px 1px 4px rgba(0, 0, 0, .69);
     cursor: pointer;
-
     transition: background-color .35s #{$transition-smooth}, opacity .35s #{$transition-smooth};
   }
 
@@ -37,4 +34,5 @@ $thumb-color: lighten($background-color, 30%);
     background-color: $thumb-color;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, .8), 0 0 3px rgba(0, 0, 0, .5);
   }
+
 }

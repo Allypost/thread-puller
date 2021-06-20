@@ -102,7 +102,7 @@
       },
 
       ...mapGetters({
-        'rawThreads': 'threads/get',
+        rawThreads: 'threads/get',
       }),
     },
 
@@ -119,6 +119,7 @@
 
   .container {
     @extend %container-base;
+
     margin-top: 0;
   }
 

@@ -93,7 +93,7 @@
 
     methods: {
       ...mapMutations({
-        'unfocusImage': 'posts/setUnfocused',
+        unfocusImage: 'posts/setUnfocused',
       }),
     },
   };
@@ -104,6 +104,7 @@
 
   .container {
     @extend %container-base;
+
     align-items: end;
   }
 
@@ -115,10 +116,8 @@
       @include no-select();
 
       display: grid;
-
       align-items: center;
       height: calc(98vh - 130px);
-
       margin: 0 auto;
       text-align: center;
     }
@@ -151,10 +150,7 @@
           // min-height: 100%;
           margin: 0 auto;
         }
-
       }
-
     }
-
   }
 </style>

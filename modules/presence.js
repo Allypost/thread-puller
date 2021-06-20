@@ -5,8 +5,8 @@ import {
 import socketIO from 'socket.io';
 import presence from '../api/presence';
 
-export default function() {
-  this.nuxt.hook('render:before', async (renderer) => {
+export default function () {
+  this.nuxt.hook('render:before', (renderer) => {
     const server = http.createServer(renderer.app);
 
     // overwrite nuxt.server.listen()

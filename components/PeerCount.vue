@@ -76,7 +76,6 @@
       .help-text {
         display: inline;
       }
-
     }
   }
 </style>

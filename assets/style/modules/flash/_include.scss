@@ -27,6 +27,7 @@
     }
 
     &.error {
+
       &:not(:empty)::before {
         margin: -.4em;
         content: "Errors:";

@@ -20,7 +20,7 @@ export default function refresher() {
     info('Refresher started');
   });
 
-  this.nuxt.hook('close', async () => {
+  this.nuxt.hook('close', () => {
     info('Shutting down refresher listener...');
     clearInterval(intervalId);
     info('Refresher shut down');

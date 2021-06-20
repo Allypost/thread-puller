@@ -54,7 +54,7 @@
       },
 
       ...mapGetters({
-        'rawBoards': 'boards/get',
+        rawBoards: 'boards/get',
       }),
     },
 

@@ -30,15 +30,17 @@
 
   .spinner {
     @keyframes spin {
+
       to {
         -webkit-transform: rotate(360deg);
       }
+
     }
 
     display: inline-block;
     width: 50px;
     height: 50px;
-    animation: spin 1s cubic-bezier(0.65, 0.05, 0.3, 0.8) infinite;
+    animation: spin 1s cubic-bezier(.65, .05, .3, .8) infinite;
     border: 3px solid rgba(255, 255, 255, .3);
     border-top-color: #ffffff;
     border-radius: 50%;

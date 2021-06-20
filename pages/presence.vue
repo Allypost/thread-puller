@@ -126,7 +126,6 @@ name: Presence
         socket.on('user:update', ({ type, data: { id, socketId, data } }) => {
           switch (type.toLowerCase()) {
             case 'update': {
-
               if (!(id in this.users)) {
                 this.$set(this.users, id, {});
               }

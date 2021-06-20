@@ -18,7 +18,7 @@ name: Threads
 
 <script>
   import {
-    AllHtmlEntities as HTMLEntities,
+    decode as decodeHtmlEntities,
   } from 'html-entities';
   import {
     mapGetters,
@@ -57,14 +57,14 @@ name: Threads
   export default {
     name: 'Threads',
 
+    components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
+
     async validate({ params, store }) {
       const { board: boardName } = params;
       const isServer = process.server;
 
       return await boardExists(store, { boardName, isServer });
     },
-
-    components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
 
     async fetch({ store, params }) {
       const { board: boardName } = params;
@@ -99,8 +99,7 @@ name: Threads
 
     methods: {
       decodeEntities(text) {
-        const htmlEntities = new HTMLEntities();
-        return htmlEntities.decode(text);
+        return decodeHtmlEntities(text);
       },
     },
 
@@ -130,8 +129,10 @@ name: Threads
     text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
   }
 
-  h1, h2 {
+  h1,
+  h2 {
     @extend %text-shadow;
+
     @include no-select();
   }
 

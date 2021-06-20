@@ -34,14 +34,12 @@
     z-index: 1;
     top: 0;
     left: calc(-1em + #{$left-padding});
-
     display: block;
     width: 1.4em;
     height: 1.2em;
     cursor: pointer;
     transition: all .5s #{$transition-smooth};
     border-radius: 6px;
-
     background: $settings-background-color;
   }
 

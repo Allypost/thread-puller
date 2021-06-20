@@ -12,6 +12,7 @@
 </template>
 
 <script>
+  import constant from 'lodash/fp/constant';
   import ThreadContent from './thread/Content';
   import ThreadHeader from './thread/Header';
 
@@ -28,9 +29,7 @@
       showBoardName: {
         type: Boolean,
         required: false,
-        default() {
-          return false;
-        },
+        default: constant(false),
       },
     },
 

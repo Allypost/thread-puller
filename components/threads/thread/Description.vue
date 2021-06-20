@@ -67,7 +67,6 @@
         max-height: none;
         cursor: zoom-out;
       }
-
     }
   }
 </style>

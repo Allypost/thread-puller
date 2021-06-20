@@ -45,7 +45,6 @@ async function clean() {
 }
 
 async function updatePresence(socket, newData) {
-
   const { id, data: oldData } = socket.presence;
 
   const redisKey = redisSocketKey(socket);
@@ -306,7 +305,7 @@ function addListeners(socket) {
 }
 
 
-module.exports = async function(io) {
+module.exports = async function (io) {
   await clean();
 
   io.on('connection', (socket) => {
@@ -355,7 +354,5 @@ module.exports = async function(io) {
         },
       });
     });
-
   });
-
 };

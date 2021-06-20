@@ -1,4 +1,5 @@
 @import "modules/include";
+@import "modules/flash/include";
 
 ::selection {
   color: $text-color;
@@ -6,12 +7,13 @@
 }
 
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
-html, body {
+html,
+body {
   margin: 0;
 }
 
@@ -35,7 +37,6 @@ a {
     text-decoration: none;
     color: $text-color;
   }
-
 }
 
 s {
@@ -49,5 +50,3 @@ s {
     color: $text-color;
   }
 }
-
-@import "modules/flash/include";

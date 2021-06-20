@@ -74,9 +74,9 @@ async function* search4ChanBoardGenerator(query, { board = '' }) {
   const threadList = new Map();
   const baseURL = new URL('https://find.4chan.org/api');
   const opts = new URLSearchParams({
-    'q': query,
-    'b': board,
-    'o': offset,
+    q: query,
+    b: board,
+    o: offset,
   });
   baseURL.search = opts.toString();
 
@@ -85,7 +85,7 @@ async function* search4ChanBoardGenerator(query, { board = '' }) {
       responseType: 'application/json',
     });
 
-    const { nhits: total, threads: threads = [] } = response.data;
+    const { nhits: total, threads = [] } = response.data;
 
     const hasUnique =
       threads
@@ -209,7 +209,7 @@ async function* searchBoardGenerator(query, { board = '', allowNSFW = true }) {
   if (board) {
     yield one(board);
   } else {
-    yield* all();
+    yield * all();
   }
 }
 

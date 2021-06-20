@@ -58,6 +58,7 @@
 
 <style lang="scss" scoped>
   @use "sass:math";
+
   @import "../../assets/style/modules/include";
 
   .board {
@@ -82,7 +83,6 @@
       border-radius: inherit;
       box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .24), 0 1px 10px 0 rgba(0, 0, 0, .22), 0 2px 4px -1px rgba(0, 0, 0, .4);
     }
-
   }
 
   .title {
@@ -109,7 +109,6 @@
     background: rgba(0, 0, 0, .6);
   }
 
-
   .board[data-nsfw] {
     background-color: adjust-color($nsfw-color, $lightness: math.div(lightness($board-background-color), 2));
 
@@ -126,6 +125,5 @@
       background: $nsfw-color;
       text-shadow: 1px 1px 1px invert($text-color);
     }
-
   }
 </style>

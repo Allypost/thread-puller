@@ -33,7 +33,6 @@
 
       @include no-select();
     }
-
   }
 </style>
 
@@ -115,7 +114,7 @@
       },
 
       ...mapGetters({
-        'presence': 'presence/get',
+        presence: 'presence/get',
       }),
     },
 
@@ -141,7 +140,7 @@
           window.addEventListener('focus', this.getFocusListener(true));
           window.addEventListener('blur', this.getFocusListener(false));
 
-          this.socket.on('page-data:update', async ({ board, thread, data }) => {
+          this.socket.on('page-data:update', ({ board, thread, data }) => {
             if (board && thread) {
               return this.updatePosts(data);
             }
@@ -192,7 +191,7 @@
         return await this.doUpdate(posts, 'posts');
       },
 
-      async doUpdate(newEntries, storeName, identifierKey = 'id') {
+      doUpdate(newEntries, storeName, identifierKey = 'id') {
         const oldEntries = this.$store.getters[ `${ storeName }/get` ];
 
         for (const newEntry of newEntries) {
@@ -224,7 +223,7 @@
       },
 
       ...mapMutations({
-        'setPresenceConnected': 'presence/SET_CONNECTED',
+        setPresenceConnected: 'presence/SET_CONNECTED',
       }),
     },
 

@@ -1,10 +1,11 @@
 window.requestIdleCallback =
-  window.requestIdleCallback ||
-  function(cb, options = {}) {
+  window.requestIdleCallback
+  || function (cb, options = {}) {
     const start = Date.now();
     const { timeout = 1 } = options;
     return setTimeout(
       () =>
+        // eslint-disable-next-line node/no-callback-literal
         cb({
           didTimeout: false,
           timeRemaining() {
@@ -16,10 +17,10 @@ window.requestIdleCallback =
   };
 
 window.cancelIdleCallback =
-  window.cancelIdleCallback ||
-  ((id) => clearTimeout(id));
+  window.cancelIdleCallback
+  || ((id) => clearTimeout(id));
 
 
-Element.prototype.documentOffsetTop = function() {
+Element.prototype.documentOffsetTop = function () {
   return this.offsetTop + (this.offsetParent ? this.offsetParent.documentOffsetTop() : 0);
 };

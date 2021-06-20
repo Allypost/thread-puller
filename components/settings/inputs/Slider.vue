@@ -82,13 +82,12 @@
     transition-timing-function: #{$transition-smooth};
     transition-duration: .2s;
     transition-property: opacity, box-shadow;
-
     border-radius: 3px;
     background: $rail-colour;
     appearance: none;
 
     &:focus {
-      box-shadow: 2px 2px 5px 0 rgba(33, 33, 33, 0.7);
+      box-shadow: 2px 2px 5px 0 rgba(33, 33, 33, .7);
     }
 
     @each $thumb in $thumb-list {
@@ -100,7 +99,6 @@
         background-color: lighten($thumb-color, 5%);
         box-shadow: 1px 1px 4px rgba(0, 0, 0, .69);
         cursor: pointer;
-
         transition: background-color .35s #{$transition-smooth}, opacity .35s #{$transition-smooth};
       }
 
@@ -108,11 +106,12 @@
         background-color: $thumb-color;
         box-shadow: 1px 1px 5px rgba(0, 0, 0, .8), 0 0 3px rgba(0, 0, 0, .5);
       }
+
     }
   }
 
   input[type="number"] {
-    font-size: 0.9em;
+    font-size: .9em;
     font-weight: bold;
     display: inline-block;
     width: 3.1415359em;

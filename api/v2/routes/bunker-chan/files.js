@@ -13,10 +13,10 @@ router.get('/.media/:resource', async (req, res) => {
   const { resource } = req.params;
 
   const options = {
-    'url': `https://bunkerchan.xyz/.media/${ resource }`,
-    'method': 'GET',
-    'responseType': 'stream',
-    'headers': {
+    url: `https://bunkerchan.xyz/.media/${ resource }`,
+    method: 'GET',
+    responseType: 'stream',
+    headers: {
       'Referer': 'https://bunkerchan.xyz/',
       'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
       'User-Agent': process.env.USER_AGENT,

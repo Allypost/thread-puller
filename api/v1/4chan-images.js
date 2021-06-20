@@ -11,10 +11,10 @@ app.get('/i/:board/:resource.:ext', (req, res) => {
   const { ext, resource, board } = req.params;
 
   const options = {
-    'host': 'i.4cdn.org',
-    'path': `/${ board }/${ resource }.${ ext }`,
-    'method': 'GET',
-    'headers': {
+    host: 'i.4cdn.org',
+    path: `/${ board }/${ resource }.${ ext }`,
+    method: 'GET',
+    headers: {
       'Referer': 'https://boards.4chan.org/',
       'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
       'User-Agent': process.env.USER_AGENT,

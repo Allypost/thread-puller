@@ -8,14 +8,14 @@
     <thread-media-container
       v-if="hasFile"
       :file="thread.file"
-      style="grid-area: media"
+      style="grid-area: media;"
       @click.native="extended = !extended"
     />
 
     <thread-description
       v-if="hasDescription"
       :description="description"
-      style="grid-area: description"
+      style="grid-area: description;"
     />
   </section>
 </template>
@@ -92,6 +92,5 @@
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas: "media" "description";
     }
-
   }
 </style>

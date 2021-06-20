@@ -93,7 +93,7 @@
     filter: none;
 
     &.isLoading {
-      filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius="2");
+      filter: progid:dximagetransform.microsoft.blur(pixelradius="2");
       filter: blur(2px);
     }
   }

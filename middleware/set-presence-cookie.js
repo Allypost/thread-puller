@@ -1,4 +1,6 @@
-import uuidV1 from 'uuid/v1';
+import {
+  v1 as uuidV1,
+} from 'uuid';
 
 export default ({ app, store }) => {
   const presence = {

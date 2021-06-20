@@ -27,6 +27,7 @@ export const state = () => (
 );
 
 export const getters = {
+  // eslint-disable-next-line lodash-fp/prefer-identity
   get(settings) {
     return settings;
   },

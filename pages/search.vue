@@ -94,12 +94,6 @@ name: Search
 
     components: { ThreadBacklinks, BoardThread, LoaderSpinner },
 
-    async fetch({ store }) {
-      const isServer = process.server;
-
-      await store.dispatch('boards/fetch', { isServer });
-    },
-
     data() {
       return {
         form: {
@@ -116,6 +110,12 @@ name: Search
       };
     },
 
+    async fetch({ store }) {
+      const isServer = process.server;
+
+      await store.dispatch('boards/fetch', { isServer });
+    },
+
     computed: {
       shownBoards() {
         if (this.form.nsfw) {
@@ -130,13 +130,13 @@ name: Search
       },
 
       ...mapGetters({
-        'boards': 'boards/get',
+        boards: 'boards/get',
       }),
     },
 
     methods: {
       ...mapActions({
-        'searchThreads': 'search/searchThreads',
+        searchThreads: 'search/searchThreads',
       }),
 
       async doSearch() {
@@ -189,8 +189,10 @@ name: Search
 
   $header-font-size: 3em;
 
-  h1, h2 {
+  h1,
+  h2 {
     @extend %text-shadow;
+
     @include no-select();
   }
 

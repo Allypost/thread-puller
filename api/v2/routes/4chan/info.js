@@ -36,7 +36,7 @@ router.get('/boards/:board/threads/:thread/posts', async ({ params }) => {
   return await Posts.get(board, thread);
 });
 
-router.post('/search/threads', async ({ body }) => {
+router.post('/search/threads', ({ body }) => {
   const searchKeys = [
     {
       name: 'body.title',

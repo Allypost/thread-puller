@@ -21,7 +21,7 @@ name: Posts
 
 <script>
   import {
-    AllHtmlEntities as HTMLEntities,
+    decode as decodeHtmlEntities,
   } from 'html-entities';
   import striptags from 'striptags';
   import {
@@ -104,10 +104,9 @@ name: Posts
       },
 
       escapedTitle() {
-        const htmlEntities = new HTMLEntities();
         const title = this.decodeEntities(this.title, { maxLength: 80, keepTags: '' });
 
-        return htmlEntities.decode(title);
+        return decodeHtmlEntities(title);
       },
 
       externalHref() {
@@ -198,8 +197,10 @@ name: Posts
 
   $header-font-size: 3em;
 
-  h1, h2 {
+  h1,
+  h2 {
     @extend %text-shadow;
+
     @include no-select();
   }
 

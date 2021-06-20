@@ -134,6 +134,5 @@
         grid-area: link;
       }
     }
-
   }
 </style>

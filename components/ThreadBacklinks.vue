@@ -40,6 +40,7 @@
     margin-bottom: 0;
     text-align: center;
     text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
+
     @include no-select();
 
     > a {
