@@ -7,7 +7,6 @@
 </template>
 
 <script>
-  import MobileDetect from 'mobile-detect';
   import ThreadVideo from '../../../../components/threads/thread/media/components/Video.vue';
 
   function isElementInViewport(el) {
@@ -48,7 +47,6 @@
 
     data() {
       return {
-        isMobile: false,
         isVisible: false,
         thumbSrc: '',
       };
@@ -93,8 +91,6 @@
 
       window.addEventListener('scroll', this.listener);
       this.listener();
-
-      this.isMobile = (new MobileDetect()).mobile();
 
       this.computePoster();
     },

@@ -72,6 +72,7 @@ module.exports = {
    */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
+    '@nuxt/typescript-build',
     '@nuxtjs/eslint-module',
     '@aceforth/nuxt-optimized-images',
   ],

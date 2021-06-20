@@ -57,6 +57,7 @@
 </script>
 
 <style lang="scss" scoped>
+  @use "sass:math";
   @import "../../assets/style/modules/include";
 
   .board {
@@ -110,7 +111,7 @@
 
 
   .board[data-nsfw] {
-    background-color: adjust-color($nsfw-color, $lightness: lightness($board-background-color) / 2);
+    background-color: adjust-color($nsfw-color, $lightness: math.div(lightness($board-background-color), 2));
 
     header::before {
       font-size: .8em;
