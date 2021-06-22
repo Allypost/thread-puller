@@ -45,7 +45,7 @@
     "typescript": "^4.3.4",
     "vue": "^2.6.14",
     "vue-linkify": "^1.0.1",
-    "vue-router": "^3.5.1",
+    "vue-router": "^3.5.2",
     "vuex": "^3.6.2",
     "vuex-shared-mutations": "^1.0.2",
     "webpack": "^5.39.1"
