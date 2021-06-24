@@ -101,3 +101,12 @@ sw.*
 
 # All gitkeep files
 !**/.gitkeep
+
+# Yarn files
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
