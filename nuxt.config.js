@@ -29,6 +29,9 @@ function meta(name, content) {
 }
 
 export default {
+  // Telemetry: https://github.com/nuxt/telemetry
+  telemetry: false,
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: process.env.npm_package_name || '',
