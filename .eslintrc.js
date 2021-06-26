@@ -24,6 +24,7 @@ module.exports = {
     'plugin:nuxt/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
+    'plugin:import/typescript',
     'plugin:lodash-fp/recommended',
   ],
 
@@ -148,7 +149,6 @@ module.exports = {
       },
     ],
     'quote-props': [ 'error', 'consistent-as-needed' ],
-    'semi': [ 'error', 'always' ],
     'space-before-blocks': [ 'warn', 'always' ],
     'space-before-function-paren': [
       'error',
@@ -177,7 +177,24 @@ module.exports = {
       },
     ],
 
+    'semi': 0,
+    '@typescript-eslint/semi': 'error',
     '@typescript-eslint/no-var-requires': 'warn',
+    '@typescript-eslint/consistent-type-definitions': [ 'error', 'interface' ],
+    '@typescript-eslint/member-delimiter-style': [
+      'error',
+      {
+        multiline: {
+          delimiter: 'semi',
+          requireLast: true,
+        },
+        singleline: {
+          delimiter: 'semi',
+          requireLast: false,
+        },
+        multilineDetection: 'brackets',
+      },
+    ],
   },
 
   overrides: [
