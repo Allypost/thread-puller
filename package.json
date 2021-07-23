@@ -81,7 +81,7 @@
     "lint-staged": "^10.5.4",
     "loader-utils": "^2.0.0",
     "normalize-path": "^3.0.0",
-    "sass": "^1.35.1",
+    "sass": "^1.35.2",
     "short-unique-id": "^4.3.3",
     "stylelint": "^13.12.0",
     "stylelint-config-standard": "^22.0.0",
