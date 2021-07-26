@@ -1,13 +1,18 @@
 import http from 'http';
 import consola from 'consola';
-import express from 'express';
 import ffmpeg from 'fluent-ffmpeg';
+import {
+  Router,
+} from '../../../helpers/route';
 
-const app = express();
-app.disable('x-powered-by');
+const router = new Router();
 
-app.get('/i/:board/:resource.:ext', (req, res) => {
-  const { ext, resource, board } = req.params;
+router.getRaw('/i/:board/:resource.:ext', (req, res) => {
+  const {
+    ext,
+    resource,
+    board,
+  } = req.params;
 
   const options = {
     host: 'i.4cdn.org',
@@ -33,8 +38,12 @@ app.get('/i/:board/:resource.:ext', (req, res) => {
     .end();
 });
 
-app.get('/thumb/:board/:resource.:ext.png', (req, res) => {
-  const { board, resource, ext } = req.params;
+router.getRaw('/thumb/:board/:resource.:ext.png', (req, res) => {
+  const {
+    board,
+    resource,
+    ext,
+  } = req.params;
 
   res.type('png');
 
@@ -55,8 +64,12 @@ app.get('/thumb/:board/:resource.:ext.png', (req, res) => {
     .run();
 });
 
-app.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
-  const { board, resource, ext } = req.params;
+router.getRaw('/thumb/:board/:resource.:ext.jpg', (req, res) => {
+  const {
+    board,
+    resource,
+    ext,
+  } = req.params;
 
   res.type('jpg');
 
@@ -77,4 +90,4 @@ app.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
     .run();
 });
 
-export default app;
+export default router;

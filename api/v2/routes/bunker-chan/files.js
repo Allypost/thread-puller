@@ -1,15 +1,15 @@
 import axios from 'axios';
 import consola from 'consola';
 import {
-  Router,
-} from 'express';
-import {
   HttpStatus,
 } from '../../../../lib/Helpers/Http';
+import {
+  Router,
+} from '../../../helpers/route';
 
 const router = new Router();
 
-router.get('/.media/:resource', async (req, res) => {
+router.getRaw('/.media/:resource', async (req, res) => {
   const { resource } = req.params;
 
   const options = {

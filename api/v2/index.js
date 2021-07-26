@@ -7,11 +7,11 @@ import express from 'express';
 import {
   ApiError,
   apiRoute,
-  registerRoutesInFolder,
+  registerRoutesInFolderRecursive,
 } from '../helpers/route';
 
 const app = express();
-const routes = registerRoutesInFolder(joinPath(__dirname, 'routes'));
+const routes = registerRoutesInFolderRecursive(joinPath(__dirname, 'routes'));
 
 app.set('x-powered-by', false);
 
