@@ -1,15 +1,24 @@
 import {
   readdirSync,
+  statSync,
 } from 'fs';
 import {
   join as joinPath,
+  dirname,
+  basename,
 } from 'path';
 import express from 'express';
+import flattenDeep from 'lodash/fp/flattenDeep';
+import flow from 'lodash/fp/flow';
+import groupBy from 'lodash/fp/groupBy';
+import initial from 'lodash/fp/initial';
+import map from 'lodash/fp/map';
+import reduce from 'lodash/fp/reduce';
+import sortBy from 'lodash/fp/sortBy';
+import toPairs from 'lodash/fp/toPairs';
 import {
   HttpStatus,
 } from '../../lib/Helpers/Http';
-
-const ExpressRouter = express.Router;
 
 /**
  * @typedef {Object} SuccessResponse
@@ -41,6 +50,7 @@ export const response =
       error,
       data,
       status,
+      ts: Date.now(),
     })
 ;
 
@@ -58,13 +68,22 @@ export const success =
 ;
 
 /**
- * @param {number} status
- * @param {string} reason
- * @param {*} data
+ * @typedef {Object} ErrorParams
+ * @property {number} status - Whether an error occurred
+ * @property {string} reason - The response status code (200 - OK, everything else - error)
+ * @property {*} [data] - Any response data
+ */
+
+/**
+ * @param {ErrorParams} params
  * @returns {ErrorResponse}
  */
 export const error =
-  ({ reason, status = HttpStatus.Error.Client.Forbidden, data = null }) =>
+  ({
+    reason,
+    status = HttpStatus.Error.Client.Forbidden,
+    data = null,
+  }) =>
     ({
       ...response({
         error: true,
@@ -84,11 +103,10 @@ export class ApiError extends Error {
 
   constructor(message, statusCode = HttpStatus.Error.Client.ImATeapot, data = null) {
     super(message);
-    this.statusCode = statusCode;
+    this.statusCode = statusCode || HttpStatus.Error.Client.ImATeapot;
     this.data = data;
   }
 }
-
 
 export const asyncWrapper = (fn) => (...args) => {
   return (
@@ -98,6 +116,31 @@ export const asyncWrapper = (fn) => (...args) => {
   );
 };
 
+export const rawRoute = (fn) => asyncWrapper(async (req, res, next) => {
+  try {
+    const result = await fn(req, res, next);
+
+    if (result instanceof Buffer || 'string' === typeof result) {
+      return res.end(result);
+    } else {
+      return res.end();
+    }
+  } catch (e) {
+    if (e.statusCode) {
+      res.status(e.statusCode);
+    } else {
+      res.status(HttpStatus.Error.Client.Forbidden);
+    }
+
+    if (e instanceof ApiError) {
+      res.set('X-Api-Error', e.message);
+    } else if ('development' === process.env.NODE_ENV) {
+      console.log('|> ERROR', '\n', e);
+    }
+
+    return res.end();
+  }
+});
 
 export const apiRoute = (fn) => asyncWrapper(async (req, res, next) => {
   try {
@@ -128,12 +171,12 @@ export const apiRoute = (fn) => asyncWrapper(async (req, res, next) => {
 });
 
 export const registerRoutesInFolder = (folder) => {
-  const router = new ExpressRouter();
+  const router = new express.Router();
 
   // Register all .js files in routes directory as express routes
   readdirSync(folder)
     // Only consider JS files
-    .filter((filename) => filename.endsWith('.js'))
+    .filter((filename) => filename.endsWith('.js') || filename.endsWith('.ts'))
     // Require files and register with express
     .forEach((fileName) => {
       // Add full path to filename
@@ -165,15 +208,94 @@ export const registerRoutesInFolder = (folder) => {
   return router;
 };
 
+export const registerRoutesInFolderRecursive = (...folderParts) => {
+  const folder = joinPath(...folderParts);
+
+  const isDirectory = (path) => statSync(path).isDirectory();
+  const isIndexFile = (path) => /(^|\/)index\.(js|ts)$/.test(path);
+  const pathToRoute = (path) => initial(path.split('/').pop().split('.')).join('.').replace(/^index$/, '');
+  const routeBasePath = (filePath) => dirname(filePath).substr(folder.length) || '/';
+  const absoluteRoute = (path) => joinPath(routeBasePath(path), pathToRoute(path));
+  const shouldSkip = (path) => !basename(path).startsWith('_');
+
+  const getListOfRoutesInFolder = (folder) => {
+    const withPath = (file) => joinPath(folder, file);
+
+    const folderEntries = map(withPath, readdirSync(folder));
+    const {
+      true: folders = [],
+      false: filesAll = [],
+    } = groupBy(isDirectory, folderEntries);
+    const {
+      true: index = [],
+      false: files = [],
+    } = groupBy(isIndexFile, filesAll);
+
+    const routeFiles = [
+      ...index,
+      ...files.filter(shouldSkip).sort(),
+    ];
+
+    return [
+      ...routeFiles,
+      folders.map(getListOfRoutesInFolder),
+    ];
+  };
+
+  const getHandler = (filePath) => {
+    const router = require(filePath).default;
+
+    if (router instanceof Router) {
+      return router.expose();
+    }
+
+    return router;
+  };
+
+  const assignPathToRouter =
+    (
+      router,
+      [
+        path,
+        files,
+      ],
+    ) => {
+      if (1 < files.length) {
+        throw new Error(`Duplicate routes: ${ files.join(' <~> ') }`);
+      }
+
+      const [ filePath ] = files;
+
+      const handler = getHandler(filePath);
+
+      router.use(path, handler);
+
+      return router;
+    };
+
+  const createRouterFor = flow(
+    getListOfRoutesInFolder,
+    flattenDeep,
+    groupBy(absoluteRoute),
+    toPairs,
+    sortBy('0'),
+    reduce(assignPathToRouter)(new express.Router()),
+  );
+
+  return createRouterFor(folder);
+};
+
 export const registerRoutesInFolderJs =
   (jsFilePath) =>
     registerRoutesInFolder(
-      jsFilePath.replace(/.js$/i, ''),
+      jsFilePath
+        .replace(/\.(js|ts)$/i, '')
+      ,
     )
 ;
 
 export const registerFolderAsRoute = (baseDir, folderName) => {
-  const router = new ExpressRouter();
+  const router = express.Router();
 
   router.use(folderName, registerRoutesInFolder(joinPath(baseDir, folderName)));
 
@@ -187,7 +309,7 @@ export class Router {
   #router = null;
 
   constructor() {
-    this.#router = new ExpressRouter();
+    this.#router = express.Router();
   }
 
   /////////// REQUEST METHODS START ///////////
@@ -199,8 +321,16 @@ export class Router {
     return this.addRoute('get', path, handlers);
   }
 
+  getRaw(path, ...handlers) {
+    return this.addRawRoute('get', path, handlers);
+  }
+
   post(path, ...handlers) {
     return this.addRoute('post', path, handlers);
+  }
+
+  postRaw(path, ...handlers) {
+    return this.addRawRoute('post', path, handlers);
   }
 
   put(path, ...handlers) {
@@ -226,7 +356,18 @@ export class Router {
   /////////// REQUEST METHODS END ///////////
 
   use(...handlers) {
-    this.#router.use(...handlers);
+    const exposedHandlers =
+      handlers
+        .map((handler) => {
+          if (handler instanceof Router) {
+            handler = handler.expose();
+          }
+
+          return handler;
+        })
+    ;
+
+    this.#router.use(...exposedHandlers);
 
     return this;
   }
@@ -239,9 +380,32 @@ export class Router {
    * @returns {Router}
    */
   addRoute(requestMethod, path, handlersList) {
+    return this.addWrappedRoute(requestMethod, path, handlersList, apiRoute);
+  }
+
+  /**
+   * @param {String} requestMethod
+   * @param {String} path
+   * @param {Array} handlersList
+   *
+   * @returns {Router}
+   */
+  addRawRoute(requestMethod, path, handlersList) {
+    return this.addWrappedRoute(requestMethod, path, handlersList, rawRoute);
+  }
+
+  /**
+   * @param {String} requestMethod
+   * @param {String} path
+   * @param {Array} handlersList
+   * @param {Function} wrapper
+   *
+   * @returns {Router}
+   */
+  addWrappedRoute(requestMethod, path, handlersList, wrapper) {
     const handler = handlersList.pop();
 
-    this.#router[ requestMethod ](path, ...[ ...handlersList, apiRoute(handler) ]);
+    this.#router[ requestMethod ](path, ...[ ...handlersList, wrapper(handler) ]);
 
     return this;
   }
