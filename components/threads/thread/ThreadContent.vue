@@ -21,8 +21,8 @@
 </template>
 
 <script>
-  import ThreadDescription from './Description';
-  import ThreadMediaContainer from './media/Container';
+  import ThreadDescription from './ThreadDescription';
+  import ThreadMediaContainer from './media/ThreadMediaContainer';
 
   export default {
     name: 'ThreadContent',

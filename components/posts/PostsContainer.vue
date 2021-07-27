@@ -39,8 +39,8 @@
     mapGetters,
     mapMutations,
   } from 'vuex';
-  import ThreadImage from '../threads/thread/media/components/Image';
-  import ThreadPost from './Post';
+  import ThreadImage from '../threads/thread/media/components/ThreadMediaThumb';
+  import ThreadPost from './ThreadPost';
 
   export default {
     name: 'PostsContainer',

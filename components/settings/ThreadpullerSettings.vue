@@ -57,7 +57,7 @@
     mapGetters,
   } from 'vuex';
   import CogImg from '../../assets/images/cog.png';
-  import ThreadpullerSetting from './Setting';
+  import ThreadpullerSetting from './ThreadpullerSetting';
 
   export default {
     name: 'ThreadpullerSettings',

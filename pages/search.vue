@@ -82,7 +82,7 @@ name: Search
   } from 'vuex';
   import PepeImage from '../assets/images/pepe.png';
   import ThreadBacklinks from '../components/ThreadBacklinks';
-  import BoardThread from '../components/threads/Thread';
+  import BoardThread from '../components/threads/BoardThread';
   import LoaderSpinner from '../components/threads/thread/media/LoaderSpinner';
 
   function e(name, content) {

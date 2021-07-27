@@ -24,8 +24,8 @@
   import {
     mapState,
   } from 'vuex';
-  import SettingCheckbox from './inputs/Checkbox';
-  import SettingSlider from './inputs/Slider';
+  import SettingCheckbox from './inputs/ThreadpullerCheckbox';
+  import SettingSlider from './inputs/ThreadpullerSlider';
 
   export default {
     name: 'ThreadpullerSetting',

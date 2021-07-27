@@ -21,8 +21,8 @@
 </template>
 
 <script>
-  import ThreadImage from './components/Image';
-  import ThreadVideo from './components/Video';
+  import ThreadImage from './components/ThreadMediaThumb';
+  import ThreadVideo from './components/ThreadVideo';
 
   export default {
 

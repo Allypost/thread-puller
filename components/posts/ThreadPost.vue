@@ -50,8 +50,8 @@
 
 <script>
   import LinkImage from '../../assets/images/link.svg';
-  import PostImage from './components/media/Image.vue';
-  import PostVideo from './components/media/Video.vue';
+  import PostImage from './components/media/PostImage.vue';
+  import PostVideo from './components/media/PostVideo.vue';
 
   export default {
     name: 'ThreadPost',

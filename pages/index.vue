@@ -16,7 +16,7 @@ name: Boards
 
 <script>
   import PepeImage from '../assets/images/pepe.png';
-  import BoardsContainer from '../components/boards/Container';
+  import BoardsContainer from '../components/boards/BoardContainer';
 
   function e(name, content) {
     return { hid: name, name, content };

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import ThreadImage from '../../../threads/thread/media/components/Image.vue';
+  import ThreadImage from '../../../threads/thread/media/components/ThreadMediaThumb.vue';
 
   function isElementInViewport(el) {
     const scroll = window.scrollY || window.pageYOffset;
