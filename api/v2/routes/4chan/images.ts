@@ -14,7 +14,7 @@ router.getRaw('/i/:board/:resource.:ext', (req, res) => {
     board,
   } = req.params;
 
-  const options = {
+  const options: http.RequestOptions = {
     host: 'i.4cdn.org',
     path: `/${ board }/${ resource }.${ ext }`,
     method: 'GET',
@@ -28,11 +28,13 @@ router.getRaw('/i/:board/:resource.:ext', (req, res) => {
   };
 
   http
-    .request(options, (resp) => {
-      res.set(resp.headers);
-      res.status(resp.statusCode);
+    .request(options, (mediaResponse) => {
+      res.set(mediaResponse.headers);
+      res.status(mediaResponse.statusCode || 200);
 
-      resp.pipe(res, { end: true });
+      consola.log(mediaResponse);
+
+      mediaResponse.pipe(res, { end: true });
     })
     .on('error', (e) => consola.error('image fetch error', e))
     .end();
