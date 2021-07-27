@@ -1,147 +1,110 @@
-/**
- * @typedef {string} StatusName
- */
+import type {
+  ValueOf,
+} from 'type-fest';
 
-/**
- * @typedef {number} StatusCode
- */
+export type StatusName = string;
 
-/**
- * @typedef {string} StatusDescription
- */
+export type StatusCode = number;
 
+export type StatusDescription = string;
 
-/**
- * @typedef {Object.<StatusName, StatusCode>} StatusNameToCode
- */
+export type StatusCodeInfo = {
+  name: StatusName;
+  description: StatusDescription;
+};
 
-/**
- * @typedef {Object.<StatusCode, StatusName>} StatusCodeToName
- */
+enum CodesInfo {
+  Continue = 100,
+  SwitchingProtocols = 101,
+  Checkpoint = 103,
+}
 
-/**
- * @type {Readonly<StatusNameToCode>}
- */
-const codesInfo = Object.freeze({
-  Continue: 100,
-  SwitchingProtocols: 101,
-  Checkpoint: 103,
-});
+enum CodesSuccess {
+  Ok = 200,
+  Created = 201,
+  Accepted = 202,
+  NonAuthoritativeInformation = 203,
+  NoContent = 204,
+  ResetContent = 205,
+  PartialContent = 206,
+}
 
-/**
- * @type {Readonly<StatusNameToCode>}
- */
-const codesSuccess = Object.freeze({
-  Ok: 200,
-  Created: 201,
-  Accepted: 202,
-  NonAuthoritativeInformation: 203,
-  NoContent: 204,
-  ResetContent: 205,
-  PartialContent: 206,
-});
+enum CodesRedirect {
+  MultipleChoices = 300,
+  MovedPermanently = 301,
+  Found = 302,
+  SeeOther = 303,
+  NotModified = 304,
+  SwitchProxy = 306,
+  TemporaryRedirect = 307,
+  ResumeIncomplete = 308,
+}
 
-/**
- * @type {Readonly<StatusNameToCode>}
- */
-const codesRedirect = Object.freeze({
-  MultipleChoices: 300,
-  MovedPermanently: 301,
-  Found: 302,
-  SeeOther: 303,
-  NotModified: 304,
-  SwitchProxy: 306,
-  TemporaryRedirect: 307,
-  ResumeIncomplete: 308,
-});
+enum CodesClientError {
+  BadRequest = 400,
+  Unauthorized = 401,
+  PaymentRequired = 402,
+  Forbidden = 403,
+  NotFound = 404,
+  MethodNotAllowed = 405,
+  NotAcceptable = 406,
+  ProxyAuthenticationRequired = 407,
+  RequestTimeout = 408,
+  Conflict = 409,
+  Gone = 410,
+  LengthRequired = 411,
+  PreconditionFailed = 412,
+  RequestEntityTooLarge = 413,
+  RequestUriTooLong = 414,
+  UnsupportedMediaType = 415,
+  RequestedRangeNotSatisfiable = 416,
+  ExpectationFailed = 417,
+  ImATeapot = 418,
+  MisdirectedRequest = 421,
+  UnprocessableEntity = 422,
+  Locked = 423,
+  FailedDependency = 424,
+  UpgradeRequired = 426,
+  PreconditionRequired = 428,
+  TooManyRequests = 429,
+  RequestHeaderFieldsTooLarge = 431,
+  UnavailableForLegalReasons = 451,
+}
 
-/**
- * @type {Readonly<StatusNameToCode>}
- */
-const codesClientError = Object.freeze({
-  BadRequest: 400,
-  Unauthorized: 401,
-  PaymentRequired: 402,
-  Forbidden: 403,
-  NotFound: 404,
-  MethodNotAllowed: 405,
-  NotAcceptable: 406,
-  ProxyAuthenticationRequired: 407,
-  RequestTimeout: 408,
-  Conflict: 409,
-  Gone: 410,
-  LengthRequired: 411,
-  PreconditionFailed: 412,
-  RequestEntityTooLarge: 413,
-  RequestUriTooLong: 414,
-  UnsupportedMediaType: 415,
-  RequestedRangeNotSatisfiable: 416,
-  ExpectationFailed: 417,
-  ImATeapot: 418,
-  MisdirectedRequest: 421,
-  UnprocessableEntity: 422,
-  Locked: 423,
-  FailedDependency: 424,
-  UpgradeRequired: 426,
-  PreconditionRequired: 428,
-  TooManyRequests: 429,
-  RequestHeaderFieldsTooLarge: 431,
-  UnavailableForLegalReasons: 451,
-});
+enum CodesServerError {
+  InternalServerError = 500,
+  NotImplemented = 501,
+  BadGateway = 502,
+  ServiceUnavailable = 503,
+  GatewayTimeout = 504,
+  HttpVersionNotSupported = 505,
+  NetworkAuthenticationRequired = 511,
+}
 
-/**
- * @type {Readonly<StatusNameToCode>}
- */
-const codesServerError = Object.freeze({
-  InternalServerError: 500,
-  NotImplemented: 501,
-  BadGateway: 502,
-  ServiceUnavailable: 503,
-  GatewayTimeout: 504,
-  HttpVersionNotSupported: 505,
-  NetworkAuthenticationRequired: 511,
-});
-
-/**
- * @type {Readonly<{Client: StatusNameToCode, Server: StatusNameToCode}>}
- */
 const codesError = Object.freeze({
-  Client: codesClientError,
-  Server: codesServerError,
+  Client: CodesClientError,
+  Server: CodesServerError,
 });
 
-/**
- * @type {Readonly<StatusNameToCode>}
- */
 const nameToCode = Object.freeze({
-  ...codesInfo,
-  ...codesSuccess,
-  ...codesRedirect,
-  ...codesClientError,
-  ...codesServerError,
+  ...CodesInfo,
+  ...CodesSuccess,
+  ...CodesRedirect,
+  ...CodesClientError,
+  ...CodesServerError,
 });
 
+type NameToCode = typeof nameToCode;
+type CodeToName = Record<ValueOf<NameToCode>, keyof NameToCode>;
 
-/**
- * @type {Readonly<StatusCodeToName>}
- */
 const codeToName = Object.freeze(Object.fromEntries(
   Object
     .entries(nameToCode)
     .map(([ k, v ]) => [ v, k ])
   ,
-));
+)) as CodeToName;
 
-/**
- * @typedef {Object} StatusCodeInfo
- * @property {StatusName} name - The name/message of the status code
- * @property {StatusDescription} description - Short description of what the code means
- */
-
-/**
- * @type {Object.<StatusCode, StatusCodeInfo>}
- */
-const StatusCodeToInfo = {
+const StatusCodeToInfo: Record<StatusCode, StatusCodeInfo> = {
   100: {
     name: 'Continue',
     description: 'The server has received the request headers, and the client should proceed to send the request body',
@@ -287,8 +250,8 @@ const StatusCodeToInfo = {
     description: 'The server cannot meet the requirements of the Expect request-header field',
   },
   418: {
-    name: "I'm a teapot",
-    description: "Any attempt to brew coffee with a teapot should result in the error code \"418 I'm a teapot\". The resulting entity body MAY be short and stout",
+    name: 'I\'m a teapot',
+    description: 'Any attempt to brew coffee with a teapot should result in the error code "418 I\'m a teapot". The resulting entity body MAY be short and stout',
   },
   421: {
     name: 'Misdirected Request',
@@ -357,62 +320,27 @@ const StatusCodeToInfo = {
 };
 
 export class HttpStatus {
-  /**
-   * @return {Readonly<StatusNameToCode>}
-   */
-  static get Info() {
-    return codesInfo;
+  static get Info(): typeof CodesInfo {
+    return CodesInfo;
   }
 
-  /**
-   * @return {Readonly<StatusNameToCode>}
-   */
-  static get Success() {
-    return codesSuccess;
+  static get Success(): typeof CodesSuccess {
+    return CodesSuccess;
   }
 
-  /**
-   * @return {Readonly<StatusNameToCode>}
-   */
-  static get Redirect() {
-    return codesRedirect;
+  static get Redirect(): typeof CodesRedirect {
+    return CodesRedirect;
   }
 
-  /**
-   * @return {Readonly<StatusNameToCode>}
-   */
-  static get Error() {
+  static get Error(): Readonly<{ Server: typeof CodesServerError; Client: typeof CodesClientError }> {
     return codesError;
   }
 
-  /**
-   * @return {Readonly<StatusNameToCode>}
-   */
-  static get ClientError() {
-    return codesClientError;
-  }
-
-  /**
-   * @return {Readonly<StatusNameToCode>}
-   */
-  static get ServerError() {
-    return codesServerError;
-  }
-
-  /**
-   * @param {StatusCode} code
-   *
-   * @return {StatusName|undefined}
-   */
-  static codeToName(code) {
+  static codeToName(code: StatusCode): ValueOf<CodeToName> {
     return codeToName[ code ];
   }
 
-  /**
-   * @param {StatusCode} code
-   * @return {StatusCodeInfo|undefined}
-   */
-  static codeToInfo(code) {
+  static codeToInfo(code: StatusCode): StatusCodeInfo {
     return StatusCodeToInfo[ code ];
   }
 }

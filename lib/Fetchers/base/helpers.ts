@@ -1,16 +1,14 @@
 import axios from 'axios';
+import type {
+  AxiosRequestConfig,
+} from 'axios';
 import consola from 'consola';
 import {
   HttpStatus,
 } from '../../Helpers/Http';
 
-/**
- * @param {Number} ms
- *
- * @returns {Promise<undefined>}
- */
 const sleep =
-  (ms) =>
+  (ms: number): Promise<void> =>
     new Promise(
       (resolve) =>
         setTimeout(resolve, ms)
@@ -18,35 +16,23 @@ const sleep =
     )
 ;
 
-/**
- * @param {String} name
- * @param {String} referer
- * @returns {function(...[*]=)}
- */
 export const getter =
-  (name, referer) =>
-    /**
-     * @param {String} url
-     * @param {any} defaultValue
-     * @returns {Promise<any|null>}
-     */
-    async (url, defaultValue = {}) => {
+  (name: string, referer: string) =>
+    async <T, R>(url: string, defaultValue: R = {} as R): Promise<T | R> => {
       const retryAttempts = 5;
       const sleepMinMs = 150;
       const sleepMaxMs = 350;
 
       for (let attempt = 0; attempt < retryAttempts; attempt++) {
         try {
-          const config = {
+          const config: AxiosRequestConfig = {
             headers: {
               'Referer': referer,
               'User-Agent': 'ThreadPuller crawler',
             },
             responseType: 'json',
           };
-          const getData = ({ data }) => data;
-
-          return await axios.get(url, config).then(getData);
+          return await axios.get<T>(url, config).then(({ data }) => data);
         } catch (e) {
           const { response = {} } = e;
 

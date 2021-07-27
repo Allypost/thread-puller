@@ -1,8 +1,13 @@
+import type {
+  Post,
+} from '../../Types/4chan/local';
+import type {
+  FourChanPost,
+} from '../../Types/4chan/remote';
 import FileInfo from './FileInfo';
 
 export default class PostInfo {
-  static parse(board, post) {
-    // noinspection JSUnresolvedVariable
+  public static parse(board: string, post: FourChanPost): Post {
     return {
       id: +post.no,
       board,
@@ -21,7 +26,7 @@ export default class PostInfo {
     };
   }
 
-  static addMetas(posts) {
+  public static addMetas(posts: Post[]): Post[] {
     if (!Array.isArray(posts)) {
       return posts;
     }
@@ -32,7 +37,7 @@ export default class PostInfo {
     return newPosts.map(addMeta);
   }
 
-  static addMeta(posts, post) {
+  private static addMeta(posts: Post[], post: Post): Post {
     const newPost = Object.assign({}, post);
 
     Object.assign(newPost, this.addRepliesTo(posts, post));
@@ -41,13 +46,13 @@ export default class PostInfo {
     return newPost;
   }
 
-  static addRepliesTo(posts, post) {
+  private static addRepliesTo(posts: Post[], post: Post): Post {
     post.meta.replies = this.getReplies(posts, post);
 
     return post;
   }
 
-  static getReplies(posts, post) {
+  private static getReplies(posts: Post[], post: Post): Post['id'][] {
     return (
       posts
         .filter((p) => String(p.body.content || '').includes(`#p${ post.id }`))
@@ -55,13 +60,13 @@ export default class PostInfo {
     );
   }
 
-  static addMentionsTo(post) {
+  private static addMentionsTo(post: Post): Post {
     post.meta.mentions = this.getMentions(post);
 
     return post;
   }
 
-  static getMentions(post) {
+  private static getMentions(post: Post): Post['id'][] {
     const re = /#p([0-9]+)/g;
     const { body: { content } } = post;
     const matches = content.match(re) || [];

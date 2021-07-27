@@ -180,7 +180,7 @@ module.exports = {
     'semi': 0,
     '@typescript-eslint/semi': 'error',
     '@typescript-eslint/no-var-requires': 'warn',
-    '@typescript-eslint/consistent-type-definitions': [ 'error', 'interface' ],
+    '@typescript-eslint/consistent-type-definitions': [ 'error', 'type' ],
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {

@@ -1,3 +1,4 @@
+import FuseClass from 'fuse.js';
 import Boards from '../../../../lib/Fetchers/4chan/Boards';
 import Posts from '../../../../lib/Fetchers/4chan/Posts';
 import Threads from '../../../../lib/Fetchers/4chan/Threads';
@@ -7,6 +8,10 @@ import {
 import {
   Fuse,
 } from '../../../../lib/Search/Fuse';
+import type {
+  Board,
+  Post,
+} from '../../../../lib/Types/4chan/local';
 import {
   ApiError,
   Router,
@@ -31,7 +36,10 @@ router.get('/boards/:board/threads', async ({ params }) => {
 });
 
 router.get('/boards/:board/threads/:thread/posts', async ({ params }) => {
-  const { board, thread } = params;
+  const {
+    board,
+    thread,
+  } = params;
 
   return await Posts.get(board, thread);
 });
@@ -52,11 +60,7 @@ router.post('/search/threads', ({ body }) => {
     },
   ];
 
-  /**
-   * @param {Boolean} allowNSFW
-   * @returns {Object[]}
-   */
-  async function getBoards(allowNSFW = true) {
+  async function getBoards(allowNSFW = true): Promise<Board[]> {
     const boards = await Boards.get();
 
     if (allowNSFW) {
@@ -66,10 +70,7 @@ router.post('/search/threads', ({ body }) => {
     return boards.filter(({ nsfw }) => !nsfw);
   }
 
-  /**
-   * @returns {Promise<{item: Object, score: Number}[]>}
-   */
-  async function searchOneBoard(board, query) {
+  async function searchOneBoard(board: string, query: string): Promise<FuseClass.FuseResult<Post>[]> {
     const threads = await Threads.get(board);
 
     return (
@@ -81,10 +82,7 @@ router.post('/search/threads', ({ body }) => {
     );
   }
 
-  /**
-   * @returns {Promise<{item: Object, score: Number}[]>}
-   */
-  async function searchAllBoards(allowNsfw, query) {
+  async function searchAllBoards(allowNsfw: boolean, query: string) {
     const boards = await getBoards(allowNsfw);
 
     /**
@@ -104,14 +102,18 @@ router.post('/search/threads', ({ body }) => {
     return (
       threads
         .sort(
-          (a, b) =>
-            a.score - b.score
+          ({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
+            scoreA - scoreB
           ,
         )
     );
   }
 
-  const { query, nsfw: allowNsfw, board = '' } = body;
+  const {
+    query,
+    nsfw: allowNsfw,
+    board = '',
+  } = body;
 
   if (!query || 3 >= query.length) {
     throw new ApiError(
@@ -146,7 +148,7 @@ router.post('/search/posts', async ({ body }) => {
   /**
    * @returns {Promise<{item: Object, score: Number}[]>}
    */
-  async function searchOneThread(board, thread, query) {
+  async function searchOneThread(board: string, thread: string | number, query: string) {
     const threads = await Posts.get(board, thread);
 
     return (
@@ -158,7 +160,10 @@ router.post('/search/posts', async ({ body }) => {
     );
   }
 
-  const { query, board } = body;
+  const {
+    query,
+    board,
+  } = body;
 
   if (!query || 3 >= query.length) {
     throw new ApiError(
@@ -176,14 +181,14 @@ router.post('/search/posts', async ({ body }) => {
 
   const threads = await Threads.get(board);
 
-  /**
-   * @type {{item: Object, score: Number}[]}
-   */
   const posts =
     await Promise.all(
       threads
         .map(
-          async ({ board, thread }) =>
+          async ({
+            board,
+            thread,
+          }) =>
             await searchOneThread(board, thread, query)
           ,
         )
@@ -195,8 +200,8 @@ router.post('/search/posts', async ({ body }) => {
     posts
       .flat()
       .sort(
-        (a, b) =>
-          a.score - b.score
+        ({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
+          scoreA - scoreB
         ,
       )
   );
