@@ -70,7 +70,7 @@ export default {
     '~/api/v1/4chan-images',
     {
       path: '/api/v2',
-      handler: '~/api/v2/index',
+      handler: '~/api/v2',
     },
   ],
 
@@ -128,7 +128,7 @@ export default {
     'nuxt-svg-loader',
     [ 'cookie-universal-nuxt', { parseJSON: false } ],
     '@nuxtjs/router-extras',
-    '~/modules/4chan/refresher',
+    './modules/4chan/refresher',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
