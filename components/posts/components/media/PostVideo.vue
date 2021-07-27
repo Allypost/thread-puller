@@ -1,10 +1,10 @@
 <template>
   <thread-video
-    v-if="isVisible"
-    :data-is-visible="isVisible ? 'yes' : 'no'"
+    v-if="isVisible || playing"
     :file="file"
     :poster="poster"
     :preload="wasVisible ? 'auto' : 'metadata'"
+    @playing="playing = $event"
   />
   <div
     v-else
@@ -62,6 +62,7 @@
       return {
         wasVisible: false,
         isVisible: false,
+        playing: false,
         thumbSrc: '',
       };
     },

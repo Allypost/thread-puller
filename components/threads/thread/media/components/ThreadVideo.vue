@@ -4,6 +4,8 @@
     :controls="controls"
     :loop="vLoop"
     :preload="preload"
+    @play="$emit('playing', true)"
+    @pause="$emit('playing', false)"
   >
     <source :src="srcset.remote">
     <source :src="srcset.local">
@@ -55,7 +57,10 @@
     computed: {
       srcset() {
         const { src } = this.file;
-        const { local, remote } = src;
+        const {
+          local,
+          remote,
+        } = src;
 
         return {
           local: local.full,
