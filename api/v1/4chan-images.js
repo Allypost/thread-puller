@@ -1,41 +1,89 @@
-//noinspection SpellCheckingInspection
-import http from 'http';
+import axios from 'axios';
 import consola from 'consola';
 import express from 'express';
 import ffmpeg from 'fluent-ffmpeg';
+import {
+  HttpStatus,
+} from '../../lib/Helpers/Http';
 
 const app = express();
 app.disable('x-powered-by');
 
-app.get('/i/:board/:resource.:ext', (req, res) => {
-  const { ext, resource, board } = req.params;
+app.get(
+  '/i/:board/:resource.:ext',
+  async ({
+    params,
+    headers,
+  }, res) => {
+    const {
+      ext,
+      resource,
+      board,
+    } = params;
 
-  const options = {
-    host: 'i.4cdn.org',
-    path: `/${ board }/${ resource }.${ ext }`,
-    method: 'GET',
-    headers: {
-      'Referer': 'https://boards.4chan.org/',
-      'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-      'User-Agent': process.env.USER_AGENT,
-      'Connection': 'keep-alive',
-      'Accept-Encoding': 'gzip, deflate',
-    },
-  };
+    const options = {
+      method: 'GET',
+      responseType: 'stream',
+      headers: {
+        ...headers,
+        'Referer': 'https://boards.4chan.org/',
+        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+        'User-Agent': process.env.USER_AGENT,
+        'Connection': 'close',
+        'Accept-Encoding': 'gzip, deflate',
+        'Host': 'i.4cdn.org',
+        'Cookie': '',
+      },
+    };
 
-  http
-    .request(options, (resp) => {
-      res.set(resp.headers);
-      res.status(resp.statusCode);
+    res.set('Connection', 'close');
 
-      resp.pipe(res, { end: true });
-    })
-    .on('error', (e) => consola.error('image fetch error', e))
-    .end();
-});
+    try {
+      const response = await axios.get(
+        `https://i.4cdn.org/${ board }/${ resource }.${ ext }`,
+        options,
+      );
+
+      res.set(response.headers);
+      res.status(response.status);
+
+      if (304 === response.status) {
+        return res.end();
+      }
+
+      await new Promise((resolve, reject) => {
+        response.data.on('data', (data) => {
+          res.write(data);
+        });
+
+        response.data.on('end', () => {
+          resolve(null);
+        });
+
+        response.data.on('error', (err) => {
+          reject(err);
+        });
+      });
+    } catch (e) {
+      if (304 === e?.response.status) {
+        res.set(e?.response.headers);
+        res.status(304);
+      } else {
+        consola.error('image fetch error', e);
+        res.status(HttpStatus.Error.Server.InternalServerError);
+      }
+    } finally {
+      res.end();
+    }
+  },
+);
 
 app.get('/thumb/:board/:resource.:ext.png', (req, res) => {
-  const { board, resource, ext } = req.params;
+  const {
+    board,
+    resource,
+    ext,
+  } = req.params;
 
   res.type('png');
 
@@ -57,7 +105,11 @@ app.get('/thumb/:board/:resource.:ext.png', (req, res) => {
 });
 
 app.get('/thumb/:board/:resource.:ext.jpg', (req, res) => {
-  const { board, resource, ext } = req.params;
+  const {
+    board,
+    resource,
+    ext,
+  } = req.params;
 
   res.type('jpg');
 
