@@ -13,8 +13,8 @@
 
 <script>
   import constant from 'lodash/fp/constant';
-  import ThreadContent from './thread/Content';
-  import ThreadHeader from './thread/Header';
+  import ThreadContent from './thread/ThreadContent';
+  import ThreadHeader from './thread/ThreadHeader';
 
   export default {
     name: 'BoardThread',

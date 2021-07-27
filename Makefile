@@ -23,7 +23,7 @@ up-db:
 	docker/compose up -d $(DB_CONTAINER)
 
 .PHONY: prod
-prod: build reboot
+prod: notify-start build reboot notify-end
 
 .PHONY: dev
 dev: $(NODE_MODULES) up-db
@@ -107,7 +107,8 @@ build: yarn-install
 	docker/yarn build -c nuxt.config.build && \
 	mv "$(FINAL_OUTPUT_DIR)" "$(FINAL_OUTPUT_DIR).old" && \
 	mv "$(BUILD_OUTPUT_DIR)" "$(FINAL_OUTPUT_DIR)" && \
-	rm -rf "$(FINAL_OUTPUT_DIR).old"
+	rm -rf "$(FINAL_OUTPUT_DIR).old" \
+	|| $(MAKE) notify-failed
 
 .PHONY: clean
 clean:

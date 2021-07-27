@@ -29,8 +29,8 @@ name: Posts
   } from 'vuex';
   import PepeSadImage from '../../../../assets/images/pepe-sad.png';
   import ThreadBacklinks from '../../../../components/ThreadBacklinks';
-  import PostsContainer from '../../../../components/posts/Container';
-  import ThreadpullerSettings from '../../../../components/settings/Container.vue';
+  import PostsContainer from '../../../../components/posts/PostsContainer';
+  import ThreadpullerSettings from '../../../../components/settings/ThreadpullerSettings.vue';
 
   function getThread(store, threadId) {
     return store.getters[ 'threads/getOne' ](threadId);

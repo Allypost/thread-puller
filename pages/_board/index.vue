@@ -25,8 +25,8 @@ name: Threads
   } from 'vuex';
   import PepeImage from '../../assets/images/pepe.png';
   import ThreadBacklinks from '../../components/ThreadBacklinks';
-  import ThreadpullerSettings from '../../components/settings/Container.vue';
-  import ThreadsContainer from '../../components/threads/Container';
+  import ThreadpullerSettings from '../../components/settings/ThreadpullerSettings.vue';
+  import ThreadsContainer from '../../components/threads/ThreadsContainer';
 
   function getBoard(store, boardName) {
     return store.getters[ 'boards/getOne' ](boardName);

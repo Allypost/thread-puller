@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  import ThreadVideo from '../../../../components/threads/thread/media/components/Video.vue';
+  import ThreadVideo from '../../../threads/thread/media/components/ThreadVideo.vue';
 
   function isElementInViewport(el) {
     const scroll = window.scrollY || window.pageYOffset;

@@ -21,10 +21,10 @@
     mapGetters,
   } from 'vuex';
   import SearchInput from '../SearchInput';
-  import BoardEntry from './Board';
+  import BoardEntry from './BoardEntry';
 
   export default {
-    name: 'Container',
+    name: 'BoardContainer',
 
     components: { SearchInput, BoardEntry },
 

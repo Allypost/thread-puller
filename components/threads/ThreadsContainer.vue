@@ -45,7 +45,7 @@
     mapGetters,
   } from 'vuex';
   import SearchInput from '../SearchInput';
-  import BoardThread from './Thread';
+  import BoardThread from './BoardThread';
 
   export default {
     name: 'ThreadsContainer',
