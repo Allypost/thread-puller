@@ -8,6 +8,12 @@ export const state = () => (
       value: 50,
     },
 
+    muted: {
+      title: 'Video muted',
+      text: 'Set the video to muted by default (doesn\'t affect volume)',
+      value: false,
+    },
+
     /*
      // Disable for now
 

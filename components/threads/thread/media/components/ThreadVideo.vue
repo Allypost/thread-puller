@@ -3,6 +3,7 @@
     :autoplay="vAutoplay"
     :controls="controls"
     :loop="vLoop"
+    :muted="vMuted"
     :preload="preload"
   >
     <source :src="srcset.remote">
@@ -41,6 +42,10 @@
         default: 'metadata',
       },
       loop: {
+        type: Boolean,
+        default: null,
+      },
+      muted: {
         type: Boolean,
         default: null,
       },
@@ -89,6 +94,10 @@
 
         vLoop({ loop }) {
           return this.getValue(loop, 'loop');
+        },
+
+        vMuted({ muted }) {
+          return this.getValue(muted, 'muted');
         },
       }),
     },
