@@ -1,12 +1,25 @@
 <template>
   <thread-video
+    v-if="isVisible || playing"
     :file="file"
     :poster="poster"
-    :preload="isVisible ? 'auto' : 'metadata'"
+    :preload="wasVisible ? 'auto' : 'metadata'"
+    @playing="playing = $event"
+  />
+  <div
+    v-else
+    :class="{
+      [$style.placeholderPoster]: true,
+      [$style.blur]: !wasVisible,
+    }"
+    :style="`padding-bottom: ${aspectRatio * 100}%; background-image: url('${poster}')`"
   />
 </template>
 
 <script>
+  import {
+    throttle,
+  } from 'lodash/fp';
   import ThreadVideo from '../../../threads/thread/media/components/ThreadVideo.vue';
 
   function isElementInViewport(el) {
@@ -47,17 +60,34 @@
 
     data() {
       return {
+        wasVisible: false,
         isVisible: false,
+        playing: false,
         thumbSrc: '',
       };
     },
 
     computed: {
 
+      aspectRatio() {
+        const {
+          width,
+          height,
+        } = this.file.dimensions.main;
+
+        return height / width;
+      },
+
       posterSrcSet() {
         const { src } = this.file;
-        const { local, remote } = src;
-        const { thumb: localThumb, thumbHD: localThumbHD } = local;
+        const {
+          local,
+          remote,
+        } = src;
+        const {
+          thumb: localThumb,
+          thumbHD: localThumbHD,
+        } = local;
         const { thumb: remoteThumb } = remote;
 
         return {
@@ -68,7 +98,7 @@
       },
 
       poster() {
-        if (!this.isVisible) {
+        if (!this.wasVisible) {
           return this.thumbSrc;
         }
 
@@ -80,14 +110,21 @@
     },
 
     mounted() {
-      this.listener = () => {
-        if (!isElementInViewport(this.$el)) {
-          return;
-        }
+      const throttleForMs = 200;
 
-        this.isVisible = true;
-        window.removeEventListener('scroll', this.listener);
-      };
+      this.listener =
+        throttle(
+          throttleForMs,
+          () => {
+            const isVisible = isElementInViewport(this.$el);
+
+            if (isVisible) {
+              this.wasVisible = true;
+            }
+
+            this.isVisible = isVisible;
+          },
+        );
 
       window.addEventListener('scroll', this.listener);
       this.listener();
@@ -102,18 +139,21 @@
     methods: {
       computePoster() {
         const img = new Image();
-        const { remote, local } = this.posterSrcSet;
+        const {
+          remote,
+          local,
+        } = this.posterSrcSet;
 
         img.src = remote;
 
         img.onerror = () => {
-          if (!this.isVisible) {
+          if (!this.wasVisible) {
             this.thumbSrc = local;
           }
         };
 
         img.onload = () => {
-          if (!this.isVisible) {
+          if (!this.wasVisible) {
             this.thumbSrc = remote;
           }
         };
@@ -122,3 +162,17 @@
 
   };
 </script>
+
+<style lang="scss" module>
+  .placeholderPoster {
+    transition: filter 1s ease;
+    background-position: center;
+    background-size: contain;
+    filter: blur(0);
+    will-change: filter;
+  }
+
+  .blur {
+    filter: blur(3px);
+  }
+</style>
