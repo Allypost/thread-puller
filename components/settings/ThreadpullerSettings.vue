@@ -24,6 +24,7 @@
           ref="settings"
 
           :name="name"
+          :dirty="name in changedSettings"
           @input="handleSettingChange(name, $event)"
         />
 
