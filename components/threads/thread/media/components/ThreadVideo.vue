@@ -3,7 +3,10 @@
     :autoplay="vAutoplay"
     :controls="controls"
     :loop="vLoop"
+    :muted="vMuted"
     :preload="preload"
+    @play="$emit('playing', true)"
+    @pause="$emit('playing', false)"
   >
     <source :src="srcset.remote">
     <source :src="srcset.local">
@@ -44,6 +47,10 @@
         type: Boolean,
         default: null,
       },
+      muted: {
+        type: Boolean,
+        default: null,
+      },
     },
 
     data() {
@@ -55,7 +62,10 @@
     computed: {
       srcset() {
         const { src } = this.file;
-        const { local, remote } = src;
+        const {
+          local,
+          remote,
+        } = src;
 
         return {
           local: local.full,
@@ -89,6 +99,10 @@
 
         vLoop({ loop }) {
           return this.getValue(loop, 'loop');
+        },
+
+        vMuted({ muted }) {
+          return this.getValue(muted, 'muted');
         },
       }),
     },

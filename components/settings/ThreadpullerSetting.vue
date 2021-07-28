@@ -3,7 +3,7 @@
     <h3>
       <span>{{ setting.title }}</span>
       <span
-        v-if="wasChanged"
+        v-if="wasChanged && dirty"
         class="changed-notice"
       > - changed</span>
     </h3>
@@ -22,6 +22,9 @@
 
 <script>
   import {
+    constant,
+  } from 'lodash/fp';
+  import {
     mapState,
   } from 'vuex';
   import SettingCheckbox from './inputs/ThreadpullerCheckbox';
@@ -36,6 +39,10 @@
       name: {
         type: String,
         required: true,
+      },
+      dirty: {
+        type: Boolean,
+        default: constant(false),
       },
     },
 

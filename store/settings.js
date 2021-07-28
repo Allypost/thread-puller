@@ -5,7 +5,13 @@ export const state = () => (
     volume: {
       title: 'Video volume',
       text: 'This is the volume that the video will be set to by default. You can change it in-video during playback as usual.',
-      value: 0,
+      value: 50,
+    },
+
+    muted: {
+      title: 'Video muted',
+      text: 'Set the video to muted by default (doesn\'t affect volume)',
+      value: false,
     },
 
     /*
