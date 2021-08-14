@@ -28,9 +28,7 @@ name: Boards
     components: { BoardsContainer },
 
     async fetch({ store }) {
-      const isServer = process.server;
-
-      await store.dispatch('boards/fetch', { isServer });
+      await store.dispatch('boards/fetch');
     },
 
     head() {

@@ -32,20 +32,20 @@ name: Threads
     return store.getters[ 'boards/getOne' ](boardName);
   }
 
-  async function fetchBoard(store, { isServer, boardName, cached = false }) {
+  async function fetchBoard(store, { boardName, cached = false }) {
     const board = getBoard(store, boardName);
 
     if (board && cached) {
       return board;
     }
 
-    await store.dispatch('boards/fetchOne', { isServer, boardName });
+    await store.dispatch('boards/fetchOne', { boardName });
 
     return getBoard(store, boardName);
   }
 
-  async function boardExists(store, { isServer, boardName, cached = true }) {
-    const board = await fetchBoard(store, { isServer, boardName, cached });
+  async function boardExists(store, { boardName, cached = true }) {
+    const board = await fetchBoard(store, { boardName, cached });
 
     return Boolean(board);
   }
@@ -61,18 +61,15 @@ name: Threads
 
     async validate({ params, store }) {
       const { board: boardName } = params;
-      const isServer = process.server;
-
-      return await boardExists(store, { boardName, isServer });
+      return await boardExists(store, { boardName });
     },
 
     async fetch({ store, params }) {
       const { board: boardName } = params;
-      const isServer = process.server;
 
-      await fetchBoard(store, { boardName, isServer });
+      await fetchBoard(store, { boardName });
 
-      await store.dispatch('threads/fetch', { isServer, boardName });
+      await store.dispatch('threads/fetch', { boardName });
     },
 
     computed: {

@@ -89,6 +89,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/axios-api',
     {
       src: '~plugins/add-client-polyfill.js',
       ssr: false,
@@ -222,5 +223,6 @@ export default {
   env: {
     THREADPULLER_GOATCOUNTER_URL: process.env.THREADPULLER_GOATCOUNTER_URL,
     THREADPULLER_REPOSITORY_URL: process.env.THREADPULLER_REPOSITORY_URL,
+    THREADPULLER_DOMAIN_API: process.env.THREADPULLER_DOMAIN_API,
   },
 };

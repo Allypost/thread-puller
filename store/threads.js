@@ -1,37 +1,6 @@
 import {
-  get,
-} from 'axios';
-import {
   mutationSet,
 } from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchThreads(boardName, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/threads`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchThread(boardName, threadId, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
 
 export const state = () => (
   {
@@ -55,8 +24,17 @@ export const mutations = {
 
 export const actions = {
 
-  async fetchOne({ state, commit }, { boardName, threadId, isServer }) {
-    const threads = await fetchThread(boardName, threadId, isServer);
+  async fetchOne(
+    {
+      state,
+      commit,
+    },
+    {
+      boardName,
+      threadId,
+    },
+  ) {
+    const threads = await this.$api.$get(`/boards/${ boardName }/thread/${ threadId }`);
 
     if (!threads) {
       return;
@@ -67,8 +45,14 @@ export const actions = {
     return state.entries.find((stateThread) => String(stateThread.id) === String(threads.id));
   },
 
-  async fetch({ state, commit }, { boardName, isServer }) {
-    const threads = await fetchThreads(boardName, isServer);
+  async fetch(
+    {
+      state,
+      commit,
+    },
+    { boardName },
+  ) {
+    const threads = await this.$api.$get(`/boards/${ boardName }/threads`);
 
     if (!threads) {
       return;

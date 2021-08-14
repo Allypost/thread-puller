@@ -36,20 +36,20 @@ name: Posts
     return store.getters[ 'threads/getOne' ](threadId);
   }
 
-  async function fetchThread(store, { isServer, boardName, threadId, cached = false }) {
+  async function fetchThread(store, { boardName, threadId, cached = false }) {
     const threads = getThread(store, boardName, threadId);
 
     if (threads && cached) {
       return threads;
     }
 
-    await store.dispatch('threads/fetchOne', { isServer, boardName, threadId });
+    await store.dispatch('threads/fetchOne', { boardName, threadId });
 
     return getThread(store, threadId);
   }
 
-  async function threadExists(store, { isServer, boardName, threadId, cached = true }) {
-    const thread = await fetchThread(store, { isServer, boardName, threadId, cached });
+  async function threadExists(store, { boardName, threadId, cached = true }) {
+    const thread = await fetchThread(store, { boardName, threadId, cached });
 
     return Boolean(thread);
   }
@@ -65,18 +65,16 @@ name: Posts
 
     async validate({ params, store }) {
       const { board: boardName, thread: threadId } = params;
-      const isServer = process.server;
 
-      return await threadExists(store, { boardName, threadId, isServer });
+      return await threadExists(store, { boardName, threadId });
     },
 
     async fetch({ store, params }) {
       const { board: boardName, thread: threadId } = params;
-      const isServer = process.server;
 
-      await fetchThread(store, { boardName, threadId, isServer });
+      await fetchThread(store, { boardName, threadId });
 
-      await store.dispatch('posts/fetch', { isServer, boardName, threadId });
+      await store.dispatch('posts/fetch', { boardName, threadId });
     },
 
     computed: {

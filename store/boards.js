@@ -1,37 +1,6 @@
 import {
-  get,
-} from 'axios';
-import {
   mutationSet,
 } from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchBoard(board, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/board/${ board }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchBoards(isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
 
 export const state = () => (
   {
@@ -55,8 +24,14 @@ export const mutations = {
 
 export const actions = {
 
-  async fetchOne({ state, commit }, { boardName, isServer }) {
-    const board = await fetchBoard(boardName, isServer);
+  async fetchOne(
+    {
+      state,
+      commit,
+    },
+    { boardName },
+  ) {
+    const board = await this.$api.$get(`board/${ boardName }`);
 
     if (!board) {
       return;
@@ -67,8 +42,13 @@ export const actions = {
     return state.entries.find((b) => b.name === board.name);
   },
 
-  async fetch({ state, commit }, { isServer }) {
-    const boards = await fetchBoards(isServer);
+  async fetch(
+    {
+      state,
+      commit,
+    },
+  ) {
+    const boards = await this.$api.$get('/boards');
 
     if (!boards) {
       return;
