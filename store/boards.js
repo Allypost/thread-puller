@@ -1,25 +1,30 @@
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
+import Vue from 'vue';
 
 export const state = () => (
   {
-    entries: [],
+    boards: [],
+    board: null,
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
+  boards(state) {
+    return state.boards;
   },
 
-  getOne({ entries }) {
-    return (boardName) => entries.find((board) => board.board === boardName);
+  board(state) {
+    return state.board;
   },
 };
 
 export const mutations = {
-  ...mutationSet({ identifierKey: 'board' }),
+  SET_BOARDS(state, boards) {
+    Vue.set(state, 'boards', boards);
+  },
+
+  SET_BOARD(state, board) {
+    Vue.set(state, 'board', board);
+  },
 };
 
 export const actions = {
@@ -33,16 +38,12 @@ export const actions = {
   ) {
     const board = await this.$api.$get(`board/${ boardName }`);
 
-    if (!board) {
-      return;
-    }
+    commit('SET_BOARD', board);
 
-    commit('add', board);
-
-    return state.entries.find((b) => b.name === board.name);
+    return state.board;
   },
 
-  async fetch(
+  async fetchAll(
     {
       state,
       commit,
@@ -50,13 +51,9 @@ export const actions = {
   ) {
     const boards = await this.$api.$get('/boards');
 
-    if (!boards) {
-      return;
-    }
+    commit('SET_BOARDS', boards);
 
-    commit('set', boards);
-
-    return state.entries;
+    return state.boards;
   },
 
 };

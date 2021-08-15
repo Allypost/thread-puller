@@ -1,6 +1,6 @@
 export const actions = {
   async searchThreads(
-    _,
+    _context,
     {
       board,
       query,

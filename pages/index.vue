@@ -28,7 +28,7 @@ name: Boards
     components: { BoardsContainer },
 
     async fetch({ store }) {
-      await store.dispatch('boards/fetch');
+      await store.dispatch('boards/fetchAll');
     },
 
     head() {

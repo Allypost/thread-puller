@@ -1,50 +1,24 @@
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
+import Vue from 'vue';
 
 export const state = () => (
   {
-    entries: [],
+    threads: [],
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
-  },
-
-  getOne({ entries }) {
-    return (threadId) => entries.find((thread) => String(thread.id) === String(threadId));
+  threads(state) {
+    return state.threads;
   },
 };
 
 export const mutations = {
-  ...mutationSet(),
+  SET_THREADS(state, threads) {
+    Vue.set(state, 'threads', threads);
+  },
 };
 
 export const actions = {
-
-  async fetchOne(
-    {
-      state,
-      commit,
-    },
-    {
-      boardName,
-      threadId,
-    },
-  ) {
-    const threads = await this.$api.$get(`/boards/${ boardName }/thread/${ threadId }`);
-
-    if (!threads) {
-      return;
-    }
-
-    commit('set', threads);
-
-    return state.entries.find((stateThread) => String(stateThread.id) === String(threads.id));
-  },
-
   async fetch(
     {
       state,
@@ -54,13 +28,8 @@ export const actions = {
   ) {
     const threads = await this.$api.$get(`/boards/${ boardName }/threads`);
 
-    if (!threads) {
-      return;
-    }
-
-    commit('set', threads);
+    commit('SET_THREADS', threads || []);
 
     return state.entries;
   },
-
 };

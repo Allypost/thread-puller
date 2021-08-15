@@ -1,36 +1,35 @@
 import Vue from 'vue';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
 
 export const state = () => (
   {
-    entries: [],
+    posts: [],
     focused: null,
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
+  posts(state) {
+    return state.posts;
   },
 
-  getFocused({ focused }) {
-    return focused;
+  focused(state) {
+    return state.focused;
   },
 };
 
 export const mutations = {
-  ...mutationSet(),
-
-  setFocused(store, postId) {
-    const focused = store.entries.find(({ id }) => id === postId);
-
-    Vue.set(store, 'focused', focused);
+  SET_POSTS(state, posts) {
+    Vue.set(state, 'posts', posts);
   },
 
-  setUnfocused(store) {
-    Vue.set(store, 'focused', null);
+  SET_FOCUSED(state, postId) {
+    const focused = state.posts.find(({ id }) => id === postId);
+
+    Vue.set(state, 'focused', focused);
+  },
+
+  SET_UNFOCUSED(state) {
+    Vue.set(state, 'focused', null);
   },
 };
 
@@ -47,13 +46,9 @@ export const actions = {
   ) {
     const posts = await this.$api.$get(`/boards/${ boardName }/thread/${ threadId }`);
 
-    if (!posts) {
-      return;
-    }
+    commit('SET_POSTS', posts);
 
-    commit('set', posts);
-
-    return state.entries;
+    return state.posts;
   },
 
 };

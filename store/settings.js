@@ -51,10 +51,6 @@ export const getters = {
     );
   },
 
-  getOne(settings) {
-    return (settingName) => settings[ settingName ];
-  },
-
   has(settings) {
     return (settingName) => 'undefined' !== typeof settings[ settingName ];
   },

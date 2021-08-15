@@ -119,7 +119,7 @@ name: Search
     },
 
     async fetch({ store }) {
-      await store.dispatch('boards/fetch');
+      await store.dispatch('boards/fetchAll');
     },
 
     computed: {
@@ -135,8 +135,8 @@ name: Search
         return `https://find.4channel.org/?q=${ encodeURIComponent(this.form.query) }`;
       },
 
-      ...mapGetters({
-        boards: 'boards/get',
+      ...mapGetters('boards', {
+        boards: 'boards',
       }),
     },
 

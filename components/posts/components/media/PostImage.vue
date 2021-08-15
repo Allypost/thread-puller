@@ -8,6 +8,9 @@
 </template>
 
 <script>
+  import {
+    mapMutations,
+  } from 'vuex';
   import ThreadImage from '../../../threads/thread/media/components/ThreadMediaThumb.vue';
 
   function isElementInViewport(el) {
@@ -107,8 +110,12 @@
 
     methods: {
       handleClick() {
-        this.$store.commit('posts/setFocused', this.file.postId);
+        this.setFocused(this.file.postId);
       },
+
+      ...mapMutations('posts', {
+        setFocused: 'SET_FOCUSED',
+      }),
     },
   };
 </script>

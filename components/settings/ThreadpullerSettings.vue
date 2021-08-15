@@ -77,8 +77,8 @@
         return CogImg;
       },
 
-      ...mapGetters({
-        settings: 'settings/keys',
+      ...mapGetters('settings', {
+        settings: 'keys',
       }),
     },
 
