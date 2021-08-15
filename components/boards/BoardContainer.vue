@@ -53,8 +53,8 @@
         return this.filteredBoards || this.rawBoards;
       },
 
-      ...mapGetters({
-        rawBoards: 'boards/get',
+      ...mapGetters('boards', {
+        rawBoards: 'boards',
       }),
     },
 

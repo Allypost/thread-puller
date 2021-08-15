@@ -86,13 +86,21 @@ name: Search
   import LoaderSpinner from '../components/threads/thread/media/LoaderSpinner';
 
   function e(name, content) {
-    return { hid: name, name, content };
+    return {
+      hid: name,
+      name,
+      content,
+    };
   }
 
   export default {
     name: 'Search',
 
-    components: { ThreadBacklinks, BoardThread, LoaderSpinner },
+    components: {
+      ThreadBacklinks,
+      BoardThread,
+      LoaderSpinner,
+    },
 
     data() {
       return {
@@ -111,9 +119,7 @@ name: Search
     },
 
     async fetch({ store }) {
-      const isServer = process.server;
-
-      await store.dispatch('boards/fetch', { isServer });
+      await store.dispatch('boards/fetchAll');
     },
 
     computed: {
@@ -129,8 +135,8 @@ name: Search
         return `https://find.4channel.org/?q=${ encodeURIComponent(this.form.query) }`;
       },
 
-      ...mapGetters({
-        boards: 'boards/get',
+      ...mapGetters('boards', {
+        boards: 'boards',
       }),
     },
 
@@ -151,8 +157,7 @@ name: Search
         this.loading = true;
         this.$set(this, 'results', []);
 
-        const isServer = process.server;
-        const result = await this.searchThreads({ ...this.form, isServer });
+        const result = await this.searchThreads(this.form);
 
         this.$set(this, 'results', result);
 

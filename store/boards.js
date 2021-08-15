@@ -1,82 +1,59 @@
-import {
-  get,
-} from 'axios';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchBoard(board, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/board/${ board }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchBoards(isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
+import Vue from 'vue';
 
 export const state = () => (
   {
-    entries: [],
+    boards: [],
+    board: null,
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
+  boards(state) {
+    return state.boards;
   },
 
-  getOne({ entries }) {
-    return (boardName) => entries.find((board) => board.board === boardName);
+  board(state) {
+    return state.board;
   },
 };
 
 export const mutations = {
-  ...mutationSet({ identifierKey: 'board' }),
+  SET_BOARDS(state, boards) {
+    Vue.set(state, 'boards', boards);
+  },
+
+  SET_BOARD(state, board) {
+    Vue.set(state, 'board', board);
+  },
 };
 
 export const actions = {
 
-  async fetchOne({ state, commit }, { boardName, isServer }) {
-    const board = await fetchBoard(boardName, isServer);
+  async fetchOne(
+    {
+      state,
+      commit,
+    },
+    { boardName },
+  ) {
+    const board = await this.$api.$get(`board/${ boardName }`);
 
-    if (!board) {
-      return;
-    }
+    commit('SET_BOARD', board);
 
-    commit('add', board);
-
-    return state.entries.find((b) => b.name === board.name);
+    return state.board;
   },
 
-  async fetch({ state, commit }, { isServer }) {
-    const boards = await fetchBoards(isServer);
+  async fetchAll(
+    {
+      state,
+      commit,
+    },
+  ) {
+    const boards = await this.$api.$get('/boards');
 
-    if (!boards) {
-      return;
-    }
+    commit('SET_BOARDS', boards);
 
-    commit('set', boards);
-
-    return state.entries;
+    return state.boards;
   },
 
 };

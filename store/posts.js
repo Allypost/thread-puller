@@ -1,72 +1,54 @@
-import {
-  get,
-} from 'axios';
 import Vue from 'vue';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchPosts(boardName, threadId, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
 
 export const state = () => (
   {
-    entries: [],
+    posts: [],
     focused: null,
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
+  posts(state) {
+    return state.posts;
   },
 
-  getFocused({ focused }) {
-    return focused;
+  focused(state) {
+    return state.focused;
   },
 };
 
 export const mutations = {
-  ...mutationSet(),
-
-  setFocused(store, postId) {
-    const focused = store.entries.find(({ id }) => id === postId);
-
-    Vue.set(store, 'focused', focused);
+  SET_POSTS(state, posts) {
+    Vue.set(state, 'posts', posts);
   },
 
-  setUnfocused(store) {
-    Vue.set(store, 'focused', null);
+  SET_FOCUSED(state, postId) {
+    const focused = state.posts.find(({ id }) => id === postId);
+
+    Vue.set(state, 'focused', focused);
+  },
+
+  SET_UNFOCUSED(state) {
+    Vue.set(state, 'focused', null);
   },
 };
 
 export const actions = {
+  async fetch(
+    {
+      state,
+      commit,
+    },
+    {
+      boardName,
+      threadId,
+    },
+  ) {
+    const posts = await this.$api.$get(`/boards/${ boardName }/thread/${ threadId }`);
 
-  async fetch({ state, commit }, { boardName, threadId, isServer }) {
-    const posts = await fetchPosts(boardName, threadId, isServer);
+    commit('SET_POSTS', posts);
 
-    if (!posts) {
-      return;
-    }
-
-    commit('set', posts);
-
-    return state.entries;
+    return state.posts;
   },
 
 };

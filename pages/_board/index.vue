@@ -28,27 +28,6 @@ name: Threads
   import ThreadpullerSettings from '../../components/settings/ThreadpullerSettings.vue';
   import ThreadsContainer from '../../components/threads/ThreadsContainer';
 
-  function getBoard(store, boardName) {
-    return store.getters[ 'boards/getOne' ](boardName);
-  }
-
-  async function fetchBoard(store, { isServer, boardName, cached = false }) {
-    const board = getBoard(store, boardName);
-
-    if (board && cached) {
-      return board;
-    }
-
-    await store.dispatch('boards/fetchOne', { isServer, boardName });
-
-    return getBoard(store, boardName);
-  }
-
-  async function boardExists(store, { isServer, boardName, cached = true }) {
-    const board = await fetchBoard(store, { isServer, boardName, cached });
-
-    return Boolean(board);
-  }
 
   function e(name, content) {
     return { hid: name, name, content };
@@ -61,18 +40,13 @@ name: Threads
 
     async validate({ params, store }) {
       const { board: boardName } = params;
-      const isServer = process.server;
 
-      return await boardExists(store, { boardName, isServer });
-    },
+      await Promise.all([
+        store.dispatch('boards/fetchOne', { boardName }),
+        store.dispatch('threads/fetch', { boardName }),
+      ]);
 
-    async fetch({ store, params }) {
-      const { board: boardName } = params;
-      const isServer = process.server;
-
-      await fetchBoard(store, { boardName, isServer });
-
-      await store.dispatch('threads/fetch', { isServer, boardName });
+      return null !== store.getters[ 'boards/board' ];
     },
 
     computed: {
@@ -88,12 +62,8 @@ name: Threads
         return `https://boards.4chan.org/${ this.boardName }/`;
       },
 
-      board() {
-        return this.getBoard(this.boardName);
-      },
-
-      ...mapGetters({
-        getBoard: 'boards/getOne',
+      ...mapGetters('boards', {
+        board: 'boards',
       }),
     },
 

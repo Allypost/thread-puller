@@ -32,28 +32,6 @@ name: Posts
   import PostsContainer from '../../../../components/posts/PostsContainer';
   import ThreadpullerSettings from '../../../../components/settings/ThreadpullerSettings.vue';
 
-  function getThread(store, threadId) {
-    return store.getters[ 'threads/getOne' ](threadId);
-  }
-
-  async function fetchThread(store, { isServer, boardName, threadId, cached = false }) {
-    const threads = getThread(store, boardName, threadId);
-
-    if (threads && cached) {
-      return threads;
-    }
-
-    await store.dispatch('threads/fetchOne', { isServer, boardName, threadId });
-
-    return getThread(store, threadId);
-  }
-
-  async function threadExists(store, { isServer, boardName, threadId, cached = true }) {
-    const thread = await fetchThread(store, { isServer, boardName, threadId, cached });
-
-    return Boolean(thread);
-  }
-
   function e(name, content) {
     return { hid: name, name, content };
   }
@@ -65,18 +43,10 @@ name: Posts
 
     async validate({ params, store }) {
       const { board: boardName, thread: threadId } = params;
-      const isServer = process.server;
 
-      return await threadExists(store, { boardName, threadId, isServer });
-    },
+      const [ firstPost ] = await store.dispatch('posts/fetch', { boardName, threadId });
 
-    async fetch({ store, params }) {
-      const { board: boardName, thread: threadId } = params;
-      const isServer = process.server;
-
-      await fetchThread(store, { boardName, threadId, isServer });
-
-      await store.dispatch('posts/fetch', { isServer, boardName, threadId });
+      return Boolean(firstPost);
     },
 
     computed: {
@@ -138,8 +108,8 @@ name: Posts
         };
       },
 
-      ...mapGetters({
-        posts: 'posts/get',
+      ...mapGetters('posts', {
+        posts: 'posts',
       }),
     },
 
