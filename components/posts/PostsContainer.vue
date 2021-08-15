@@ -77,9 +77,9 @@
         };
       },
 
-      ...mapGetters({
-        posts: 'posts/get',
-        focusedPost: 'posts/getFocused',
+      ...mapGetters('posts', {
+        posts: 'posts',
+        focusedPost: 'focused',
       }),
     },
 
@@ -93,7 +93,7 @@
 
     methods: {
       ...mapMutations({
-        unfocusImage: 'posts/setUnfocused',
+        unfocusImage: 'posts/SET_UNFOCUSED',
       }),
     },
   };

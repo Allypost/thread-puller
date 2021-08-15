@@ -1,82 +1,35 @@
-import {
-  get,
-} from 'axios';
-import {
-  mutationSet,
-} from './helpers/entryCRUD';
-
-function baseUrl(isServer) {
-  if (isServer) {
-    return `http://localhost:${ process.env.PORT }`;
-  } else {
-    return '';
-  }
-}
-
-async function fetchThreads(boardName, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/threads`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function fetchThread(boardName, threadId, isServer) {
-  try {
-    const { data } = await get(`${ baseUrl(isServer) }/api/boards/${ boardName }/thread/${ threadId }`, { responseType: 'json' });
-
-    return data;
-  } catch (e) {
-    return null;
-  }
-}
+import Vue from 'vue';
 
 export const state = () => (
   {
-    entries: [],
+    threads: [],
   }
 );
 
 export const getters = {
-  get({ entries }) {
-    return entries;
-  },
-
-  getOne({ entries }) {
-    return (threadId) => entries.find((thread) => String(thread.id) === String(threadId));
+  threads(state) {
+    return state.threads;
   },
 };
 
 export const mutations = {
-  ...mutationSet(),
+  SET_THREADS(state, threads) {
+    Vue.set(state, 'threads', threads);
+  },
 };
 
 export const actions = {
+  async fetch(
+    {
+      state,
+      commit,
+    },
+    { boardName },
+  ) {
+    const threads = await this.$api.$get(`/boards/${ boardName }/threads`);
 
-  async fetchOne({ state, commit }, { boardName, threadId, isServer }) {
-    const threads = await fetchThread(boardName, threadId, isServer);
-
-    if (!threads) {
-      return;
-    }
-
-    commit('set', threads);
-
-    return state.entries.find((stateThread) => String(stateThread.id) === String(threads.id));
-  },
-
-  async fetch({ state, commit }, { boardName, isServer }) {
-    const threads = await fetchThreads(boardName, isServer);
-
-    if (!threads) {
-      return;
-    }
-
-    commit('set', threads);
+    commit('SET_THREADS', threads || []);
 
     return state.entries;
   },
-
 };

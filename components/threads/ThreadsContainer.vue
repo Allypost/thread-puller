@@ -101,8 +101,8 @@
         );
       },
 
-      ...mapGetters({
-        rawThreads: 'threads/get',
+      ...mapGetters('threads', {
+        rawThreads: 'threads',
       }),
     },
 
