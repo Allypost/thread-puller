@@ -31,6 +31,9 @@ name: Posts
   import ThreadBacklinks from '../../../../components/ThreadBacklinks';
   import PostsContainer from '../../../../components/posts/PostsContainer';
   import ThreadpullerSettings from '../../../../components/settings/ThreadpullerSettings.vue';
+  import {
+    generateMetadata,
+  } from '../../../../lib/Helpers/Head/metadata';
 
   function e(name, content) {
     return { hid: name, name, content };
@@ -138,21 +141,15 @@ name: Posts
         .decodeEntities(originalPostBody.content || originalPostBody.title, { maxLength: 200, br2nl: true })
         .replace(/\n/gi, '\\n');
 
-      const meta = [
-        e('og:title', title),
-        e('og:description', description),
-        e('description', description),
-      ];
-
-      if (originalPostFile) {
-        meta.push(e('og:image', originalPostFile.src.remote.thumb));
-      } else {
-        meta.push(e('og:image', PepeSadImage));
-      }
+      const meta = {
+        title,
+        description,
+        image: originalPostFile?.src.remote.thumb || PepeSadImage,
+      };
 
       return {
         title,
-        meta,
+        meta: generateMetadata(meta),
       };
     },
   };

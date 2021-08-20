@@ -84,6 +84,9 @@ name: Search
   import ThreadBacklinks from '../components/ThreadBacklinks';
   import BoardThread from '../components/threads/BoardThread';
   import LoaderSpinner from '../components/threads/thread/media/LoaderSpinner';
+  import {
+    generateMetadata,
+  } from '../lib/Helpers/Head/metadata';
 
   function e(name, content) {
     return {
@@ -168,13 +171,16 @@ name: Search
     },
 
     head() {
+      const title = 'Search';
+
       return {
-        title: 'Search',
+        title,
         meta: [
-          e('og:title', 'Search | ThreadPuller'),
-          e('og:description', 'Search the current boards.'),
-          e('description', 'Search the current boards.'),
-          e('og:image', PepeImage),
+          ...generateMetadata({
+            title,
+            description: 'Search the current boards.',
+            image: PepeImage,
+          }),
         ],
       };
     },

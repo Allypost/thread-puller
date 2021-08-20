@@ -7,6 +7,9 @@ import {
 } from 'loader-utils';
 import normalizePath from 'normalize-path';
 import ShortUniqueId from 'short-unique-id';
+import {
+  generateMetadata,
+} from './lib/Helpers/Head/metadata';
 
 // eslint-disable-next-line no-control-regex
 const filenameReservedRegex = /[<>:"/\\|?*\x00-\x1F]/g;
@@ -37,11 +40,13 @@ export default {
     title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
-      meta('viewport', 'width=device-width, initial-scale=1'),
-      meta('referrer', 'never'),
-      meta('theme-color', '#1e1e1e'),
-      meta('msapplication-TileColor', '#1e1e1e'),
-      meta('application-name', process.env.npm_package_description || ''),
+      ...generateMetadata({
+        'viewport': 'width=device-width, initial-scale=1',
+        'referrer': 'never',
+        'theme-color': '#1e1e1e',
+        'msapplication-TileColor': '#1e1e1e',
+        'application-name': process.env.npm_package_description || '',
+      }),
     ],
     link: [
       {

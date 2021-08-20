@@ -17,6 +17,9 @@ name: Boards
 <script>
   import PepeImage from '../assets/images/pepe.png';
   import BoardsContainer from '../components/boards/BoardContainer';
+  import {
+    generateMetadata,
+  } from '../lib/Helpers/Head/metadata';
 
   function e(name, content) {
     return { hid: name, name, content };
@@ -32,13 +35,16 @@ name: Boards
     },
 
     head() {
+      const title = 'ThreadPuller - Pull 4Chan Image Threads';
+
       return {
-        title: '',
+        title,
         meta: [
-          e('og:title', 'ThreadPuller - Pull 4Chan Image Threads'),
-          e('og:description', 'Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.'),
-          e('description', 'Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.'),
-          e('og:image', PepeImage),
+          ...generateMetadata({
+            title,
+            description: 'Strips down as much as possible so you can enjoy the pure imagery of the chan denizens.',
+            image: PepeImage,
+          }),
         ],
       };
     },
