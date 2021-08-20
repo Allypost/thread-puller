@@ -27,11 +27,9 @@ name: Threads
   import ThreadBacklinks from '../../components/ThreadBacklinks';
   import ThreadpullerSettings from '../../components/settings/ThreadpullerSettings.vue';
   import ThreadsContainer from '../../components/threads/ThreadsContainer';
-
-
-  function e(name, content) {
-    return { hid: name, name, content };
-  }
+  import {
+    generateMetadata,
+  } from '../../lib/Helpers/Head/metadata';
 
   export default {
     name: 'Threads',
@@ -63,7 +61,7 @@ name: Threads
       },
 
       ...mapGetters('boards', {
-        board: 'boards',
+        board: 'board',
       }),
     },
 
@@ -81,10 +79,11 @@ name: Threads
       return {
         title: link,
         meta: [
-          e('og:title', `${ link } - ${ title } | ThreadPuller`),
-          e('og:description', decodedDescription),
-          e('description', decodedDescription),
-          e('og:image', PepeImage),
+          ...generateMetadata({
+            title: `${ link } - ${ title }`,
+            description: decodedDescription,
+            image: PepeImage,
+          }),
         ],
       };
     },
