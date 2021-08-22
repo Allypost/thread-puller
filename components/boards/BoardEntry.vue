@@ -4,15 +4,14 @@
     class="board"
   >
     <header>
-      <n-link
+      <nuxt-link
         ref="link"
-        :event="approved ? 'click' : ''"
         :to="{ name: 'Threads', params: { board: board.board } }"
         class="title"
-        @click.native="handleClick"
+        @click.native.capture="handleClick"
       >
         {{ board.link }} - {{ board.title }}
-      </n-link>
+      </nuxt-link>
     </header>
     <section
       class="description"
@@ -39,7 +38,7 @@
     },
 
     methods: {
-      handleClick() {
+      handleClick($event) {
         if (this.approved) {
           return true;
         }
@@ -48,8 +47,8 @@
           'This section of the website may contain sexually explicit content or content that is otherwise inappropriate for children and young adults.\nIf you are a minor or it is illegal for you to access mature images and language, do not proceed.\n\nYou must be 18 or older to enter.\n\nDo you agree to continue?',
         );
 
-        if (this.approved) {
-          this.$nextTick(() => this.$refs.link.$el.click());
+        if (!this.approved) {
+          $event.preventDefault();
         }
       },
     },
