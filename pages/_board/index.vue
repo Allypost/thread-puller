@@ -36,7 +36,7 @@ name: Threads
 
     components: { ThreadsContainer, ThreadBacklinks, ThreadpullerSettings },
 
-    async validate({ params, store }) {
+    async fetch({ params, store, error }) {
       const { board: boardName } = params;
 
       await Promise.all([
@@ -44,7 +44,12 @@ name: Threads
         store.dispatch('threads/fetch', { boardName }),
       ]);
 
-      return null !== store.getters[ 'boards/board' ];
+      if (!store.getters[ 'boards/board' ]) {
+        error({
+          statusCode: 404,
+          message: 'Board does not exist',
+        });
+      }
     },
 
     computed: {
