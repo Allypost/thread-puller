@@ -44,12 +44,17 @@ name: Posts
 
     components: { PostsContainer, ThreadBacklinks, ThreadpullerSettings },
 
-    async validate({ params, store }) {
+    async fetch({ params, store, error }) {
       const { board: boardName, thread: threadId } = params;
 
       const [ firstPost ] = await store.dispatch('posts/fetch', { boardName, threadId });
 
-      return Boolean(firstPost);
+      if (!firstPost) {
+        error({
+          statusCode: 404,
+          message: 'Thread does not exist',
+        });
+      }
     },
 
     computed: {

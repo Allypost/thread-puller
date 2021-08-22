@@ -50,14 +50,33 @@
   export default {
     name: 'ThreadsContainer',
 
-    components: { SearchInput, BoardThread },
+    components: {
+      SearchInput,
+      BoardThread,
+    },
 
     data() {
+      const {
+        sb = 'none',
+        sd = 'desc',
+      } = this.$route.query;
+
+      const allowedSortKeys = new Set([
+        'none',
+        'images',
+        'replies',
+      ]);
+
+      const allowedSortDirections = new Set([
+        'asd',
+        'desc',
+      ]);
+
       return {
         filteredThreads: null,
         sort: {
-          key: 'none',
-          direction: 'desc',
+          key: allowedSortKeys.has(sb) ? sb : 'none',
+          direction: allowedSortDirections.has(sd) ? sd : 'desc',
         },
         keys: [
           {
@@ -104,6 +123,38 @@
       ...mapGetters('threads', {
         rawThreads: 'threads',
       }),
+    },
+
+    watch: {
+      sort: {
+        deep: true,
+        handler(newSort) {
+          const {
+            sb,
+            sd,
+            ...query
+          } = this.$route.query;
+
+          const {
+            key,
+            direction,
+          } = newSort;
+
+          if ('none' === key) {
+            this.$router.replace({
+              query,
+            });
+          } else {
+            this.$router.replace({
+              query: {
+                ...query,
+                sb: key,
+                sd: direction,
+              },
+            });
+          }
+        },
+      },
     },
 
     methods: {
