@@ -22,7 +22,7 @@ export default class Threads extends ThreadsBase {
       board: string;
     },
   ): Promise<Post[]> {
-    const url = `https://bunkerchan.xyz/${ board }/catalog.json`;
+    const url = `https://leftypol.org/${ board }/catalog.json`;
     const threads = await get<BunkerChanBoardCatalog, null>(url, null);
 
     if (!threads) {

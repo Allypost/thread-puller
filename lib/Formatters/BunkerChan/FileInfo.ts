@@ -9,7 +9,7 @@ import type {
 } from '../../Types/BunkerChan/remote';
 
 export default class FileInfo {
-  static chanBase = 'https://bunkerchan.xyz';
+  static chanBase = 'https://leftypol.org';
 
   static localBase = `${ process.env.THREADPULLER_DOMAIN_API }/v2/bunker-chan/files`;
 

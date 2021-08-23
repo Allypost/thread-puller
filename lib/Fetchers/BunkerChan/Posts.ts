@@ -24,7 +24,7 @@ export default class Posts extends PostsBase {
     board,
     thread,
   }: { board: string; thread: string }): Promise<Post[]> {
-    const url = `https://bunkerchan.xyz/${ board }/res/${ thread }.json`;
+    const url = `https://leftypol.org/${ board }/res/${ thread }.json`;
     const catalog = await get<BunkerChanThreadCatalog, null>(url);
 
     if (!catalog) {
