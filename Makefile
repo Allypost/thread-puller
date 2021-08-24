@@ -97,19 +97,6 @@ build: yarn-install
 	rm -rf "$(FINAL_OUTPUT_DIR).old" \
 	|| $(MAKE) notify-failed
 
-.PHONY: yarn-install
-yarn-install:
-	docker/yarn install
-
-.PHONY: build
-build: yarn-install
-	mkdir -p "$(FINAL_OUTPUT_DIR)" && \
-	docker/yarn build -c nuxt.config.build && \
-	mv "$(FINAL_OUTPUT_DIR)" "$(FINAL_OUTPUT_DIR).old" && \
-	mv "$(BUILD_OUTPUT_DIR)" "$(FINAL_OUTPUT_DIR)" && \
-	rm -rf "$(FINAL_OUTPUT_DIR).old" \
-	|| $(MAKE) notify-failed
-
 .PHONY: clean
 clean:
 	rm -rf $(NODE_MODULES) .nuxt
