@@ -232,13 +232,17 @@ app.get('/board/:board', fetchData(async ({ params }) => {
 app.get('/boards/:board/threads', fetchData(async ({ params }) => {
   const { board } = params;
 
-  return await Threads.get(board);
+  const threads = await Threads.get(board);
+
+  return threads.map((t) => PostInfo.toOld(t));
 }));
 
 app.get('/boards/:board/thread/:thread', fetchData(async ({ params }) => {
   const { board, thread } = params;
 
-  return await Posts.get(board, thread);
+  const posts = await Posts.get(board, thread);
+
+  return posts.map((p) => PostInfo.toOld(p));
 }));
 
 app.post('/search/remote', streamSearchData(search4ChanBoardGenerator));

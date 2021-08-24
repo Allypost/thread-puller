@@ -98,13 +98,7 @@
       },
 
       poster() {
-        if (!this.wasVisible) {
-          return this.thumbSrc;
-        }
-
-        const { hd } = this.posterSrcSet;
-
-        return hd;
+        return this.thumbSrc;
       },
 
     },

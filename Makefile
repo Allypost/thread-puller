@@ -30,6 +30,12 @@ dev: $(NODE_MODULES) up-db
 	docker/yarn dev || exit 0
 	$(MAKE) down
 
+.PHONY: debug/api
+debug/api: $(NODE_MODULES)
+	nodemon \
+		--ext 'js,mjs,json,ts' \
+		--exec "TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\",\"target\":\"ES2017\"}' node --inspect -r ts-node/register ./api"
+
 .PHONY: down
 down:
 	docker/compose down
@@ -83,19 +89,6 @@ notify-failed:
 		-F "message=Build za $(APP_NAME) je pukao na \`$(shell hostname)'" \
 		-F "priority=10" &>/dev/null \
 	|| exit 0
-
-.PHONY: yarn-install
-yarn-install:
-	docker/yarn install
-
-.PHONY: build
-build: yarn-install
-	mkdir -p "$(FINAL_OUTPUT_DIR)" && \
-	docker/yarn build -c nuxt.config.build && \
-	mv "$(FINAL_OUTPUT_DIR)" "$(FINAL_OUTPUT_DIR).old" && \
-	mv "$(BUILD_OUTPUT_DIR)" "$(FINAL_OUTPUT_DIR)" && \
-	rm -rf "$(FINAL_OUTPUT_DIR).old" \
-	|| $(MAKE) notify-failed
 
 .PHONY: yarn-install
 yarn-install:

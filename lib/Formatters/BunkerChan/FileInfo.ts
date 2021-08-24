@@ -1,15 +1,15 @@
 import type {
-  Attachment,
-  AttachmentBase,
-  AttachmentMeta,
-} from '../../Types/BunkerChan/local';
-import type {
   BunkerChanPostBase,
   BunkerChanPostFile,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Attachment,
+  AttachmentBase,
+  AttachmentMeta,
+} from '../../Types/api';
 
 export default class FileInfo {
-  static chanBase = 'https://bunkerchan.xyz';
+  static chanBase = 'https://leftypol.org';
 
   static localBase = `${ process.env.THREADPULLER_DOMAIN_API }/v2/bunker-chan/files`;
 
