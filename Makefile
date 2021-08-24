@@ -30,6 +30,12 @@ dev: $(NODE_MODULES) up-db
 	docker/yarn dev || exit 0
 	$(MAKE) down
 
+.PHONY: debug/api
+debug/api: $(NODE_MODULES)
+	nodemon \
+		--ext 'js,mjs,json,ts' \
+		--exec "TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\",\"target\":\"ES2017\"}' node --inspect -r ts-node/register ./api"
+
 .PHONY: down
 down:
 	docker/compose down
