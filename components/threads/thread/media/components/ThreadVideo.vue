@@ -3,10 +3,12 @@
     :autoplay="vAutoplay"
     :controls="controls"
     :loop="vLoop"
+    :poster="hidePoster ? undefined : poster"
     :muted="vMuted"
     :preload="preload"
     @play="$emit('playing', true)"
     @pause="$emit('playing', false)"
+    @canplay="handleCanPlay"
   >
     <source :src="srcset.remote">
     <source :src="srcset.local">
@@ -26,6 +28,10 @@
       file: {
         type: Object,
         required: true,
+      },
+      poster: {
+        type: String,
+        default: undefined,
       },
       autoplay: {
         type: Boolean,
@@ -56,6 +62,7 @@
     data() {
       return {
         isDestroyed: false,
+        hidePoster: false,
       };
     },
 
@@ -117,6 +124,13 @@
           this.$el.play();
         }
       },
+
+      srcset: {
+        deep: true,
+        handler() {
+          this.hidePoster = false;
+        },
+      },
     },
 
     mounted() {
@@ -145,6 +159,10 @@
         const { value } = setting;
 
         return value;
+      },
+
+      handleCanPlay() {
+        this.hidePoster = true;
       },
     },
   };
