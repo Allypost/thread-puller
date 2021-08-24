@@ -1,17 +1,18 @@
-import {
-  pipe,
-} from 'lodash/fp';
-import type {
-  Post,
-} from '../../Types/BunkerChan/local';
 import type {
   BunkerChanBoardCatalog,
   BunkerChanPost,
   BunkerChanThreadCatalog,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Post,
+} from '../../Types/api';
 import FileInfo from './FileInfo';
 
 export default class PostInfo {
+  private static readonly MENTION_REGEX = />&gt;&gt;([0-9]+)</g;
+
+  private static readonly MENTION_NUMBER_START = 9;
+
   public static parseThreads(catalog: BunkerChanBoardCatalog): Post[] {
     const parsed =
       catalog
@@ -69,7 +70,7 @@ export default class PostInfo {
       body: {
         title: post.sub || '',
         poster: post.name || '',
-        content: (post.com || '').replace(/<wbr>/gi, ''),
+        content: post.com || '',
       },
 
       meta: {
@@ -84,41 +85,54 @@ export default class PostInfo {
   }
 
   private static addMetas(posts: Post[]): Post[] {
-    return posts.map((post) => this.addMeta(posts, post));
+    const postRepliesTo = new Map<Post['id'], Array<Post['id']>>();
+    const postsMentioning = new Map<Post['id'], Set<Post['id']>>();
+
+    for (const post of posts) {
+      const postId = post.id;
+
+      // Get all post ids the current post includes
+      const mentions = this.getPostIdsMentionedIn(post);
+
+      if (0 === mentions.length) {
+        continue;
+      }
+
+      postRepliesTo.set(postId, mentions);
+
+      // Add current post to list of posts that mentioned the post ID
+      for (const mentionedPostId of mentions) {
+        if (!postsMentioning.has(mentionedPostId)) {
+          postsMentioning.set(mentionedPostId, new Set());
+        }
+
+        postsMentioning
+          .get(mentionedPostId)
+          ?.add(postId)
+        ;
+      }
+    }
+
+    for (const post of posts) {
+      post.meta.refs = {
+        repliesTo: Array.from(postRepliesTo.get(post.id) || []),
+        mentionedIn: Array.from(postsMentioning.get(post.id) || []),
+      };
+    }
+
+    return posts;
   }
 
-  private static addMeta(posts: Post[], post: Post): Post {
-    return pipe(
-      this.addRepliesToPost.bind(this, posts),
-      this.addMentionsInPost.bind(this),
-    )(post);
-  }
+  private static getPostIdsMentionedIn(post: Post): number[] {
+    const matches = post.body.content.match(this.MENTION_REGEX);
 
-  private static addRepliesToPost(posts: Post[], post: Post): Post {
-    post.meta.replies = this.getReplies(posts, post);
+    if (null === matches) {
+      return [];
+    }
 
-    return post;
-  }
+    const start = this.MENTION_NUMBER_START;
+    const end = -1;
 
-  private static getReplies(posts: Post[], post: Post): number[] {
-    return (
-      posts
-        .filter((p) => String(p.body.content || '').includes(`>>${ post.id }`))
-        .map((p) => p.id)
-    );
-  }
-
-  private static addMentionsInPost(post: Post): Post {
-    post.meta.mentions = this.getMentions(post);
-
-    return post;
-  }
-
-  private static getMentions(post: Post): number[] {
-    const re = /(^|[^>])>>([0-9]+)/g;
-    const { content } = post.body;
-    const matches = content.match(re) || [];
-
-    return matches.map((m) => Number(m.replace(/[^\d]/gi, '')));
+    return matches.map((m) => Number(m.slice(start, end)));
   }
 }

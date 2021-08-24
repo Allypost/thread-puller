@@ -1,9 +1,9 @@
 import type {
-  Post,
-} from '../../Types/BunkerChan/local';
-import type {
   BunkerChanPostOp,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Post,
+} from '../../Types/api';
 import FileInfo from './FileInfo';
 
 export default class ThreadInfo {

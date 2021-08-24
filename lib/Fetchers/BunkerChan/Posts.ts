@@ -1,10 +1,10 @@
 import PostInfo from '../../Formatters/BunkerChan/PostInfo';
 import type {
-  Post,
-} from '../../Types/BunkerChan/local';
-import type {
   BunkerChanThreadCatalog,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Post,
+} from '../../Types/api';
 import PostsBase from '../base/Posts';
 import {
   get,
@@ -24,7 +24,7 @@ export default class Posts extends PostsBase {
     board,
     thread,
   }: { board: string; thread: string }): Promise<Post[]> {
-    const url = `https://bunkerchan.xyz/${ board }/res/${ thread }.json`;
+    const url = `https://leftypol.org/${ board }/res/${ thread }.json`;
     const catalog = await get<BunkerChanThreadCatalog, null>(url);
 
     if (!catalog) {

@@ -1,22 +1,22 @@
 import type {
-  File,
-  FileBase,
-} from '../../Types/4chan/local';
-import type {
   FourChanPost,
   FourChanPostWithAttachment,
 } from '../../Types/4chan/remote';
+import {
+  Attachment,
+  AttachmentBase,
+} from '../../Types/api';
 
 export default class FileInfo {
-  public static parse(rawPost: FourChanPost | FourChanPostWithAttachment, board: string): File | null {
+  public static parse(rawPost: FourChanPost | FourChanPostWithAttachment, board: string): Attachment[] {
     if (!rawPost.md5) {
-      return null;
+      return [];
     }
 
     const post = rawPost as FourChanPostWithAttachment;
 
-    const file: FileBase = {
-      id: +post.tim,
+    const file: AttachmentBase = {
+      id: String(post.tim),
       postId: +post.no,
       name: post.filename,
       board,
@@ -36,19 +36,19 @@ export default class FileInfo {
       md5: post.md5,
     };
 
-    return this.addMeta(file);
+    return [ this.addMeta(file) ];
   }
 
-  private static addMeta(file: FileBase): File {
-    const meta = {
+  private static addMeta(file: AttachmentBase): Attachment {
+    const meta: Attachment['meta'] = {
       isVideo: this.isVideo(file.extension),
+      isImage: this.isImage(file.extension),
     };
 
-    const src = {
+    const src: Attachment['src'] = {
       local: {
         full: this.fullSrc(file),
         thumb: this.thumbSrc(file),
-        thumbHD: this.thumbFullSrc(file),
       },
       remote: {
         full: this.fullSrc(file, true),
@@ -63,11 +63,15 @@ export default class FileInfo {
     };
   }
 
-  private static isVideo(extension: File['extension']): boolean {
+  private static isVideo(extension: Attachment['extension']): boolean {
     return 'video' === this.getFileType(extension);
   }
 
-  private static getFileType(extension: File['extension']): 'image' | 'video' {
+  private static isImage(extension: Attachment['extension']): boolean {
+    return 'image' === this.getFileType(extension);
+  }
+
+  private static getFileType(extension: Attachment['extension']): 'image' | 'video' {
     switch (extension) {
       case 'jpg':
       case 'jpeg':
@@ -83,7 +87,7 @@ export default class FileInfo {
     {
       board,
       id,
-    }: FileBase,
+    }: AttachmentBase,
     original = false,
   ): string {
     if (original) {
@@ -104,7 +108,7 @@ export default class FileInfo {
       board,
       filename,
       extension,
-    }: Pick<FileBase, 'board' | 'filename' | 'extension'>,
+    }: Pick<AttachmentBase, 'board' | 'filename' | 'extension'>,
   ): string {
     if (this.isVideo(extension)) {
       return this.thumbUrl({
@@ -119,7 +123,7 @@ export default class FileInfo {
     }
   }
 
-  private static thumbOriginalSrc(file: Pick<FileBase, 'id' | 'board'>): string {
+  private static thumbOriginalSrc(file: Pick<AttachmentBase, 'id' | 'board'>): string {
     const thumbFile = {
       ...file,
       filename: `${ file.id }s.jpg`,
@@ -132,7 +136,7 @@ export default class FileInfo {
     {
       board,
       filename,
-    }: Pick<FileBase, 'board' | 'filename'>,
+    }: Pick<AttachmentBase, 'board' | 'filename'>,
     original = false,
   ): string {
     if (original) {
@@ -149,7 +153,7 @@ export default class FileInfo {
     {
       board,
       filename,
-    }: Pick<FileBase, 'board' | 'filename'>,
+    }: Pick<AttachmentBase, 'board' | 'filename'>,
   ): string {
     return `${ process.env.THREADPULLER_DOMAIN_CACHE }/i/${ board }/${ filename }`;
   }
@@ -158,7 +162,7 @@ export default class FileInfo {
     {
       board,
       filename,
-    }: Pick<FileBase, 'board' | 'filename'>,
+    }: Pick<AttachmentBase, 'board' | 'filename'>,
   ): string {
     return `${ process.env.THREADPULLER_DOMAIN_CACHE }/thumb/${ board }/${ filename }.jpg`;
   }

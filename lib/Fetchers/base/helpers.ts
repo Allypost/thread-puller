@@ -28,7 +28,7 @@ export const getter =
           const config: AxiosRequestConfig = {
             headers: {
               'Referer': referer,
-              'User-Agent': 'ThreadPuller crawler',
+              'User-Agent': 'ThreadPuller crawler (thread-puller.party)',
             },
             responseType: 'json',
           };
@@ -47,7 +47,7 @@ export const getter =
 
           const randTime = ((sleepMaxMs - sleepMinMs) * Math.random()) + sleepMinMs;
 
-          await sleep(randTime);
+          await sleep((attempt + 1) * randTime);
         }
       }
 

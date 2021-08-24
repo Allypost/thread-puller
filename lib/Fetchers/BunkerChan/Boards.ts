@@ -1,10 +1,10 @@
 import BoardInfo from '../../Formatters/BunkerChan/BoardInfo';
 import type {
-  Board,
-} from '../../Types/BunkerChan/local';
-import type {
   BunkerChanBoardIndex,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Board,
+} from '../../Types/api';
 import BoardsBase from '../base/Boards';
 import {
   get,

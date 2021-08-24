@@ -1,3 +1,5 @@
+type count = number;
+
 export type Board = {
   title: string;
   board: string;
@@ -6,16 +8,22 @@ export type Board = {
   nsfw: boolean;
 };
 
+type PostID = number;
+
 export type AttachmentBase = {
   id: string;
-  postId: number;
+  postId: PostID;
   name: string;
-  board: string;
+  board: Board['board'];
   filename: string;
   extension: string;
 
   dimensions: {
     main: {
+      width: number;
+      height: number;
+    };
+    thumbnail?: {
       width: number;
       height: number;
     };
@@ -46,9 +54,9 @@ export type AttachmentMeta = {
 export type Attachment = AttachmentBase & AttachmentMeta;
 
 export type Post = {
-  id: number;
-  board: string;
-  thread: number;
+  id: PostID;
+  board: Board['board'];
+  thread: PostID;
   posted: Date;
 
   body: {
@@ -58,11 +66,14 @@ export type Post = {
   };
 
   meta: {
-    replies: number | number[];
-    images: number;
-    videos: number;
-    media: number;
-    mentions?: number[];
+    replies: count;
+    images: count;
+    videos: count;
+    media: count;
+    refs?: {
+      repliesTo: PostID[];
+      mentionedIn: PostID[];
+    };
   };
 
   files: Attachment[];

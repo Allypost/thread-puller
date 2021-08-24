@@ -24,24 +24,23 @@ router.getRaw(
     const resource = params.board + params[ 0 ];
 
     const options: AxiosRequestConfig = {
-      url: `https://bunkerchan.xyz/${ resource }`,
+      url: `https://leftypol.org/${ resource }`,
       method: 'GET',
       responseType: 'stream',
       headers: {
         ...headers,
-        'Referer': 'https://bunkerchan.xyz/',
-        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-        'User-Agent': process.env.USER_AGENT,
-        'Connection': 'close',
-        'Accept-Encoding': 'gzip, deflate',
-        'Host': 'bunkerchan.xyz',
-        'Cookie': '',
+        'referer': 'https://leftypol.org/',
+        'accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+        'user-agent': process.env.USER_AGENT,
+        'connection': 'close',
+        'accept-encoding': 'gzip, deflate',
+        'cookie': '',
+        'host': 'leftypol.org',
       },
     };
 
     try {
-      const response = await axios.get<Readable>(
-        `https://bunkerchan.xyz/${ resource }`,
+      const response = await axios.request<Readable>(
         options,
       );
 
