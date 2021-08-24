@@ -11,7 +11,7 @@ import {
 import type {
   Board,
   Post,
-} from '../../Types/4chan/local';
+} from '../../Types/api';
 
 const REDIS_KEY = 'refreshers:4chan:queue' as const;
 const REDIS_ENTITY_SEPARATOR = '$' as const;
