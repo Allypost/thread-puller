@@ -1,9 +1,9 @@
 import type {
-  Board,
-} from '../../Types/BunkerChan/local';
-import type {
   BunkerChanBoard,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Board,
+} from '../../Types/api';
 
 export default class BoardInfo {
   public static parse(board: BunkerChanBoard): Board {

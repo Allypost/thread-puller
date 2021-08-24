@@ -1,10 +1,10 @@
 import PostInfo from '../../Formatters/4chan/PostInfo';
 import type {
-  Post,
-} from '../../Types/4chan/local';
-import type {
   FourChanCatalog,
 } from '../../Types/4chan/remote';
+import type {
+  Post,
+} from '../../Types/api';
 import ThreadsBase from '../base/Threads';
 import {
   get,

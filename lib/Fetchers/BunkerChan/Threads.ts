@@ -1,10 +1,10 @@
 import ThreadInfo from '../../Formatters/BunkerChan/ThreadInfo';
 import type {
-  Post,
-} from '../../Types/BunkerChan/local';
-import type {
   BunkerChanBoardCatalog,
 } from '../../Types/BunkerChan/remote';
+import type {
+  Post,
+} from '../../Types/api';
 import ThreadsBase from '../base/Threads';
 import {
   get,
