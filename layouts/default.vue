@@ -1,10 +1,9 @@
 <style lang="scss" src="../assets/style/global.scss"></style>
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../assets/style/modules/include";
+  $footer-height: 2em;
 
-  #wrap {
-    $footer-height: 2em;
-
+  .wrap {
     position: relative;
     display: flex;
     flex: 1 0 auto;
@@ -12,11 +11,6 @@
     min-height: 100vh;
     margin: 0;
     text-align: center;
-
-    .page-container {
-      min-height: 100%;
-      padding-bottom: $footer-height;
-    }
 
     > footer {
       position: absolute;
@@ -34,11 +28,16 @@
       @include no-select();
     }
   }
+
+  .pageContainer {
+    min-height: 100%;
+    padding-bottom: $footer-height;
+  }
 </style>
 
 <template>
-  <div id="wrap">
-    <nuxt class="page-container" />
+  <div :class="$style.wrap">
+    <nuxt :class="$style.pageContainer" />
     <footer>
       Copyright &copy; {{ new Date().getFullYear() }}
       <a

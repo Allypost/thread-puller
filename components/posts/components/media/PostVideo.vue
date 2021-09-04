@@ -49,7 +49,9 @@
   export default {
     name: 'PostVideo',
 
-    components: { ThreadVideo },
+    components: {
+      ThreadVideo,
+    },
 
     props: {
       file: {

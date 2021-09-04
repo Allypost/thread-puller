@@ -1,10 +1,14 @@
 <template>
-  <h1>
-    <n-link :to="backLink">
+  <h1 :class="$style.container">
+    <nuxt-link
+      :class="$style.link"
+      :to="backLink"
+    >
       Back
-    </n-link>
+    </nuxt-link>
     <span class="separator">|</span>
     <a
+      :class="$style.link"
       :href="externalHref"
       rel="noopener noreferrer"
       target="_blank"
@@ -31,10 +35,10 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../assets/style/modules/include";
 
-  h1 {
+  .container {
     font-size: 3em;
     margin: .67em 0;
     margin-bottom: 0;
@@ -42,9 +46,11 @@
     text-shadow: 1px 1px 3px #000000, 0 0 5px #000000, 3px 3px 8px #000000;
 
     @include no-select();
+  }
 
-    > a {
-      text-shadow: none;
-    }
+  .link {
+    @extend %link;
+
+    text-shadow: none;
   }
 </style>

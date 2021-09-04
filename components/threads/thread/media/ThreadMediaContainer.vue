@@ -1,7 +1,9 @@
 <template>
   <section
-    :class="{ expanded }"
-    class="container"
+    :class="{
+      [$style.container]: true,
+      [$style.containerExpanded]: expanded,
+    }"
     @click="expanded = !expanded"
   >
     <thread-video
@@ -13,22 +15,27 @@
     <thread-image
       v-else
       :alt="file.name"
-      :class="{expanded}"
+      :class="{
+        [$style.img]: true,
+        [$style.imgExpanded]: expanded,
+      }"
       :src-set="srcset"
-      class="img"
     />
   </section>
 </template>
 
 <script>
-  import ThreadImage from './components/ThreadMediaThumb';
+  import ThreadImage from './components/ThreadImage';
   import ThreadVideo from './components/ThreadVideo';
 
   export default {
 
     name: 'ThreadMediaContainer',
 
-    components: { ThreadVideo, ThreadImage },
+    components: {
+      ThreadVideo,
+      ThreadImage,
+    },
 
     props: {
       file: {
@@ -50,7 +57,10 @@
 
       thumbSrc() {
         const { src } = this.file;
-        const { local, remote } = src;
+        const {
+          local,
+          remote,
+        } = src;
 
         return {
           local: local.thumb,
@@ -60,7 +70,10 @@
 
       fullSrc() {
         const { src } = this.file;
-        const { local, remote } = src;
+        const {
+          local,
+          remote,
+        } = src;
 
         return {
           local: local.full,
@@ -80,22 +93,22 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   .container {
     overflow: hidden;
     max-height: 140px;
+  }
 
-    &.expanded {
-      max-height: initial;
-    }
+  .containerExpanded {
+    max-height: initial;
+  }
 
-    .img {
-      width: 100%;
-      cursor: zoom-in;
+  .img {
+    width: 100%;
+    cursor: zoom-in;
+  }
 
-      &.expanded {
-        cursor: zoom-out;
-      }
-    }
+  .imgExpanded {
+    cursor: zoom-out;
   }
 </style>

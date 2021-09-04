@@ -1,14 +1,15 @@
 <template>
-  <div class="setting-container">
-    <h3>
-      <span>{{ setting.title }}</span>
-      <span
-        v-if="wasChanged && dirty"
-        class="changed-notice"
-      > - changed</span>
-    </h3>
+  <div :class="$style.container">
+    <h3
+      :class="{
+        [$style.title]: true,
+        [$style.changed]: wasChanged && dirty
+      }"
+
+      v-text="setting.title"
+    />
     <span>{{ setting.text }}</span>
-    <div class="setting">
+    <div :class="$style.input">
       <component
         :is="inputType"
 
@@ -33,7 +34,10 @@
   export default {
     name: 'ThreadpullerSetting',
 
-    components: { SettingCheckbox, SettingSlider },
+    components: {
+      SettingCheckbox,
+      SettingSlider,
+    },
 
     props: {
       name: {
@@ -88,7 +92,10 @@
 
     created() {
       this.reset();
-      this.$store.subscribe(({ type, payload }) => {
+      this.$store.subscribe(({
+        type,
+        payload,
+      }) => {
         if (!payload) {
           return;
         }
@@ -120,10 +127,10 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../../assets/style/modules/include";
 
-  .setting-container {
+  .container {
     @extend %card-shadow;
 
     margin: .5em 0;
@@ -134,14 +141,42 @@
 
     & > * {
       display: block;
-      margin: .2em auto;
+      margin: .3em auto;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
+  }
 
-    .changed-notice {
+  .title {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
       font-size: .8em;
-      opacity: .7;
+      position: absolute;
+      top: .2em;
+      display: inline-block;
+      margin-left: .69ch;
+      content: " - changed";
+      transition-timing-function: ease;
+      transition-duration: .3s;
+      transition-property: transform, opacity;
+      transform: translateX(50%);
+      opacity: 0;
+    }
+  }
 
-      @include no-select();
+  .title.changed {
+
+    &::after {
+      transform: translateX(0);
+      opacity: .69;
     }
   }
 </style>
