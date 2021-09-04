@@ -1,25 +1,76 @@
 <template>
   <article
     :id="id"
-    class="board"
+    :class="$style.board"
   >
-    <thread-header :thread="thread" />
-    <thread-content :thread="thread" />
-    <footer>
-      <span>{{ thread.meta.images }} images | {{ thread.meta.replies }} replies <span v-if="showBoardName">| /{{ thread.board }}/</span></span>
+    <header :class="$style.threadHeader">
+      <nuxt-link
+        :class="$style.title"
+        :to="{ name: 'Posts', params: { board: thread.board, thread: thread.id } }"
+      >
+        <span
+          v-if="hasTitle"
+          v-html="title"
+        />
+        <i
+          v-else
+          :class="$style.noTitle"
+        >No title</i>
+      </nuxt-link>
+    </header>
+
+    <section
+      :class="$style.descriptionContainer"
+      :data-expanded="descriptionExpanded"
+      :data-expanded-text="descriptionTextExpanded"
+      :data-no-description="!hasDescription"
+      :data-no-file="!hasFile"
+    >
+      <thread-media-container
+        v-if="hasFile"
+        :class="{
+          [$style.descriptionMedia]: true,
+        }"
+        :file="thread.file"
+        @click.native="descriptionExpanded = !descriptionExpanded"
+      />
+
+      <section
+        v-if="hasDescription"
+        ref="descriptionText"
+        v-linkified
+        :class="{
+          [$style.descriptionText]: true,
+          [$style.descriptionTextIsLong]: descriptionTextIsLong,
+          [$style.descriptionTextExpanded]: descriptionTextExpanded,
+        }"
+        :data-expanded="descriptionTextExpanded"
+        :data-long="descriptionTextIsLong"
+        @click="descriptionTextExpanded = !descriptionTextExpanded"
+        v-html="description"
+      />
+    </section>
+
+    <footer
+      :class="$style.footer"
+    >
+      <span>
+        {{ thread.meta.images }} images | {{ thread.meta.replies }} replies <span v-if="showBoardName">| /{{ thread.board }}/</span>
+      </span>
     </footer>
   </article>
 </template>
 
 <script>
   import constant from 'lodash/fp/constant';
-  import ThreadContent from './thread/ThreadContent';
-  import ThreadHeader from './thread/ThreadHeader';
+  import ThreadMediaContainer from './thread/media/ThreadMediaContainer';
 
   export default {
     name: 'BoardThread',
 
-    components: { ThreadContent, ThreadHeader },
+    components: {
+      ThreadMediaContainer,
+    },
 
     props: {
       thread: {
@@ -33,15 +84,51 @@
       },
     },
 
+    data: () => ({
+      descriptionTextIsLong: false,
+      descriptionExpanded: false,
+      descriptionTextExpanded: false,
+    }),
+
     computed: {
       id() {
         const { id } = this.thread;
 
         return `post-${ id }`;
       },
+
+      title() {
+        const { body } = this.thread;
+        const { title } = body;
+
+        return title;
+      },
+
+      hasTitle() {
+        return Boolean(this.title);
+      },
+
+      description() {
+        const { body } = this.thread;
+        const { content } = body;
+
+        return content;
+      },
+
+      hasDescription() {
+        return Boolean(this.description);
+      },
+
+      hasFile() {
+        return Boolean(this.thread.file);
+      },
     },
 
     mounted() {
+      if (this.hasDescription) {
+        this.descriptionTextIsLong = 164 < this.$refs.descriptionText.scrollHeight;
+      }
+
       const { hash = '' } = this.$route;
 
       if (hash.trim().length) {
@@ -83,8 +170,10 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../../assets/style/modules/include";
+
+  $content-height: 140px;
 
   .board {
     font-size: 1.4em;
@@ -95,7 +184,105 @@
     grid-template-rows: auto 1fr 1.5em;
   }
 
-  footer {
+  .threadHeader {
+    margin-bottom: .3em;
+  }
+
+  .title {
+    @extend %link;
+
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+    word-break: break-word;
+    color: invert($text-color);
+  }
+
+  .noTitle {
+    font-weight: normal;
+  }
+
+  %description-expanded {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "media" "description";
+  }
+
+  .descriptionContainer {
+    display: grid;
+    overflow: hidden;
+    min-height: $content-height;
+    color: $text-color;
+    border-radius: 6px 6px 0 0;
+    background-color: $board-content-background-color;
+    grid-template-columns: [media] minmax(0, 1fr) [description] minmax(0, 2fr);
+    grid-template-areas: "media description";
+
+    &:not(&[data-expanded]) {
+
+      &[data-no-description] {
+        align-items: center;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);
+        grid-template-areas: "_ media __";
+      }
+
+      &[data-no-file] {
+        align-items: center;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 4fr) minmax(0, 1fr);
+        grid-template-areas: "_ description __";
+      }
+    }
+
+    &[data-expanded] {
+      @extend %description-expanded;
+    }
+
+    a {
+      @extend %link;
+    }
+
+    s {
+      @extend %spoiler;
+    }
+  }
+
+  .descriptionMedia {
+    grid-area: media;
+  }
+
+  .descriptionText {
+    position: relative;
+    min-height: 85px;
+    max-height: $content-height;
+    padding: .35em .5em;
+    text-align: left;
+    grid-area: description;
+
+    &[data-long] {
+      cursor: zoom-in;
+
+      &:not(&[data-expanded])::after {
+        position: absolute;
+        top: calc(140px - 1em);
+        left: 0;
+        width: 100%;
+        height: 2em;
+        content: "";
+        background-image: linear-gradient(180deg, transparent, #000000 85%);
+      }
+
+      &[data-expanded] {
+        max-height: none;
+        cursor: zoom-out;
+      }
+    }
+  }
+
+  .descriptionContainer[data-no-file][data-expanded-text] {
+    @extend %description-expanded;
+  }
+
+  .footer {
     font-size: .8em;
     display: grid;
     align-items: center;

@@ -2,7 +2,7 @@
   <thread-image
     :alt="file.name"
     :src-set="src"
-    class="expandable-image"
+    :class="$style.expandableImage"
     @click.native="handleClick"
   />
 </template>
@@ -11,7 +11,7 @@
   import {
     mapMutations,
   } from 'vuex';
-  import ThreadImage from '../../../threads/thread/media/components/ThreadMediaThumb.vue';
+  import ThreadImage from '../../../threads/thread/media/components/ThreadImage';
 
   function isElementInViewport(el) {
     const scroll = window.scrollY || window.pageYOffset;
@@ -40,7 +40,9 @@
   export default {
     name: 'PostImage',
 
-    components: { ThreadImage },
+    components: {
+      ThreadImage,
+    },
 
     props: {
       file: {
@@ -72,7 +74,10 @@
       },
 
       thumbSrc() {
-        const { local, remote } = this.srcset;
+        const {
+          local,
+          remote,
+        } = this.srcset;
 
         return {
           local: local.thumb,
@@ -81,7 +86,10 @@
       },
 
       fullSrc() {
-        const { local, remote } = this.srcset;
+        const {
+          local,
+          remote,
+        } = this.srcset;
 
         return {
           local: local.full,
@@ -120,8 +128,8 @@
   };
 </script>
 
-<style lang="scss" scoped>
-  .expandable-image {
+<style lang="scss" module>
+  .expandableImage {
     cursor: zoom-in;
   }
 </style>

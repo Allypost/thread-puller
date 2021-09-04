@@ -1,9 +1,9 @@
 <template>
   <client-only>
     <div>
-      <n-link :to="{ name: 'Search' }">
+      <nuxt-link :class="$style.link" :to="{ name: 'Search' }">
         Advanced search
-      </n-link>
+      </nuxt-link>
       <br>
       <label>
         Search:
@@ -12,7 +12,7 @@
           type="text"
         >
         <button
-          :class="{ hidden: !query.length }"
+          :class="{ [$style.hidden]: !query.length }"
           :tabindex="-1 * !query.length"
           @click="query = ''"
         >
@@ -99,7 +99,10 @@
       },
 
       updateQuery(newValue) {
-        const { q, ...query } = this.$route.query;
+        const {
+          q,
+          ...query
+        } = this.$route.query;
 
         this.updateData(newValue);
 
@@ -136,12 +139,16 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../assets/style/modules/include";
 
   .hidden {
     @include no-select();
 
     opacity: 0;
+  }
+
+  .link {
+    @extend %link;
   }
 </style>

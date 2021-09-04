@@ -1,5 +1,6 @@
 <template>
   <video
+    :class="$style.video"
     :autoplay="vAutoplay"
     :controls="controls"
     :loop="vLoop"
@@ -168,8 +169,8 @@
   };
 </script>
 
-<style>
-  video {
+<style module>
+  .video {
     width: 100%;
   }
 </style>
