@@ -2,15 +2,19 @@
   <div
     :class="$style.container"
   >
-    <img
-      title="Settings"
+    <button
       :class="{
-        [$style.open]: open,
+        [$style.openButton]: true,
+        [$style.openButtonActive]: open,
       }"
-      :src="imgSrc"
-      alt="Open settings dialog"
-      @click="handleClickCog"
+      title="Settings"
+      @click.capture="handleClickCog"
     >
+      <settings-icon
+        :class="$style.openButtonImage"
+        alt="Settings icon"
+      />
+    </button>
     <client-only>
       <sweet-modal
         id="settings-modal"
@@ -26,8 +30,8 @@
 
           ref="settings"
 
-          :name="name"
           :dirty="name in changedSettings"
+          :name="name"
           @input="handleSettingChange(name, $event)"
         />
 
@@ -58,15 +62,18 @@
     SweetModal,
   } from 'sweet-modal-vue';
   import {
+    SettingsIcon,
+  } from 'vue-feather-icons';
+  import {
     mapGetters,
   } from 'vuex';
-  import CogImg from '../../assets/images/cog.png';
   import ThreadpullerSetting from './ThreadpullerSetting';
 
   export default {
     name: 'ThreadpullerSettings',
 
     components: {
+      SettingsIcon,
       ThreadpullerSetting,
       SweetModal,
     },
@@ -79,10 +86,6 @@
     },
 
     computed: {
-      imgSrc() {
-        return CogImg;
-      },
-
       ...mapGetters('settings', {
         settings: 'keys',
       }),
@@ -128,22 +131,38 @@
 
   .container {
     position: absolute;
-    top: 1em;
-    right: 1em;
+    top: 0;
+    right: 0;
+    padding: 1em;
+    border-bottom-left-radius: 4px;
+    background: $post-background-color;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+  }
+
+  .openButtonImage {
     width: $size;
     height: $size;
+    transition: transform .3s #{$transition-smooth}, opacity .3s #{$transition-smooth};
+    opacity: .69;
+    color: $text-color;
+  }
 
-    img {
-      width: 100%;
-      cursor: pointer;
-      transition: transform .3s #{$transition-smooth}, opacity .3s #{$transition-smooth};
-      opacity: .5;
+  .openButton {
+    padding: 0;
+    cursor: pointer;
+    border: none;
+    background: transparent;
 
-      &:hover {
-        opacity: .75;
+    &:hover {
+
+      .openButtonImage {
+        opacity: 1;
       }
+    }
 
-      &.open {
+    &.openButtonActive {
+
+      .openButtonImage {
         transform: rotate(180deg);
         opacity: 1;
       }

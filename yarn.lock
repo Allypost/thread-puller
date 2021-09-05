@@ -3620,6 +3620,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-helper-vue-jsx-merge-props@npm:^2.0.2":
+  version: 2.0.3
+  resolution: "babel-helper-vue-jsx-merge-props@npm:2.0.3"
+  checksum: bfee8918726b00c3edda201a53955f5b57937e61194ef6c32de6cd75a9a2092c137343871ef56e430fedcba17c5e52901f4ddb03202686573a86eb0a3e73962c
+  languageName: node
+  linkType: hard
+
 "babel-loader@npm:^8.2.2":
   version: 8.2.2
   resolution: "babel-loader@npm:8.2.2"
@@ -14208,6 +14215,7 @@ fsevents@~2.3.2:
     type-fest: ^1.2.1
     typescript: ^4.3.4
     vue: ^2.6.14
+    vue-feather-icons: ^5.1.0
     vue-linkify: ^1.0.1
     vue-router: ^3.5.1
     vuex: ^3.6.2
@@ -15044,6 +15052,15 @@ typescript@~4.2:
   peerDependencies:
     eslint: ">=5.0.0"
   checksum: 27d6bc4acaafe897af8eee41512d0cd2812b533883d7ecbfda30c263533ebf486fdd76cb65f546f3c3737df383fb4bc33ecb358d7397b8b731c161c89db72bcd
+  languageName: node
+  linkType: hard
+
+"vue-feather-icons@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "vue-feather-icons@npm:5.1.0"
+  dependencies:
+    babel-helper-vue-jsx-merge-props: ^2.0.2
+  checksum: ce81d5c03d86ce1f6997c8820a7725684e5bafc49d7496ed9989dee6c97f141c0288774057c21ddcc2ae61f14bc6bf5b54c2ad128f69bae6ab4a537204220eb1
   languageName: node
   linkType: hard
 

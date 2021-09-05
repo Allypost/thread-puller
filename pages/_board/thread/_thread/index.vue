@@ -39,7 +39,18 @@
               ]"
               :data-replies="post.meta.replies.join(',')"
             >
-              Replies: {{ post.meta.replies.length }}
+              <span
+                :class="$style.onLarge"
+                title="# of replies to this post"
+              >
+                Replies:
+              </span>
+              <corner-down-right-icon
+                :class="$style.onSmall"
+                size="1x"
+                title="# of replies to this post"
+              />
+              <span v-text="post.meta.replies.length" />
             </span>
 
             <a
@@ -51,7 +62,16 @@
               rel="noopener noreferrer"
               target="_blank"
             >
-              Go to post
+              <span
+                :class="$style.onLarge"
+              >
+                Go to post
+              </span>
+              <span
+                :class="$style.onSmall"
+              >
+                <external-link-icon size="1x" />
+              </span>
             </a>
 
             <span
@@ -62,7 +82,18 @@
               ]"
               :data-mentions="post.meta.mentions.join(',')"
             >
-              Mentions: {{ post.meta.mentions.length }}
+              <span
+                :class="$style.onLarge"
+                title="# of other posts mentioned"
+              >
+                Mentions:
+              </span>
+              <span v-text="post.meta.mentions.length" />
+              <corner-right-up-icon
+                :class="$style.onSmall"
+                size="1x"
+                title="# of other posts mentioned"
+              />
             </span>
 
             <nuxt-link
@@ -73,7 +104,7 @@
               :to="`#p${ post.id }`"
               title="Link to this post"
             >
-              <LinkImage />
+              <link-icon />
             </nuxt-link>
           </footer>
         </article>
@@ -112,16 +143,22 @@ name: Posts
     SweetModal,
   } from 'sweet-modal-vue';
   import {
+    LinkIcon,
+    CornerDownRightIcon,
+    CornerRightUpIcon,
+    ExternalLinkIcon,
+  } from 'vue-feather-icons';
+  import {
     mapGetters,
     mapMutations,
   } from 'vuex';
-  import LinkImage from '../../../../assets/images/link.svg';
   import PepeSadImage from '../../../../assets/images/pepe-sad.png';
   import ThreadBacklinks from '../../../../components/ThreadBacklinks';
   import PostImage from '../../../../components/posts/components/media/PostImage';
   import PostVideo from '../../../../components/posts/components/media/PostVideo';
   import ThreadpullerSettings from '../../../../components/settings/ThreadpullerSettings';
   import ThreadImage from '../../../../components/threads/thread/media/components/ThreadImage';
+
   import {
     generateMetadata,
   } from '../../../../lib/Helpers/Head/metadata';
@@ -130,9 +167,12 @@ name: Posts
     name: 'Posts',
 
     components: {
+      LinkIcon,
+      CornerDownRightIcon,
+      CornerRightUpIcon,
+      ExternalLinkIcon,
       PostImage,
       PostVideo,
-      LinkImage,
       ThreadImage,
       SweetModal,
       ThreadBacklinks,
@@ -379,6 +419,18 @@ name: Posts
     }
   }
 
+  .onLarge {
+    @media #{$small-and-down} {
+      display: none;
+    }
+  }
+
+  .onSmall {
+    @media #{$small-and-up} {
+      display: none;
+    }
+  }
+
   .postsContainer {
     @extend %container-base;
 
@@ -429,7 +481,7 @@ name: Posts
     overflow: hidden;
     transform: translateZ(0);
     border-radius: 8px;
-    background: #37474f;
+    background: $post-background-color;
     grid-template-rows: 1fr 3em;
 
     footer {
@@ -450,7 +502,7 @@ name: Posts
     transition-duration: .25s;
     transition-property: box-shadow, color;
     text-decoration: none;
-    border: 1px solid #263238;
+    border: 1px solid #{darken($post-background-color, 10%)};
     border-radius: 6px;
   }
 
