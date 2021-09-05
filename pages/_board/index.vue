@@ -296,12 +296,29 @@ name: Threads
     select {
       font-size: 100%;
       padding: .2em .3em;
+      cursor: pointer;
       color: $text-color;
       border-width: 1px;
       border-style: solid;
       border-color: currentColor;
       border-radius: 3px;
-      background: none;
+      outline-color: $quote-color;
+      background-color: $background-color;
+
+      &:active {
+        border-bottom-color: transparent;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      option {
+        color: $text-color;
+        border-width: 1px;
+        border-style: solid;
+        border-color: currentColor;
+        border-radius: 3px;
+        background-color: $background-color;
+      }
     }
   }
 </style>
