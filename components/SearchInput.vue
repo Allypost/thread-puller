@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    <div>
+    <div :class="$style.container">
       <nuxt-link :class="$style.link" :to="{ name: 'Search' }">
         Advanced search
       </nuxt-link>
@@ -150,5 +150,71 @@
 
   .link {
     @extend %link;
+  }
+
+  .container {
+
+    select {
+      font-size: 100%;
+      padding: .2em .3em;
+      cursor: pointer;
+      color: $text-color;
+      border-width: 1px;
+      border-style: solid;
+      border-color: currentColor;
+      border-radius: 3px;
+      outline-color: $quote-color;
+      background-color: $background-color;
+
+      &:active {
+        border-bottom-color: transparent;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      option {
+        color: $text-color;
+        border-width: 1px;
+        border-style: solid;
+        border-color: currentColor;
+        border-radius: 3px;
+        background-color: $background-color;
+      }
+    }
+
+    input {
+      font-size: 1rem;
+      padding: .2rem .3rem;
+      cursor: text;
+      color: $text-color;
+      border-width: 1px;
+      border-style: solid;
+      border-color: currentColor;
+      border-radius: 3px;
+      outline-color: $quote-color;
+      background-color: $background-color;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: .3rem .5rem;
+      cursor: pointer;
+      color: $text-color;
+      border-width: 1px;
+      border-style: solid;
+      border-color: currentColor;
+      border-radius: 3px;
+      outline-color: $quote-color;
+      background-color: $post-background-color;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .24), 0 3px 1px -2px rgba(0, 0, 0, .22), 0 1px 5px 0 rgba(0, 0, 0, .3);
+
+      &:hover {
+        background-color: darken($post-background-color, 5%);
+      }
+
+      &:active {
+        background-color: darken($post-background-color, 15%);
+      }
+    }
   }
 </style>

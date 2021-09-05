@@ -19,7 +19,7 @@ const reRelativePath = /^\.+/;
 
 const uid = new ShortUniqueId();
 
-const identNameMap = {};
+const identNameMap = new Map();
 
 const isProd = 'production' === process.env.NODE_ENV;
 
@@ -184,17 +184,17 @@ export default {
               { isIdentifier: true },
             ).replace(/\\\[local\\]/gi, localName);
 
-            if (!(parsedLocalIdentName in identNameMap)) {
+            if (!identNameMap.has(parsedLocalIdentName)) {
               const id = cssesc(uid.sequentialUUID());
 
-              if (/^\d+/.test(id)) {
-                identNameMap[ parsedLocalIdentName ] = `_${ id }`;
+              if (/^\d/.test(id)) {
+                identNameMap.set(parsedLocalIdentName, `_${ id }`);
               } else {
-                identNameMap[ parsedLocalIdentName ] = id;
+                identNameMap.set(parsedLocalIdentName, id);
               }
             }
 
-            const className = identNameMap[ parsedLocalIdentName ];
+            const className = identNameMap.get(parsedLocalIdentName);
 
             if (isProd) {
               return className;
