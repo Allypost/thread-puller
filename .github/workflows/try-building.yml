@@ -1,10 +1,14 @@
-name: lint
+name: Build
 
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
 
 jobs:
-  run-linters:
-    name: Run linters
+  try-building:
+    name: Try building
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -39,5 +43,4 @@ jobs:
         run: yarn
 
       - name: Run linter 👀
-        run: yarn lint
-
+        run: yarn build -c nuxt.config.build

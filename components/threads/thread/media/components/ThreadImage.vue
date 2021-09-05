@@ -1,8 +1,10 @@
 <template>
-  <span class="img-container">
+  <span :class="$style.container">
     <img
       :alt="alt"
-      :class="{isLoading}"
+      :class="{
+        [$style.loading]: isLoading
+      }"
       :src="src"
       draggable="false"
       @error="handleError"
@@ -10,7 +12,7 @@
     >
     <LoaderSpinner
       v-if="isLoading"
-      class="img-spinner"
+      :class="$style.spinner"
     />
   </span>
 </template>
@@ -20,7 +22,7 @@
   import LoaderSpinner from '../LoaderSpinner';
 
   export default {
-    name: 'ThreadMediaThumb',
+    name: 'ThreadImage',
 
     components: { LoaderSpinner },
 
@@ -44,7 +46,10 @@
 
     computed: {
       src() {
-        const { local, remote } = this.srcSet;
+        const {
+          local,
+          remote,
+        } = this.srcSet;
 
         const src = [ remote, local, FileDeletedImage ];
 
@@ -72,16 +77,16 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../../../../../assets/style/modules/include";
 
-  .img-container {
+  .container {
     position: relative;
     display: inline-block;
     width: 100%;
   }
 
-  .img-spinner {
+  .spinner {
     position: absolute;
     top: .5em;
     right: .5em;
@@ -92,7 +97,7 @@
     transition: .25s filter ease-out;
     filter: none;
 
-    &.isLoading {
+    &.loading {
       filter: progid:dximagetransform.microsoft.blur(pixelradius="2");
       filter: blur(2px);
     }

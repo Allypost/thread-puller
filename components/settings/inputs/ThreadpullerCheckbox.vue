@@ -1,16 +1,17 @@
 <template>
-  <div
-    class="checkbox-container"
+  <label
+    :class="$style.container"
   >
     <input
-      :id="id"
       v-model="valueProp"
-      :name="id"
       type="checkbox"
       @input="$emit('input', $event.target.checked)"
     >
-    <label :for="id">{{ name }}</label>
-  </div>
+    <span
+      :class="$style.block"
+      v-text="'check'"
+    />
+  </label>
 </template>
 
 <script>
@@ -18,11 +19,6 @@
     name: 'ThreadpullerCheckbox',
 
     props: {
-      name: {
-        type: String,
-        required: true,
-      },
-
       value: {
         type: Boolean,
         default: false,
@@ -33,15 +29,6 @@
       return {
         valueProp: this.value,
       };
-    },
-
-    computed: {
-      id() {
-        const timePart = Number(new Date()).toString(36);
-        const randPart = Math.random().toString(36).slice(2);
-
-        return `${ this.name }-${ timePart }-${ randPart }`;
-      },
     },
 
     watch: {
@@ -58,15 +45,16 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../../../assets/style/modules/include";
 
-  .checkbox-container {
+  .container {
     $left-padding: .2em;
 
     position: relative;
     display: inline-block;
     padding: #{$left-padding} 1em;
+    cursor: pointer;
     border-radius: 8px;
     background: #36484f;
 
@@ -90,7 +78,7 @@
       color: $settings-background-color;
     }
 
-    label {
+    .block {
       @include no-select;
 
       position: relative;
@@ -112,7 +100,7 @@
       }
     }
 
-    input[type="checkbox"]:checked + label {
+    input[type="checkbox"]:checked + .block {
       left: calc(1em - #{$left-padding});
       background: $success-color;
     }

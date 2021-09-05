@@ -1,14 +1,15 @@
 <template>
   <video
     :autoplay="vAutoplay"
+    :class="$style.video"
     :controls="controls"
     :loop="vLoop"
-    :poster="hidePoster ? undefined : poster"
     :muted="vMuted"
+    :poster="hidePoster ? undefined : poster"
     :preload="preload"
-    @play="$emit('playing', true)"
-    @pause="$emit('playing', false)"
     @canplay="handleCanPlay"
+    @pause="$emit('playing', false)"
+    @play="$emit('playing', true)"
   >
     <source :src="srcset.remote">
     <source :src="srcset.local">
@@ -168,8 +169,9 @@
   };
 </script>
 
-<style>
-  video {
+<style module>
+  .video {
     width: 100%;
+    min-height: 10em;
   }
 </style>

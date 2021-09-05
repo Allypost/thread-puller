@@ -1,7 +1,7 @@
 <template>
   <div
     :style="style"
-    class="spinner"
+    :class="$style.spinner"
   />
 </template>
 
@@ -25,7 +25,7 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
   @import "../../../../assets/style/modules/include";
 
   .spinner {

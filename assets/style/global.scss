@@ -27,26 +27,3 @@ html {
   color: $text-color;
   background-color: $background-color;
 }
-
-a {
-  display: inline-block;
-  word-break: break-word;
-  color: $link-color;
-
-  &:hover {
-    text-decoration: none;
-    color: $text-color;
-  }
-}
-
-s {
-  cursor: help;
-  text-decoration: none;
-  color: invert($text-color);
-  background: invert($text-color);
-  box-shadow: 0 0 1em -8px $text-color;
-
-  &:hover {
-    color: $text-color;
-  }
-}
