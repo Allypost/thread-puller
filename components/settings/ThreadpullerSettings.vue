@@ -145,6 +145,7 @@
     transition: transform .3s #{$transition-smooth}, opacity .3s #{$transition-smooth};
     opacity: .69;
     color: $text-color;
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, .7));
   }
 
   .openButton {
