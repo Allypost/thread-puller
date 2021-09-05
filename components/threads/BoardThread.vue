@@ -31,7 +31,7 @@
         :class="{
           [$style.descriptionMedia]: true,
         }"
-        :file="thread.file"
+        :file="file"
         @click.native="descriptionExpanded = !descriptionExpanded"
       />
 
@@ -119,8 +119,16 @@
         return Boolean(this.description);
       },
 
+      file() {
+        if (1 <= this.thread.files?.length) {
+          return this.thread.files[ 0 ];
+        }
+
+        return this.thread.file;
+      },
+
       hasFile() {
-        return Boolean(this.thread.file);
+        return Boolean(this.file);
       },
     },
 
