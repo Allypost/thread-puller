@@ -53,6 +53,7 @@
   display: inline-block;
   word-break: break-word;
   color: $link-color;
+  outline-color: $link-color;
 
   &:hover {
     text-decoration: none;
