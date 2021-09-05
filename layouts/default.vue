@@ -26,6 +26,10 @@
       background: darken($background-color, 5%);
 
       @include no-select();
+
+      a {
+        @extend %link;
+      }
     }
   }
 
