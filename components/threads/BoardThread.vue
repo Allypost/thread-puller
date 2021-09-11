@@ -55,7 +55,7 @@
       :class="$style.footer"
     >
       <span>
-        {{ thread.meta.images }} images | {{ thread.meta.replies }} replies <span v-if="showBoardName">| /{{ thread.board }}/</span>
+        {{ thread.meta.images }} media | {{ thread.meta.replies }} replies <span v-if="showBoardName">| /{{ thread.board }}/</span>
       </span>
     </footer>
   </article>
