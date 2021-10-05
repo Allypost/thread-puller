@@ -26,7 +26,7 @@
             >
               none
             </option>
-            <option value="images">image #</option>
+            <option value="images">media #</option>
             <option value="replies">reply #</option>
           </select>
           <select
