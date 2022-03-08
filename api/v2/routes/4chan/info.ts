@@ -115,7 +115,7 @@ router.post('/search/threads', ({ body }) => {
     board = '',
   } = body;
 
-  if (!query || 3 >= query.length) {
+  if (!query || 3 > query.length) {
     throw new ApiError(
       'Search term must be at least 3 characters long',
       HttpStatus.Error.Client.Conflict,
