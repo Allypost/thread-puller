@@ -1,0 +1,333 @@
+<nav>
+  <a href="/">&larr; Back</a>
+</nav>
+
+<h1>Board: {{board.link}}</h1>
+<h2>{{{board.description}}}</h2>
+
+<style>
+  nav {
+    font-size: 3em;
+    font-weight: bold;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
+    gap: 1em;
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px 0 #0000003d,
+    0 3px 1px -2px #00000038,
+    0 1px 5px 0 #0000004d;
+    transform: translateZ(0);
+    align-self: center;
+  }
+
+  article h1 {
+    padding: .3em .5em;
+    margin: 0;
+    text-align: center;
+  }
+
+  article h1 a {
+    text-decoration: underline;
+  }
+
+  article h1 a:hover {
+    text-decoration: none;
+  }
+
+  article .description {
+    max-height: 8.75em;
+    position: relative;
+    padding: 0.35em 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  article .description:empty {
+    display: none;
+  }
+
+  article .description .quote {
+    color: #789922;
+  }
+
+  article .description .quotelink {
+    color: #d00;
+    text-decoration: underline;
+  }
+
+  article .description .quotelink::after {
+    content: " \2192";
+  }
+
+  article .description s {
+    cursor: help;
+    text-decoration: none;
+    color: #050505;
+    background: #050505;
+    box-shadow: 0 0 1em -8px #fafafa;
+  }
+
+  article .description s:hover {
+    color: #fafafa;
+  }
+
+  article .media .img-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .img-container .spinner {
+    display: none;
+    position: absolute;
+    top: .5em;
+    left: .5em;
+  }
+
+  .img-container.loading .spinner {
+    display: inherit;
+  }
+
+  .img-container.loading img {
+    filter: progid:dximagetransform.microsoft.blur(pixelradius="3");
+    filter: blur(3px);
+  }
+
+  .img-container img {
+    cursor: zoom-in;
+  }
+
+  .img-container img[data-expanded] {
+    cursor: zoom-out;
+  }
+
+  article .media img {
+    height: 8.75em;
+    width: 100%;
+    object-position: center;
+    object-fit: contain;
+  }
+
+  article .media video {
+    width: 100%;
+    object-position: center;
+    object-fit: contain;
+  }
+
+  article .description + footer {
+    margin-top: .3em;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  article footer {
+    text-align: center;
+    padding: .3em .5em;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s cubic-bezier(.65, .05, .3, .8) infinite;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    background: #455a64;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+<noscript>
+  <style>
+    article noscript + * {
+      display: none;
+    }
+  </style>
+</noscript>
+
+<main>
+  {{#each threads}}
+    <article id="p{{this.id}}">
+      <h1>
+        <a href="/{{../board.board}}/thread/{{this.thread}}/">
+          {{#if this.body.title}}
+            {{{this.body.title}}}
+          {{else}}
+            <em>No title</em>
+          {{/if}}
+        </a>
+      </h1>
+
+      {{#if this.files}}
+        <section class="media">
+          {{#each this.files}}
+            {{#if this.meta.isImage ~}}
+              <noscript>
+                <a
+                  href="{{this.variations.full.src.remote}}"
+                  target="_blank"
+                >
+                  <img
+                    loading="lazy"
+                    draggable="false"
+                    src="{{this.variations.full.src.remote}}"
+                    alt="{{ this.name }}"
+                    title="{{ this.name }}"
+                  >
+                </a>
+              </noscript>
+              <div
+                class="img-container"
+                data-width="{{this.variations.full.dimensions.width}}"
+                data-height="{{this.variations.full.dimensions.height}}"
+              >
+                <img
+                  class="loading"
+                  loading="lazy"
+                  draggable="false"
+                  src="{{this.variations.thumb.src.remote}}"
+                  data-full-local="{{this.variations.full.src.remote}}"
+                  data-full-remote="{{this.variations.full.src.local}}"
+                  data-thumb-remote="{{this.variations.thumb.src.remote}}"
+                  data-thumb-local="{{this.variations.thumb.src.local}}"
+                  alt="{{ this.name }}"
+                  title="{{ this.name }}"
+                  style="aspect-ratio: {{this.variations.full.dimensions.width}} / {{this.variations.full.dimensions.height}};"
+                >
+                <div class="spinner"></div>
+              </div>
+            {{/if}}
+            {{#if this.meta.isVideo }}
+              <video
+                controls
+                playsinline
+                poster="{{this.variations.thumb.src.remote}}"
+                data-thumb-remote="{{this.variations.thumb.src.remote}}"
+                data-thumb-local="{{this.variations.thumb.src.local}}"
+                preload="metadata"
+                title="{{this.name}}"
+              >
+                <source src="{{this.variations.full.src.remote}}" type="{{this.mimeType}}" data-type="remote">
+                <source src="{{this.variations.full.src.local}}" type="{{this.mimeType}}" data-type="local">
+                <a
+                  href="{{this.variations.full.src.remote}}"
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                >
+                  Video link
+                </a>
+              </video>
+            {{/if}}
+          {{/each}}
+        </section>
+      {{/if}}
+
+      {{#if this.body.content }}
+        <section class="description">
+          {{{this.body.content}}}
+        </section>
+      {{/if}}
+
+      <footer>
+        <span title="{{ this.meta.media }} images/videos">
+          {{ this.meta.media }} media
+        </span> | <span title="{{ this.meta.replies }} posts in thread">
+        {{ this.meta.replies }} replies
+      </span>
+      </footer>
+    </article>
+  {{/each}}
+</main>
+
+<script>
+  (function () {
+    function handleImageError($el) {
+      return function (event) {
+        switch ($el.src) {
+          case $el.dataset.thumbRemote: {
+            $el.src = $el.dataset.thumbLocal;
+            return;
+          }
+
+          case $el.dataset.fullRemote: {
+            $el.src = $el.dataset.fullLocal;
+            return;
+          }
+
+
+          case $el.dataset.thumbLocal:
+          case $el.dataset.fullLocal: {
+            $el.src = "/assets/images/deleted.gif";
+            return;
+          }
+        }
+      }
+    }
+
+    function handleVideoError($el) {
+      return function (event) {
+        console.log(event);
+        if ($el.poster === $el.dataset.thumbRemote) {
+          $el.poster = $el.dataset.thumbLocal;
+          return;
+        }
+      }
+    }
+
+    document
+      .querySelectorAll('article video')
+      .forEach(function ($el) {
+        $el.addEventListener('error', handleVideoError($el));
+      })
+    ;
+
+    document
+      .querySelectorAll('article img')
+      .forEach(function ($el) {
+        $el.addEventListener('error', handleImageError($el));
+
+        $el.addEventListener('load', function (event) {
+          $el.parentElement.classList.remove('loading');
+        });
+
+        $el.addEventListener("click", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          switch ($el.src) {
+            case $el.dataset.thumbRemote:
+            case $el.dataset.thumbLocal: {
+              $el.parentElement.classList.add("loading");
+              $el.src = $el.dataset.fullRemote;
+              $el.style.height = "auto";
+              $el.dataset.expanded = "";
+              return;
+            }
+            case $el.dataset.fullRemote:
+            case $el.dataset.fullLocal: {
+              $el.parentElement.classList.add("loading");
+              $el.src = $el.dataset.thumbRemote;
+              $el.style.removeProperty('height');
+              delete $el.dataset.expanded;
+              return;
+            }
+          }
+        })
+      })
+    ;
+  })()
+</script>

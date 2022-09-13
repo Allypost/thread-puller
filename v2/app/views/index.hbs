@@ -1,0 +1,61 @@
+<style>
+  main {
+    display: grid;
+    grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
+    gap: 1em;
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px 0 #0000003d,
+    0 3px 1px -2px #00000038,
+    0 1px 5px 0 #0000004d;
+    transform: translateZ(0);
+    padding: .5em;
+  }
+
+  article h1 {
+    margin: 0;
+    text-align: center;
+  }
+
+  article h1 a {
+    text-decoration: none;
+  }
+
+  article h1 a:hover {
+    text-decoration: underline;
+  }
+
+  article[data-nsfw] header a::before {
+    font-size: .8em;
+    position: relative;
+    bottom: 3px;
+    display: inline-block;
+    margin-right: 0.5em;
+    padding: 0.2em 0.4em;
+    content: "NSFW";
+    color: #fafafa;
+    border-radius: 4px;
+    background: #e53935;
+    text-shadow: 1px 1px 1px #050505;
+  }
+</style>
+
+<h1>{{_appName}} - {{_appTagline}}</h1>
+<h2>{{_appDescription}}</h2>
+<main>
+  {{#each boards}}
+    <article {{#if this.nsfw }}data-nsfw{{/if}}>
+      <h1>
+        <a href="/{{this.board}}/">{{this.link}} - {{this.title}}</a>
+      </h1>
+
+      <section>
+        {{{this.description}}}
+      </section>
+    </article>
+  {{/each}}
+</main>

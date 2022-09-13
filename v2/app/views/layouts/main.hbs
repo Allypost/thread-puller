@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    {{> 'partials/layouts/main/head/meta' }}
+    <meta name="og:title" property="og:title" content="{{_appName}} - {{_appTagline}}">
+    <title>{{_appName}} - {{_appTagline}}</title>
+    <style>
+      :root {
+        --column-count: 4;
+      }
+
+      ::selection {
+        color: #fafafa;
+        background: #2f2f2f;
+      }
+
+      @media only screen and (max-width: 1750px) {
+        :root {
+          --column-count: 3;
+        }
+      }
+
+      @media only screen and (max-width: 1250px) {
+        :root {
+          --column-count: 2;
+        }
+      }
+
+      @media only screen and (max-width: 800px) {
+        :root {
+          --column-count: 1;
+        }
+      }
+
+      body {
+        font-family: arial, helvetica, sans-serif;
+        color: #2f2f2f;
+        background: #fafafa;
+        margin: 0;
+        padding: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    {{{embed}}}
+  </body>
+
+</html>

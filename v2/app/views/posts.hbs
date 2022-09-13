@@ -1,0 +1,363 @@
+<style type="text/css">
+  nav {
+    font-size: 3em;
+    font-weight: bold;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
+    gap: 1em;
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fafafa;
+    align-self: end;
+    box-shadow: 0 2px 2px 0 #0000003d,
+    0 3px 1px -2px #00000038,
+    0 1px 5px 0 #0000004d;
+    transform: translateZ(0);
+  }
+
+  article:target {
+    background-color: #f0f0f0;
+    border-color: #ba9dbf;
+  }
+
+  article section {
+    flex: 0;
+  }
+
+  article section .img-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  article section img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-position: center;
+    object-fit: contain;
+  }
+
+  article section img.loading {
+    filter: progid:dximagetransform.microsoft.blur(pixelradius="3");
+    filter: blur(3px);
+  }
+
+  article section video {
+    width: 100%;
+    object-position: center;
+    object-fit: contain;
+  }
+
+  article footer {
+    text-align: center;
+    padding: .3em .5em;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s cubic-bezier(.65, .05, .3, .8) infinite;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    background: #455a64;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  article .img-container {
+    position: relative;
+  }
+
+  .img-container .spinner {
+    position: absolute;
+    top: .5em;
+    left: .5em;
+  }
+</style>
+<noscript>
+  <style>
+    article noscript + * {
+      display: none;
+    }
+  </style>
+</noscript>
+
+<nav>
+  <a href="/{{board.board}}/">&larr; Back</a>
+</nav>
+
+<h1>Board: {{board.link}}</h1>
+<h2>Thread: {{#with posts.[0].body ~}}
+  {{#if title ~}}
+    {{{title}}}
+  {{else ~}}
+    {{#if content ~}}
+      {{{content}}}
+    {{else ~}}
+      <em>No title</em>
+    {{/if}}
+  {{/if}}
+{{/with}}</h2>
+
+<main>
+  {{#each posts ~}}
+    <article id="p{{this.id}}">
+      <section>
+        {{#each this.files ~}}
+          {{#if this.meta.isImage ~}}
+            <noscript>
+              <img
+                loading="lazy"
+                draggable="false"
+                src="{{this.variations.full.src.remote}}"
+                alt="{{ this.name }}"
+                title="{{ this.name }}"
+              >
+            </noscript>
+            <div
+              class="img-container"
+              data-width="{{this.variations.full.dimensions.width}}"
+              data-height="{{this.variations.full.dimensions.height}}"
+            >
+              <img
+                class="loading"
+                loading="lazy"
+                draggable="false"
+                src="{{this.variations.thumb.src.remote}}"
+                data-full-local="{{this.variations.full.src.remote}}"
+                data-full-remote="{{this.variations.full.src.local}}"
+                data-thumb-remote="{{this.variations.thumb.src.remote}}"
+                data-thumb-local="{{this.variations.thumb.src.local}}"
+                alt="{{ this.name }}"
+                title="{{ this.name }}"
+                style="aspect-ratio: {{this.variations.full.dimensions.width}} / {{this.variations.full.dimensions.height}};"
+              >
+              <div class="spinner"></div>
+            </div>
+          {{/if}}
+          {{#if this.meta.isVideo ~}}
+            <video
+              controls
+              muted
+              loop
+              poster="{{this.variations.thumb.src.remote}}"
+              data-thumb-remote="{{this.variations.thumb.src.remote}}"
+              data-thumb-local="{{this.variations.thumb.src.local}}"
+              preload="none"
+              title="{{this.name}}"
+            >
+              <source src="{{this.variations.full.src.remote}}" type="{{this.mimeType}}">
+              <source src="{{this.variations.full.src.local}}" type="{{this.mimeType}}">
+              <a
+                href="{{this.variations.full.src.remote}}"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+              >
+                Video link
+              </a>
+            </video>
+          {{/if}}
+        {{/each}}
+      </section>
+
+      <footer>
+        {{#if this.meta.replies ~}}
+          <span title="{{this.meta.replies}} replies to this post">
+            Replies: {{ this.meta.replies }}
+          </span>
+        {{/if}}
+        <a
+          rel="noopener noreferrer"
+          href="https://boards.4chan.org/{{this.board}}/thread/{{this.thread}}#p{{this.id}}"
+          target="_blank"
+        >Go to post</a>
+        {{#if this.meta.mentions ~}}
+          <span title="{{this.meta.mentions}} other posts mentioned">
+            Mentions: {{ this.meta.mentions }}
+          </span>
+        {{/if}}
+      </footer>
+    </article>
+  {{/each}}
+</main>
+
+<script>
+  (function () {
+    function isElementInViewport($el) {
+      var scroll = window.scrollY || window.pageYOffset;
+      var boundsTop = $el.getBoundingClientRect().top + scroll;
+
+      var viewport = {
+        top: scroll,
+        bottom: scroll + window.innerHeight,
+      };
+
+      var bounds = {
+        top: boundsTop,
+        bottom: boundsTop + $el.clientHeight,
+      };
+
+      return (
+        (
+          bounds.bottom >= viewport.top && bounds.bottom <= viewport.bottom
+        )
+        || (
+          bounds.top <= viewport.bottom && bounds.top >= viewport.top
+        )
+      );
+    }
+
+    function handleImageUpgrade($el) {
+      var finishLoading = function ($el) {
+        var fn = function () {
+          $el.classList.remove('loading');
+          var $spinner = $el.parentNode.querySelector('.spinner');
+          if ($spinner) {
+            $spinner.parentNode.removeChild($spinner);
+          }
+
+          $el.removeEventListener('load', fn);
+        }
+
+        return fn;
+      };
+
+      switch ($el.src) {
+        case $el.dataset.thumbRemote:
+        case $el.dataset.thumbLocal: {
+          $el.src = $el.dataset.fullRemote;
+          $el.addEventListener('load', finishLoading($el));
+          return;
+        }
+      }
+    }
+
+    function handleImageError($el) {
+      return function (event) {
+        switch ($el.src) {
+          case $el.dataset.thumbRemote: {
+            $el.src = $el.dataset.thumbLocal;
+            return;
+          }
+
+          case $el.dataset.fullRemote: {
+            $el.src = $el.dataset.fullLocal;
+            return;
+          }
+
+
+          case $el.dataset.thumbLocal:
+          case $el.dataset.fullLocal: {
+            $el.src = "/assets/images/deleted.gif";
+            return;
+          }
+        }
+      }
+    }
+
+    function handleVideoError($el) {
+      return function (event) {
+        if ($el.poster === $el.dataset.thumbRemote) {
+          $el.poster = $el.dataset.thumbLocal;
+          return;
+        }
+      }
+    }
+
+    var imgObserver = new IntersectionObserver(
+      function (entities) {
+        entities.forEach(function (entity) {
+          if (!entity.isIntersecting) {
+            return;
+          }
+
+          var $el = entity.target;
+
+          handleImageUpgrade($el);
+
+          imgObserver.unobserve($el);
+        });
+      },
+      {
+        rootMargin: '50px 0px 50px 0px',
+      }
+    );
+
+    var videoObserver = new IntersectionObserver(
+      function (entities) {
+        entities.forEach(function (entity) {
+          var $el = entity.target;
+
+          if (entity.isIntersecting) {
+            $el.preload = 'auto';
+          } else {
+            $el.preload = 'none';
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px 50px 0px',
+      },
+    );
+
+    document
+      .querySelectorAll('article video')
+      .forEach(function ($el) {
+        $el.addEventListener('error', handleVideoError($el));
+
+        if (isElementInViewport($el)) {
+          $el.preload = "metadata";
+        }
+
+        $el.addEventListener("loadeddata", function () {
+          if ($el.readyState >= 4) {
+            $el.removeAttribute('poster');
+          } else {
+            $el.setAttribute("poster", $el.dataset.thumbRemote);
+          }
+        });
+
+        $el.addEventListener("click", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (this.paused) {
+            this.play();
+          } else {
+            this.pause();
+          }
+        });
+
+        videoObserver.observe($el);
+      })
+    ;
+
+    document
+      .querySelectorAll('article .img-container img')
+      .forEach(function ($el) {
+        $el.addEventListener('error', handleImageError($el));
+
+        if (isElementInViewport($el)) {
+          handleImageUpgrade($el);
+        } else {
+          imgObserver.observe($el);
+        }
+      })
+    ;
+  })()
+</script>
