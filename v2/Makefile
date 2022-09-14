@@ -60,7 +60,7 @@ $pull:
 	git pull --rebase
 
 .PHONY: dev/server
-dev/server: assets
+dev/server: assets dev/server/install
 	gin \
 		--all \
 		--immediate \
@@ -71,6 +71,10 @@ dev/server: assets
 		--bin '${OUTPUT_BINARY}' \
 		run \
 		main.go
+
+.PHONY: dev/server/install
+dev/server/install:
+	go get github.com/codegangsta/gin
 
 .PHONY: debug/build
 debug/build: assets
