@@ -6,11 +6,13 @@
     <style>
       :root {
         --column-count: 4;
+        --border-radius: 4px;
+        --article-padding: .5rem;
       }
 
       ::selection {
-        color: #fafafa;
-        background: #2f2f2f;
+        color: #2f2f2f;
+        background: #fafafa;
       }
 
       @media only screen and (max-width: 1750px) {
@@ -31,12 +33,35 @@
         }
       }
 
+      * {
+        transition-timing-function: cubic-bezier(.23, 1, .32, 1);
+        transition-duration: .25s;
+        transition-property: none;
+        box-sizing: border-box;
+      }
+
       body {
         font-family: arial, helvetica, sans-serif;
-        color: #2f2f2f;
-        background: #fafafa;
+        color: #fafafa;
+        background-color: #263238;
         margin: 0;
         padding: 1em;
+        font-size: 1rem;
+        box-sizing: border-box;
+        height: 100%;
+        text-align: center;
+      }
+
+      a {
+        display: inline-block;
+        word-break: break-word;
+        color: #cfd8dc;
+        outline-color: #cfd8dc;
+        text-decoration: underline;
+      }
+
+      a:hover {
+        text-decoration: none;
       }
     </style>
   </head>

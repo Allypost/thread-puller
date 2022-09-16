@@ -13,9 +13,10 @@
   article {
     display: flex;
     flex-direction: column;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     overflow: hidden;
-    background: #fafafa;
+    background: #37474f;
+    color: #fafafa;
     align-self: end;
     box-shadow: 0 2px 2px 0 #0000003d,
     0 3px 1px -2px #00000038,
@@ -24,8 +25,8 @@
   }
 
   article:target {
-    background-color: #f0f0f0;
-    border-color: #ba9dbf;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 23%),
+    0 3px 12px rgb(0 0 0 / 16%);
   }
 
   article section {
@@ -58,8 +59,61 @@
   }
 
   article footer {
-    text-align: center;
-    padding: .3em .5em;
+    padding: 0 .69em;
+    min-height: 3rem;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 2rem;
+    grid-template-areas: "replies post-btn mentions link";
+    gap: .5em;
+    color: #cfd8dc;
+    outline-color: #cfd8dc;
+  }
+
+  footer a {
+    text-decoration: none;
+  }
+
+  footer span {
+    padding: 0.5em 0;
+    transition-property: box-shadow, color;
+    text-decoration: none;
+    border: 1px solid #222c31;
+    border-radius: var(--border-radius);
+  }
+
+  footer .post-btn {
+    grid-area: post-btn;
+    justify-self: center;
+    background-color: #263238;
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%);
+    transition-property: box-shadow, color;
+    text-decoration: none;
+    border: 1px solid #222c31;
+    border-radius: var(--border-radius);
+    padding: .5em .85em;
+  }
+
+  footer .link {
+    grid-area: link;
+    display: inline-block;
+    font-size: 1.5em;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .3);
+    padding-left: 2px;
+    will-change: border-color, color;
+    transition-property: border-color, font-weight;
+  }
+
+  footer .link:hover {
+    font-weight: bold;
+    border-color: currentColor;
+  }
+
+  article:target footer a:last-of-type {
+    color: #dd0000;
+    border-color: #dd0000;
   }
 
   .spinner {
@@ -98,7 +152,9 @@
 </noscript>
 
 <nav>
-  <a href="/{{board.board}}/">&larr; Back</a>
+  <a href="/{{board.board}}/">&larr; Back</a> |
+  <a href="https://boards.4chan.org/{{board.board}}/thread/{{posts.[0].thread}}" rel="noopener noreferrer">Go to
+                                                                                                           thread</a>
 </nav>
 
 <h1>Board: {{board.link}}</h1>
@@ -129,26 +185,28 @@
                 title="{{ this.name }}"
               >
             </noscript>
-            <div
-              class="img-container"
-              data-width="{{this.variations.full.dimensions.width}}"
-              data-height="{{this.variations.full.dimensions.height}}"
-            >
-              <img
-                class="loading"
-                loading="lazy"
-                draggable="false"
-                src="{{this.variations.thumb.src.remote}}"
-                data-full-remote="{{this.variations.full.src.remote}}"
-                data-full-local="{{this.variations.full.src.local}}"
-                data-thumb-remote="{{this.variations.thumb.src.remote}}"
-                data-thumb-local="{{this.variations.thumb.src.local}}"
-                alt="{{ this.name }}"
-                title="{{ this.name }}"
-                style="aspect-ratio: {{this.variations.full.dimensions.width}} / {{this.variations.full.dimensions.height}};"
+            <a href="{{this.variations.full.src.remote}}" rel="noopener noreferrer" style="display: contents">
+              <div
+                class="img-container"
+                data-width="{{this.variations.full.dimensions.width}}"
+                data-height="{{this.variations.full.dimensions.height}}"
               >
-              <div class="spinner"></div>
-            </div>
+                <img
+                  class="loading"
+                  loading="lazy"
+                  draggable="false"
+                  src="{{this.variations.thumb.src.remote}}"
+                  data-full-remote="{{this.variations.full.src.remote}}"
+                  data-full-local="{{this.variations.full.src.local}}"
+                  data-thumb-remote="{{this.variations.thumb.src.remote}}"
+                  data-thumb-local="{{this.variations.thumb.src.local}}"
+                  alt="{{ this.name }}"
+                  title="{{ this.name }}"
+                  style="aspect-ratio: {{this.variations.full.dimensions.width}} / {{this.variations.full.dimensions.height}};"
+                >
+                <div class="spinner"></div>
+              </div>
+            </a>
           {{/if}}
           {{#if this.meta.isVideo ~}}
             <video
@@ -165,8 +223,7 @@
               <source src="{{this.variations.full.src.local}}" type="{{this.mimeType}}">
               <a
                 href="{{this.variations.full.src.remote}}"
-                target="_blank"
-                rel="noopener noreferrer nofollow"
+                rel="noopener noreferrer"
               >
                 Video link
               </a>
@@ -177,20 +234,27 @@
 
       <footer>
         {{#if this.meta.replies ~}}
-          <span title="{{this.meta.replies}} replies to this post">
+          <span title="{{this.meta.replies}} replies to this post" style="grid-area: replies;">
             Replies: {{ this.meta.replies }}
           </span>
         {{/if}}
         <a
           rel="noopener noreferrer"
           href="https://boards.4chan.org/{{this.board}}/thread/{{this.thread}}#p{{this.id}}"
-          target="_blank"
+          class="post-btn"
         >Go to post</a>
         {{#if this.meta.mentions ~}}
-          <span title="{{this.meta.mentions}} other posts mentioned">
+          <span title="{{this.meta.mentions}} other posts mentioned" style="grid-area: mentions;">
             Mentions: {{ this.meta.mentions }}
           </span>
         {{/if}}
+        <a
+          title="Link to this post"
+          href="/{{this.board}}/thread/{{this.thread}}/#p{{this.id}}"
+          class="link"
+        >
+          &lambda;
+        </a>
       </footer>
     </article>
   {{/each}}
@@ -198,6 +262,10 @@
 
 <script>
   (function () {
+    /**
+     * @param {HTMLElement} $el
+     * @returns {boolean}
+     */
     function isElementInViewport($el) {
       var scroll = window.scrollY || window.pageYOffset;
       var boundsTop = $el.getBoundingClientRect().top + scroll;
@@ -222,9 +290,19 @@
       );
     }
 
+    /**
+     * @param {HTMLImageElement} $el
+     */
     function handleImageUpgrade($el) {
+      /**
+       * @param {HTMLImageElement} $el
+       */
       var finishLoading = function ($el) {
         var fn = function () {
+          if ($el.src === $el.dataset.thumbRemote && $el.src === $el.dataset.thumbRemote) {
+            return;
+          }
+
           $el.classList.remove('loading');
           var $spinner = $el.parentNode.querySelector('.spinner');
           if ($spinner) {
@@ -240,13 +318,21 @@
       switch ($el.src) {
         case $el.dataset.thumbRemote:
         case $el.dataset.thumbLocal: {
-          $el.src = $el.dataset.fullRemote;
           $el.addEventListener('load', finishLoading($el));
+          const $img = document.createElement('img');
+          $img.src = $el.dataset.fullRemote;
+          $img.addEventListener('error', handleImageError($img));
+          $img.addEventListener('load', function () {
+            $el.src = $img.src;
+          });
           return;
         }
       }
     }
 
+    /**
+     * @param {HTMLImageElement} $el
+     */
     function handleImageError($el) {
       return function (event) {
         switch ($el.src) {
@@ -270,6 +356,9 @@
       }
     }
 
+    /**
+     * @param {HTMLVideoElement} $el
+     */
     function handleVideoError($el) {
       return function (event) {
         if ($el.poster === $el.dataset.thumbRemote) {
@@ -286,6 +375,9 @@
             return;
           }
 
+          /**
+           * @type {HTMLImageElement}
+           */
           var $el = entity.target;
 
           handleImageUpgrade($el);
@@ -301,6 +393,9 @@
     var videoObserver = new IntersectionObserver(
       function (entities) {
         entities.forEach(function (entity) {
+          /**
+           * @type {HTMLVideoElement}
+           */
           var $el = entity.target;
 
           if (entity.isIntersecting) {
@@ -317,7 +412,9 @@
 
     document
       .querySelectorAll('article video')
-      .forEach(function ($el) {
+      .forEach(/**
+       * @param {HTMLVideoElement} $el
+       */ function ($el) {
         $el.addEventListener('error', handleVideoError($el));
 
         if (isElementInViewport($el)) {
@@ -349,7 +446,9 @@
 
     document
       .querySelectorAll('article .img-container img')
-      .forEach(function ($el) {
+      .forEach(/**
+       * @param {HTMLImageElement} $el
+       */ function ($el) {
         $el.addEventListener('error', handleImageError($el));
 
         if (isElementInViewport($el)) {
