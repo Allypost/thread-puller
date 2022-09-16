@@ -184,3 +184,67 @@ func (p Posts) AddMetas(calculateMetas ...bool) Posts {
 
 	return p
 }
+
+type PostsSortable struct {
+	posts         *Posts
+	sortBy        string
+	sortDirection string
+}
+
+const (
+	postSortableDirectionAsc  = "asc"
+	postSortableDirectionDesc = "desc"
+)
+
+const (
+	postSortableByReplies = "replies"
+	postSortableByMedia   = "images"
+)
+
+func (p Posts) Sortable(sortBy string, sortDirection string) PostsSortable {
+	if sortDirection != postSortableDirectionAsc && sortDirection != postSortableDirectionDesc {
+		sortDirection = postSortableDirectionAsc
+	}
+
+	return PostsSortable{
+		posts:         &p,
+		sortBy:        sortBy,
+		sortDirection: sortDirection,
+	}
+}
+
+func (p PostsSortable) Len() int {
+	return len(*p.posts)
+}
+
+func (p PostsSortable) Less(i, j int) bool {
+	posts := *p.posts
+
+	a := *posts[i]
+	b := *posts[j]
+
+	res := false
+
+	switch p.sortBy {
+	case postSortableByReplies:
+		res = a.Meta.Replies < b.Meta.Replies
+	case postSortableByMedia:
+		res = a.Meta.Media < b.Meta.Media
+	}
+
+	if p.sortDirection == postSortableDirectionDesc {
+		res = !res
+	}
+
+	return res
+}
+
+func (p PostsSortable) Swap(i, j int) {
+	posts := *p.posts
+
+	posts[i], posts[j] = posts[j], posts[i]
+}
+
+func (p PostsSortable) Posts() Posts {
+	return *p.posts
+}

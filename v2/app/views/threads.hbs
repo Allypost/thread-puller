@@ -5,6 +5,24 @@
 <h1>Board: {{board.link}}</h1>
 <h2>{{{board.description}}}</h2>
 
+<form class="sort">
+  <label for="sort--field">
+    Sort posts by:
+  </label>
+  <select name="sb" id="sort--field" onchange="this.parentElement.submit()">
+    <option {{#if (eq sort.by "") }}selected{{/if}} value="">None</option>
+    <option {{#if (eq sort.by "images") }}selected{{/if}} value="images">media #</option>
+    <option {{#if (eq sort.by "replies") }}selected{{/if}} value="replies">reply #</option>
+  </select>
+  <select name="sd" id="sort--direction" onchange="this.parentElement.submit()">
+    <option {{#if (eq sort.dir "desc") }}selected{{/if}} value="desc">↓</option>
+    <option {{#if (eq sort.dir "asc") }}selected{{/if}} value="asc">↑</option>
+  </select>
+  <noscript>
+    <button type="submit">Sort</button>
+  </noscript>
+</form>
+
 <style>
   nav {
     font-size: 3em;
@@ -15,6 +33,11 @@
     display: grid;
     grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
     gap: 1em;
+  }
+
+  .sort {
+    margin: 1em 1em .5em;
+    text-align: right;
   }
 
   article {

@@ -34,6 +34,13 @@ func Init(fs fs.FS) fiber.Views {
 	buildTimeFormatted := buildTime.UTC().Format(version.TimeFormat)
 
 	engine.AddFunc(
+		"eq",
+		func(a, b interface{}) bool {
+			return a == b
+		},
+	)
+
+	engine.AddFunc(
 		"_currentYear",
 		func() int {
 			return time.Now().Year()

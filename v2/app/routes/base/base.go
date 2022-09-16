@@ -1,6 +1,8 @@
 package base
 
 import (
+	"sort"
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/Allypost/thread-puller/app/providers/requestTimer"
@@ -48,12 +50,23 @@ func Threads(ctx *fiber.Ctx) error {
 	}
 	timer.End("fetchBrd")
 
+	sortBy, sortDirection := ctx.Query("sb"), ctx.Query("sd")
+
+	if sortBy == "images" || sortBy == "replies" {
+		sort.Sort(threads.Sortable(sortBy, sortDirection))
+	}
+
 	timer.Start("render")
 	err = ctx.Render(
 		"threads",
 		t.Map{
 			"board":   board,
 			"threads": threads,
+
+			"sort": t.Map{
+				"by":  sortBy,
+				"dir": sortDirection,
+			},
 
 			"_meta": t.Map{
 				"title":       board.Link,
