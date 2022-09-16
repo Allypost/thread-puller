@@ -7,6 +7,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/k3a/html2text"
 
 	"github.com/Allypost/thread-puller/app/config"
 	"github.com/Allypost/thread-puller/app/providers/viewEngine/handlebars"
@@ -68,6 +69,13 @@ func Init(fs fs.FS) fiber.Views {
 	)
 
 	engine.AddFunc(
+		"_appUrl",
+		func() string {
+			return config.AppUrl()
+		},
+	)
+
+	engine.AddFunc(
 		"toJson",
 		func(item interface{}) string {
 			data, err := json.Marshal(item)
@@ -77,6 +85,13 @@ func Init(fs fs.FS) fiber.Views {
 			}
 
 			return string(data)
+		},
+	)
+
+	engine.AddFunc(
+		"text",
+		func(item string) string {
+			return html2text.HTML2Text(item)
 		},
 	)
 

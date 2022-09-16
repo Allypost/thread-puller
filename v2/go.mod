@@ -6,6 +6,7 @@ require (
 	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/joho/godotenv v1.4.0
+	github.com/k3a/html2text v1.0.8
 	github.com/modfy/fluent-ffmpeg v0.1.0
 	github.com/spf13/pflag v1.0.5
 	github.com/tdewolff/minify v2.3.6+incompatible

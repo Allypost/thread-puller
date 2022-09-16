@@ -2,9 +2,68 @@
 <meta name="referrer" property="referrer" content="never">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <meta name="og:type" property="og:type" content="website">
 <meta name="og:site_name" property="og:site_name" content="{{_appName}}">
 <meta name="application-name" property="never" content="{{_appName}}">
 <meta name="locale" content="en-US">
 <meta name="og:locale" property="og:locale" content="en-US">
+
+{{! ======== DESCRIPTION ======== }}
+{{#if _meta.description ~}}
+  <meta
+    name="description"
+    property="description"
+    content="{{text _meta.description}}"
+  >
+  <meta
+    name="og:description"
+    property="og:description"
+    content="{{text _meta.description}}"
+  >
+{{else ~}}
+  <meta
+    name="description"
+    property="description"
+    content="{{_appTagline}}"
+  >
+  <meta
+    name="og:description"
+    property="og:description"
+    content="{{_appTagline}}"
+  >
+{{/if}}
+{{! ======== /DESCRIPTION ======== }}
+
+{{! ======== IMAGE ======== }}
+{{#if _meta.image ~}}
+  <meta
+    name="og:image"
+    property="og:image"
+    content="{{text _meta.image}}"
+  >
+{{else ~}}
+  <meta
+    name="og:image"
+    property="og:image"
+    content="{{_appUrl}}/assets/images/pepe.png"
+  >
+{{/if}}
+{{! ======== /IMAGE ======== }}
+
+{{! ======== TITLE ======== }}
+{{#if _meta.title ~}}
+  <meta
+    name="og:title"
+    property="og:title"
+    content="{{text _meta.title}} | {{_appName}}"
+  >
+  <title>{{text _meta.title}} | {{_appName}}</title>
+{{else ~}}
+  <meta
+    name="og:title"
+    property="og:title"
+    content="{{_appName}} - {{_appTagline}}"
+  >
+  <title>{{_appName}} - {{_appTagline}}</title>
+{{/if}}
+{{! ======== /TITLE ======== }}
