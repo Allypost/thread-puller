@@ -20,8 +20,20 @@ type Minifier struct {
 func New() Minifier {
 	m := minify.New()
 
-	m.AddFunc("text/css", css.Minify)
-	m.AddFunc("text/html", html.Minify)
+	m.Add(
+		"text/css",
+		&css.Minifier{
+			Decimals: -1,
+			KeepCSS2: true,
+		},
+	)
+	m.Add(
+		"text/html",
+		&html.Minifier{
+			KeepConditionalComments: true,
+			KeepDocumentTags:        true,
+		},
+	)
 	m.AddFunc("image/svg+xml", svg.Minify)
 	m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
