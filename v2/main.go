@@ -182,6 +182,15 @@ func main() {
 		},
 	)
 
+	app.Get(
+		"/robots.txt",
+		func(c *fiber.Ctx) error {
+			robots, _ := assets.ReadFile("assets/robots.txt")
+
+			return c.Type(".txt").Send(robots)
+		},
+	)
+
 	assetsFs, _ := fs.Sub(assets, "assets")
 	app.Use(
 		"/assets",
