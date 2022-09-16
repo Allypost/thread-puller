@@ -6,6 +6,7 @@ import (
 	"github.com/Allypost/thread-puller/app/providers/requestTimer"
 	"github.com/Allypost/thread-puller/app/src/fourChan/fetcher"
 	"github.com/Allypost/thread-puller/app/src/fourChan/types/public"
+	"github.com/Allypost/thread-puller/app/t"
 )
 
 func Boards(ctx *fiber.Ctx) error {
@@ -20,7 +21,7 @@ func Boards(ctx *fiber.Ctx) error {
 
 	return ctx.Render(
 		"index",
-		fiber.Map{
+		t.Map{
 			"boards": boards,
 		},
 		"layouts/main",
@@ -49,7 +50,7 @@ func Threads(ctx *fiber.Ctx) error {
 	timer.Start("render")
 	err = ctx.Render(
 		"threads",
-		fiber.Map{
+		t.Map{
 			"board":   board,
 			"threads": threads,
 		},
@@ -90,7 +91,7 @@ func Thread(ctx *fiber.Ctx) error {
 	timer.Start("render")
 	err = ctx.Render(
 		"posts",
-		fiber.Map{
+		t.Map{
 			"board": board,
 			"posts": postsWithMedia,
 		},

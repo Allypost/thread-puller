@@ -6,6 +6,7 @@ import (
 	apiFourchanInfo "github.com/Allypost/thread-puller/app/routes/api/fourChan/info"
 	"github.com/Allypost/thread-puller/app/routes/base"
 	"github.com/Allypost/thread-puller/app/routes/files"
+	"github.com/Allypost/thread-puller/app/t"
 	"github.com/Allypost/thread-puller/app/util/api/response"
 )
 
@@ -19,7 +20,7 @@ func RegisterRoutes(app *fiber.App) {
 			func(c *fiber.Ctx) (err error) {
 				return c.Status(fiber.StatusNotFound).Render(
 					"util/404",
-					fiber.Map{},
+					t.Map{},
 					"layouts/main",
 				)
 			},
