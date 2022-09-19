@@ -30,6 +30,9 @@ func RegisterRoutes(app *fiber.App) {
 	Api := app.Group(
 		"/api/v3", func(c *fiber.Ctx) error {
 			c.Type("json")
+			c.Set("Access-Control-Allow-Origin", "*")
+			c.Set("Access-Control-Allow-Methods", "GET, POST")
+			c.Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
 
 			return c.Next()
 		},
