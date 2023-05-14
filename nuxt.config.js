@@ -67,6 +67,13 @@ export default {
         'async': true,
       },
       {
+        async: true,
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-NXGH569032',
+      },
+      {
+        innerHTML: 'window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag(\'js\', new Date()); gtag(\'config\', \'G-NXGH569032\');',
+      },
+      {
         'defer': true,
         'src': '/js/script.js',
         'data-domain': 'thread-puller.party',
