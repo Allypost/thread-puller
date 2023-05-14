@@ -66,6 +66,12 @@ export default {
         'data-goatcounter': process.env.THREADPULLER_GOATCOUNTER_URL,
         'async': true,
       },
+      {
+        'defer': true,
+        'src': '/js/script.js',
+        'data-domain': 'thread-puller.party',
+        'data-api': '/api/event',
+      },
     ],
     __dangerouslyDisableSanitizers: [ 'script' ],
   },
